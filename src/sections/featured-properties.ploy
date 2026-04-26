@@ -1,0 +1,85 @@
+{%- assign fp_properties = sections['featured-properties'].properties -%}
+{%- if fp_properties and fp_properties.size > 0 -%}
+{%- assign _url_parts = canonical_url | split: '/' -%}
+{%- assign _fp_site_url = _url_parts[0] | append: '//' | append: _url_parts[2] -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": {{ 'home.featured_title' | t | json }},
+  "itemListElement": [
+    {%- for property in fp_properties limit: 6 -%}
+    {
+      "@type": "ListItem",
+      "position": {{ forloop.index }},
+      "item": {
+        "@type": "RealEstateListing",
+        "url": "{{ _fp_site_url }}{{ locale_prefix }}{{ routes.property }}/{{ property.sku }}/{{ property.slug }}",
+        "name": {{ property.title | json }}
+        {%- if property.images and property.images.size > 0 -%},
+        "image": "{{ property.images[0].url | default: property.images[0] }}"
+        {%- endif -%}
+        {%- if property.for_sale and property.sale_price and property.sale_price > 0 %},
+        "offers": { "@type": "Offer", "price": {{ property.sale_price }}, "priceCurrency": "{{ property.currency | default: 'BRL' }}", "businessFunction": "http://purl.org/goodrelations/v1#Sell" }
+        {%- elsif property.for_rent and property.rental_price and property.rental_price > 0 %},
+        "offers": { "@type": "Offer", "price": {{ property.rental_price }}, "priceCurrency": "{{ property.currency | default: 'BRL' }}", "businessFunction": "http://purl.org/goodrelations/v1#LeaseOut" }
+        {%- endif %}
+      }
+    }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>
+{%- endif -%}
+
+<!-- Featured Properties Section -->
+<section class="vp-section vp-featured-properties py-20 pb-0 bg-white">
+  <div class="vp-section__container max-w-screen-2xl mx-auto px-[3%]">
+    <!-- Section Header -->
+    <div class="vp-section__header text-left mb-12">
+      <h2 class="text-2xl font-semibold text-gray-900 mb-3  ">
+        {% if workspace.top_cities.size > 0 %}
+        {{ 'home.featured_title' | t }} <span class="font-bold">{{ 'home.featured_title_in' | t }} {{ workspace.top_cities[0].name }} {{ 'home.featured_title_suffix' | t }}</span>
+        {% else %}
+        {{ 'home.featured_title' | t }} <span class="font-bold">{{ 'home.featured_title_suffix' | t }}</span>
+        {% endif %}
+      </h2>
+      <p class="text-gray-500 text-base max-w-2xl">
+        {{ 'home.featured_description' | t }}
+      </p>
+    </div>
+
+    <!-- Properties Grid -->
+    <div class="vp-properties-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+      {% for property in fp_properties limit: 6 %}
+        {% include 'components/property-card' %}
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Imóveis em Destaque",
+  "location": "home",
+  "settings": [
+    {
+      "type": "property_picker",
+      "id": "featured_skus",
+      "label": "Imóveis em Destaque",
+      "limit": 6,
+      "autofill": {
+        "enabled": false,
+        "source": "recent",
+        "sources": [
+          { "value": "recent", "label": "Mais recentes" },
+          { "value": "random", "label": "Aleatório" },
+          { "value": "price_above", "label": "Preço acima de" },
+          { "value": "price_below", "label": "Preço abaixo de" }
+        ]
+      }
+    }
+  ]
+}
+{% endschema %}

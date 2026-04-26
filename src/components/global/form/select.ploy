@@ -1,0 +1,444 @@
+{% comment %}
+  Select Component – Native select with custom styled interface
+  Props:
+    - options: array of { value, label, type? } (or option_value_key / option_label_key)
+    - options_str: alternative – string "value|label||value2|label2" (use when options array is not available)
+    - show_all_label: when set, prepends an option with value "" and this label (e.g. "Mostrar todos", "Show all")
+    - multiple: boolean (default false)
+    - close_on_select: boolean → close panel on select (e.g. true for single, false for multiple)
+    - name: form field name (e.g. "operation" or "type[]")
+    - init_selected: for single, the value string; for multiple, use init_selected: array | join: ','
+    - placeholder: trigger text when none selected (default "Selecione...")
+    - label: optional label above the trigger
+    - option_value_key, option_label_key, option_type_key: keys in option objects (default 'value', 'label', 'type')
+    - auto_width: boolean - if true, panel width is auto (min-content), otherwise full width (default false)
+    - search_api: API endpoint for dynamic search (optional - enables search mode)
+    - searchable: boolean - if true, enables local filtering (without API)
+    - search_min_chars: minimum characters for search (default: 2)
+    - search_debounce: debounce delay in ms (default: 300)
+    - group_labels: hash mapping type values to display labels (e.g. { 'residential': 'Residencial', 'commercial': 'Comercial' })
+{% endcomment %}
+{% assign ovk = option_value_key | default: 'value' %}
+{% assign olk = option_label_key | default: 'label' %}
+{% assign otk = option_type_key | default: 'type' %}
+{% assign ph = placeholder | default: 'Selecione...' %}
+{% assign is_multi = multiple | default: false %}
+{% assign close_on = close_on_select %}
+{% assign auto_w = auto_width | default: false %}
+{% assign has_search_api = false %}
+{% if search_api != blank %}
+  {% assign has_search_api = true %}
+{% endif %}
+{% assign is_searchable = false %}
+{% if searchable == true or has_search_api %}
+  {% assign is_searchable = true %}
+{% endif %}
+{% if auto_w %}
+  {% assign panel_width_class = 'w-max min-w-full' %}
+{% else %}
+  {% assign panel_width_class = 'min-w-[var(--dropdown-min-w,100%)]' %}
+{% endif %}
+{% if options_str != blank %}
+  {% assign opts_str = options_str %}
+  {% if show_all_label != blank %}
+    {% assign opts_str = '|' | append: show_all_label | append: '||' | append: opts_str %}
+  {% endif %}
+  {% assign options_split = opts_str | split: '||' %}
+{% else %}
+  {% capture opts_str %}{% if show_all_label != blank %}|{{ show_all_label }}||{% endif %}{% for o in options %}{{ o[ovk] }}|{{ o[olk] }}{% unless forloop.last %}||{% endunless %}{% endfor %}{% endcapture %}
+{% endif %}
+{% assign init_val = init_selected | default: '' %}
+{% if init_val == nil %}{% assign init_val = '' %}{% endif %}
+{% assign selected_values = init_val | split: ',' %}
+
+<div
+  class="select-component relative"
+  :class="open ? 'z-[9999]' : 'z-[1]'"
+  x-data="customSelect({
+    closeOnSelect: {{ close_on | default: true }},
+    isMultiple: {{ is_multi }},
+    placeholder: '{{ ph | escape }}',
+    searchApi: {% if has_search_api %}'{{ search_api | escape }}'{% else %}null{% endif %},
+    searchable: {{ is_searchable }},
+    searchMinChars: {{ search_min_chars | default: 2 }},
+    searchDebounce: {{ search_debounce | default: 300 }}
+  })"
+>
+  {% if label != blank %}
+  <label class="block text-base font-semibold text-gray-900 mb-2">{{ label }}</label>
+  {% endif %}
+
+  <!-- Native Select (hidden but functional) -->
+  <select
+    name="{{ name }}"
+    {% if is_multi %}multiple{% endif %}
+    class="sr-only"
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    {% if options_str != blank %}
+      {% for pair in options_split %}
+        {% assign p = pair | split: '|' %}
+        {% assign v = p.first | default: '' %}
+        {% assign l = p.last | default: p.first %}
+        <option value="{{ v }}" {% if selected_values contains v %}selected{% endif %}>{{ l }}</option>
+      {% endfor %}
+    {% else %}
+      {% if show_all_label != blank %}
+        <option value="" {% if selected_values contains '' %}selected{% endif %}>{{ show_all_label }}</option>
+      {% endif %}
+      {% for opt in options %}
+        {% assign v = opt[ovk] %}
+        {% assign l = opt[olk] %}
+        <option value="{{ v }}" {% if selected_values contains v %}selected{% endif %}>{{ l }}</option>
+      {% endfor %}
+    {% endif %}
+    {% comment %} Pre-render options for API-backed selects with initial values {% endcomment %}
+    {% if init_options != blank %}
+      {% assign init_options_split = init_options | split: '||' %}
+      {% for pair in init_options_split %}
+        {% assign p = pair | split: '|' %}
+        {% assign v = p.first | default: '' %}
+        {% assign l = p.last | default: p.first %}
+        {% if v != blank %}
+        <option value="{{ v }}" {% if selected_values contains v %}selected{% endif %}>{{ l }}</option>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+  </select>
+
+  {% capture trigger_html %}<div class="flex items-center gap-2 flex-1 min-w-0"><span class="truncate min-w-0" x-text="triggerText"></span><span x-show="extraCount > 0" class="flex-shrink-0 inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-gray-100 text-xs font-medium text-gray-600" x-text="'+' + extraCount"></span></div>{% endcapture %}
+
+  {% if has_search_api == false %}
+  {% capture panel_html %}
+    {% if options_str != blank %}
+      {% for pair in options_split %}
+        {% assign p = pair | split: '|' %}
+        {% assign v = p.first | default: '' %}
+        {% assign l = p.last | default: p.first %}
+        <div
+          class="select-option px-4 py-2 hover:bg-gray-50 transition-colors cursor-pointer flex items-center gap-3"
+          role="option"
+          data-search-text="{{ l | downcase }}"
+          @click="toggleOption('{{ v | escape }}')"
+          :class="isSelected('{{ v | escape }}') ? 'bg-primary/5' : ''"
+        >
+          {% if is_multi %}
+          <span class="relative w-5 h-5 flex-shrink-0">
+            <span
+              class="absolute inset-0 rounded border-2 pointer-events-none transition-colors"
+              :class="isSelected('{{ v | escape }}') ? 'bg-primary border-primary' : 'border-gray-300 bg-white'"
+            ></span>
+            <span
+              class="absolute inset-0 flex items-center justify-center pointer-events-none transition-all duration-200"
+              :class="isSelected('{{ v | escape }}') ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 text-white">
+                <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z" clip-rule="evenodd"/>
+              </svg>
+            </span>
+          </span>
+          {% else %}
+          <span class="relative w-5 h-5 flex-shrink-0">
+            <span
+              class="absolute inset-0 rounded-full border-2 pointer-events-none transition-colors"
+              :class="isSelected('{{ v | escape }}') ? 'border-primary bg-white' : 'border-gray-300 bg-white'"
+            ></span>
+            <span
+              class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary pointer-events-none scale-0 transition-transform duration-200"
+              :class="isSelected('{{ v | escape }}') ? 'scale-100' : 'scale-0'"
+            ></span>
+          </span>
+          {% endif %}
+          <span class="text-[14px] text-gray-700">{{ l }}</span>
+        </div>
+      {% endfor %}
+    {% else %}
+      {% if show_all_label != blank %}
+        <div
+          class="select-option px-4 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer flex items-center gap-3"
+          role="option"
+          @click="toggleOption('')"
+          :class="isSelected('') ? 'bg-primary/5' : ''"
+        >
+          {% if is_multi %}
+          <span class="relative w-5 h-5 flex-shrink-0">
+            <span class="absolute inset-0 rounded border-2 pointer-events-none transition-colors" :class="isSelected('') ? 'bg-primary border-primary' : 'border-gray-300 bg-white'"></span>
+            <span class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 scale-75 transition-all duration-200" :class="isSelected('') ? 'opacity-100 scale-100' : 'opacity-0 scale-75'">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 text-white">
+                <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z" clip-rule="evenodd"/>
+              </svg>
+            </span>
+          </span>
+          {% else %}
+          <span class="relative w-5 h-5 flex-shrink-0">
+            <span class="absolute inset-0 rounded-full border-2 pointer-events-none transition-colors" :class="isSelected('') ? 'border-primary bg-white' : 'border-gray-300 bg-white'"></span>
+            <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary pointer-events-none scale-0 transition-transform duration-200" :class="isSelected('') ? 'scale-100' : 'scale-0'"></span>
+          </span>
+          {% endif %}
+          <span class="text-[14px] text-gray-700">{{ show_all_label }}</span>
+        </div>
+      {% endif %}
+
+      {% comment %} Group options by type if option_type_key is provided {% endcomment %}
+      {% assign has_groups = false %}
+      {% if option_type_key != blank %}
+        {% for opt in options %}
+          {% if opt[otk] != blank %}
+            {% assign has_groups = true %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      {% if has_groups %}
+        {% comment %} Collect unique group types in order {% endcomment %}
+        {% assign group_types = '' %}
+        {% for opt in options %}
+          {% assign opt_type = opt[otk] | default: '' %}
+          {% unless group_types contains opt_type %}
+            {% if group_types != '' %}{% assign group_types = group_types | append: '||' %}{% endif %}
+            {% assign group_types = group_types | append: opt_type %}
+          {% endunless %}
+        {% endfor %}
+        {% assign group_types_arr = group_types | split: '||' %}
+
+        {% for grp in group_types_arr %}
+          {% if grp == 'residential' %}
+            {% assign group_label = 'Residencial' | t %}
+          {% elsif grp == 'commercial' %}
+            {% assign group_label = 'Comercial' | t %}
+          {% else %}
+            {% assign group_label = grp | capitalize %}
+          {% endif %}
+          <div class="select-group-header px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50">{{ group_label }}</div>
+
+          {% for opt in options %}
+            {% assign opt_type = opt[otk] | default: '' %}
+            {% if opt_type == grp %}
+              {% assign v = opt[ovk] %}
+              {% assign l = opt[olk] %}
+              <div
+                class="select-option px-4 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer flex items-center gap-3"
+                role="option"
+                data-search-text="{{ l | downcase }}"
+                @click="toggleOption('{{ v | escape }}')"
+                :class="isSelected('{{ v | escape }}') ? 'bg-primary/5' : ''"
+              >
+                {% if is_multi %}
+                <span class="relative w-5 h-5 flex-shrink-0">
+                  <span class="absolute inset-0 rounded border-2 pointer-events-none transition-colors" :class="isSelected('{{ v | escape }}') ? 'bg-primary border-primary' : 'border-gray-300 bg-white'"></span>
+                  <span class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 scale-75 transition-all duration-200" :class="isSelected('{{ v | escape }}') ? 'opacity-100 scale-100' : 'opacity-0 scale-75'">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 text-white">
+                      <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z" clip-rule="evenodd"/>
+                    </svg>
+                  </span>
+                </span>
+                {% else %}
+                <span class="relative w-5 h-5 flex-shrink-0">
+                  <span class="absolute inset-0 rounded-full border-2 pointer-events-none transition-colors" :class="isSelected('{{ v | escape }}') ? 'border-primary bg-white' : 'border-gray-300 bg-white'"></span>
+                  <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary pointer-events-none scale-0 transition-transform duration-200" :class="isSelected('{{ v | escape }}') ? 'scale-100' : 'scale-0'"></span>
+                </span>
+                {% endif %}
+                <span class="text-[14px] text-gray-700">{{ l }}</span>
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      {% else %}
+        {% for opt in options %}
+          {% assign v = opt[ovk] %}
+          {% assign l = opt[olk] %}
+          <div
+            class="select-option px-4 py-2.5 hover:bg-gray-50 transition-colors cursor-pointer flex items-center gap-3"
+            role="option"
+            data-search-text="{{ l | downcase }}"
+            @click="toggleOption('{{ v | escape }}')"
+            :class="isSelected('{{ v | escape }}') ? 'bg-primary/5' : ''"
+          >
+            {% if is_multi %}
+            <span class="relative w-5 h-5 flex-shrink-0">
+              <span class="absolute inset-0 rounded border-2 pointer-events-none transition-colors" :class="isSelected('{{ v | escape }}') ? 'bg-primary border-primary' : 'border-gray-300 bg-white'"></span>
+              <span class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 scale-75 transition-all duration-200" :class="isSelected('{{ v | escape }}') ? 'opacity-100 scale-100' : 'opacity-0 scale-75'">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 text-white">
+                  <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z" clip-rule="evenodd"/>
+                </svg>
+              </span>
+            </span>
+            {% else %}
+            <span class="relative w-5 h-5 flex-shrink-0">
+              <span class="absolute inset-0 rounded-full border-2 pointer-events-none transition-colors" :class="isSelected('{{ v | escape }}') ? 'border-primary bg-white' : 'border-gray-300 bg-white'"></span>
+              <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary pointer-events-none scale-0 transition-transform duration-200" :class="isSelected('{{ v | escape }}') ? 'scale-100' : 'scale-0'"></span>
+            </span>
+            {% endif %}
+            <span class="text-[14px] text-gray-700">{{ l }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+  {% endcapture %}
+  {% endif %}
+
+  <!-- Dropdown (inline to share Alpine.js scope) -->
+  <div class="dropdown relative min-w-0" x-ref="dropdownContainer">
+    <!-- Trigger -->
+    {% if is_searchable %}
+    <!-- Searchable Trigger (Editable Input) -->
+    <div
+      x-ref="trigger"
+      role="combobox"
+      aria-expanded="false"
+      aria-haspopup="listbox"
+      :aria-expanded="open"
+      aria-label="{{ label | default: ph }}"
+      class="dropdown-trigger w-full flex items-center justify-between gap-2 px-4 py-2.5 text-left text-base border border-gray-200 rounded-lg bg-white focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary outline-none transition-colors cursor-pointer"
+      @click="handleTriggerClick()"
+    >
+      <!-- Loading state while resolving labels from API -->
+      <div x-show="resolvingLabels" class="flex items-center gap-2 flex-1">
+        <svg class="animate-spin h-4 w-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span class="text-sm text-gray-400">Carregando...</span>
+      </div>
+
+      <!-- Selected items display (read-only, shown when not editing and not resolving) -->
+      <div x-show="selectedValues.length > 0 && !isEditing && !resolvingLabels" class="flex items-center gap-2 flex-1 min-w-0">
+        <span class="truncate text-gray-900 min-w-0" x-text="triggerText"></span>
+        <span x-show="extraCount > 0" class="flex-shrink-0 inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-gray-100 text-xs font-medium text-gray-600" x-text="'+' + extraCount"></span>
+      </div>
+
+      <!-- Search input (shown when editing or nothing selected) -->
+      <input
+        x-show="selectedValues.length === 0 || isEditing"
+        type="text"
+        x-model="searchQuery"
+        x-ref="searchInput"
+        :placeholder="placeholder"
+        class="flex-1 min-w-0 outline-none bg-transparent text-base"
+        @keydown.escape="open = false; if (selectedValues.length > 0) { isEditing = false; searchQuery = ''; }"
+      >
+
+      <svg x-show="nativeSelect && nativeSelect.options.length > 1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-gray-400 flex-shrink-0 transition-transform pointer-events-none" :class="open && 'rotate-180'">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+      </svg>
+    </div>
+    {% else %}
+    <!-- Standard Trigger (Non-searchable) -->
+    <div
+      x-ref="trigger"
+      role="combobox"
+      aria-expanded="false"
+      aria-haspopup="listbox"
+      :aria-expanded="open"
+      aria-label="{{ label | default: ph }}"
+      tabindex="0"
+      @click="toggleDropdown()"
+      @keydown.escape="open = false"
+      @keydown.space.prevent="toggleDropdown()"
+      @keydown.enter.prevent="toggleDropdown()"
+      class="dropdown-trigger w-full flex items-center justify-between gap-2 px-4 py-2.5 text-left text-base border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none cursor-pointer transition-colors"
+    >
+      {{ trigger_html }}
+      <svg x-show="nativeSelect && nativeSelect.options.length > 1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-gray-400 flex-shrink-0 transition-transform" :class="open && 'rotate-180'">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+      </svg>
+    </div>
+    {% endif %}
+
+    <!-- Panel with search API support -->
+    {% if has_search_api %}
+    <div
+      x-show="open && hasContentToShow"
+      x-transition:enter="transition ease-out duration-150"
+      x-transition:enter-start="opacity-0 scale-95"
+      x-transition:enter-end="opacity-100 scale-100"
+      x-transition:leave="transition ease-in duration-100"
+      x-transition:leave-start="opacity-100 scale-100"
+      x-transition:leave-end="opacity-0 scale-95"
+      class="dropdown-panel absolute z-10 py-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-80 overflow-y-auto {{ panel_width_class }}"
+      :class="openUpwards ? 'bottom-full mb-1.5' : 'top-full mt-1.5'"
+      x-ref="panel"
+      role="listbox"
+      @click.outside="open = false; isEditing = false; searchQuery = '';"
+      @click.stop
+      x-cloak
+    >
+        <!-- Loading State -->
+        <div x-show="loading" class="px-4 py-8 flex flex-col items-center justify-center gap-2">
+          <svg class="animate-spin h-6 w-6 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span class="text-sm text-gray-500">Buscando...</span>
+        </div>
+
+        <!-- Grouped Results -->
+        <template x-if="!loading && (searchResults.length > 0 || selectedItems.length > 0)">
+          <div>
+            <template x-for="(group, groupIndex) in groupedResults" :key="groupIndex">
+              <div>
+                <!-- Group Header -->
+                <div class="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider bg-gray-50" x-text="group.label"></div>
+
+                <!-- Group Items -->
+                <template x-for="(result, index) in group.items" :key="result.value || result.label || index">
+                  <div
+                    class="select-option px-4 py-2 hover:bg-gray-50 transition-colors cursor-pointer flex items-center gap-3"
+                    role="option"
+                    @mousedown.prevent @click.stop="toggleOption(result.value, result.label, result.type)"
+                    :class="isSelected(result.value) ? 'bg-primary/5' : ''"
+                  >
+                    <span class="relative w-5 h-5 flex-shrink-0">
+                      <span
+                        class="absolute inset-0 rounded border-2 pointer-events-none transition-colors"
+                        :class="isSelected(result.value) ? 'bg-primary border-primary' : 'border-gray-300 bg-white'"
+                      ></span>
+                      <span
+                        class="absolute inset-0 flex items-center justify-center pointer-events-none transition-all duration-200"
+                        :class="isSelected(result.value) ? 'opacity-100 scale-100' : 'opacity-0 scale-75'"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 text-white">
+                          <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z" clip-rule="evenodd"/>
+                        </svg>
+                      </span>
+                    </span>
+
+                    <span class="text-[14px] text-gray-700" x-text="result.label"></span>
+                  </div>
+                </template>
+              </div>
+            </template>
+          </div>
+        </template>
+
+        <!-- No Results (only show after search completed) -->
+        <div x-show="!loading && hasSearched && searchQuery && searchQuery.length >= searchMinChars && searchResults.length === 0 && selectedItems.length === 0" class="px-4 py-8 text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 mx-auto text-gray-300 mb-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+          <p class="text-sm text-gray-500">Nenhum resultado encontrado</p>
+        </div>
+      </div>
+    {% else %}
+    <!-- Panel without search API (original behavior) -->
+    <div
+      x-show="open"
+      x-transition:enter="transition ease-out duration-150"
+      x-transition:enter-start="opacity-0 scale-95"
+      x-transition:enter-end="opacity-100 scale-100"
+      x-transition:leave="transition ease-in duration-100"
+      x-transition:leave-start="opacity-100 scale-100"
+      x-transition:leave-end="opacity-0 scale-95"
+      class="dropdown-panel absolute z-[100] py-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-64 overflow-y-auto {{ panel_width_class }}"
+      :class="(openUpwards ? 'bottom-full mb-1.5' : 'top-full mt-1.5') + (openToLeft ? ' right-0' : ' left-0')"
+      role="listbox"
+      @click.outside="open = false; isEditing = false; searchQuery = '';"
+      x-cloak
+    >
+      {{ panel_html }}
+    </div>
+    {% endif %}
+  </div>
+</div>

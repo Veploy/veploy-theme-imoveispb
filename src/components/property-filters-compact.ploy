@@ -1,0 +1,75 @@
+<!-- Property Filters Compact - horizontal search bar, positioned at bottom of hero -->
+<div class="absolute bottom-0 left-0 right-0 transform translate-y-[90%] md:translate-y-[75%] z-20 px-4">
+  <div class="max-w-[1140px] mx-auto">
+    <div x-data="{ searchByCode: {% if filters.code %}true{% else %}false{% endif %} }">
+      <div class="bg-white rounded-lg shadow-xl p-4 md:p-6">
+
+        <!-- Code Search Form (isolated, only submits code) -->
+        <form x-show="searchByCode" {% if not filters.code %}style="display: none"{% endif %} method="GET" action="{{ routes.properties | default: '/imoveis' }}">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-4">
+            <div class="md:col-span-10">
+              {% include 'components/global/form/filter/filter-code-search' %}
+            </div>
+            <div class="md:col-span-2 flex items-end">
+              <button type="submit" class="w-full btn-secondary px-4 py-3 rounded-lg font-semibold text-base transition-colors flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+                {{ 'search.search' | t }}
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Normal Filters Form -->
+        <form x-show="!searchByCode" {% if filters.code %}style="display: none"{% endif %} method="GET" action="{{ routes.properties | default: '/imoveis' }}" x-ref="filterForm">
+          <div class="grid grid-cols-2 md:grid-cols-12 gap-3 md:gap-4" x-data="{ isMobile: window.innerWidth < 768 }" x-init="
+  const updateWidth = () => {
+    isMobile = window.innerWidth < 768;
+    $el.style.setProperty('--dropdown-min-w', isMobile ? $el.offsetWidth + 'px' : '100%');
+  };
+  updateWidth();
+  window.addEventListener('resize', updateWidth);
+">
+            <!-- Operação (Comprar/Alugar) -->
+            <div class="col-span-1 md:col-span-3">
+              {% include 'components/global/form/filter/filter-operation' %}
+            </div>
+
+            <!-- Tipo do Imóvel -->
+            <div class="col-span-1 md:col-span-3">
+              {% include 'components/global/form/filter/filter-property-type'
+                close_on_select: false
+              %}
+            </div>
+
+            <!-- Localização -->
+            <div class="col-span-2 md:col-span-4">
+              {% include 'components/global/form/filter/filter-location' %}
+            </div>
+
+            <!-- Botão Buscar -->
+            <div class="col-span-2 md:col-span-2 flex items-end">
+              <button type="submit" class="w-full btn-secondary px-4 py-3 rounded-lg font-semibold text-base transition-colors flex items-center justify-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+                {{ 'search.search' | t }}
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <!-- Toggle link -->
+        <div class="mt-3 text-left">
+          <button
+            type="button"
+            @click="searchByCode = !searchByCode"
+            class="text-sm text-gray-500 underline hover:text-primary transition-colors"
+            x-text="searchByCode ? '{{ 'search.back_to_normal_search' | t }}' : '{{ 'search.search_by_code' | t }}'"
+          ></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

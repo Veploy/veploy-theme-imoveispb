@@ -1,0 +1,27 @@
+{% comment %}
+  Radio component – styled with Tailwind, accessible.
+  Use standalone: name, value, checked, label, id.
+  Use inside popover: value, label, alpine_checked (e.g. "selected[0] === 'apartamento'"), alpine_change (e.g. "selected = [$event.target.value]; if (closeOnSelect) open = false").
+  Omit 'name' when using with popover (hidden inputs are used instead).
+{% endcomment %}
+{% assign val = value | default: '' %}
+{% assign lid = id | default: 'rd' | append: val %}
+<label class="flex items-center gap-3 cursor-pointer group select-none">
+  <span class="relative w-5 h-5 flex-shrink-0">
+    <input
+      type="radio"
+      {% if name %}name="{{ name }}"{% endif %}
+      value="{{ val }}"
+      {% if alpine_checked %}:checked="{{ alpine_checked }}"{% endif %}
+      {% if alpine_change %}@change="{{ alpine_change }}"{% endif %}
+      {% if checked and alpine_checked == blank and alpine_change == blank %}checked{% endif %}
+      id="{{ lid }}"
+      class="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+    >
+    <span class="absolute inset-0 rounded-full border-2 border-gray-300 bg-white pointer-events-none transition-colors group-hover:border-gray-400 peer-checked:border-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary/40 peer-focus-visible:ring-offset-1" aria-hidden="true"></span>
+    <span class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary pointer-events-none scale-0 transition-transform duration-200 peer-checked:scale-100" aria-hidden="true"></span>
+  </span>
+  {% if label != blank %}
+  <span class="text-base text-gray-700 group-hover:text-gray-900">{{ label }}</span>
+  {% endif %}
+</label>

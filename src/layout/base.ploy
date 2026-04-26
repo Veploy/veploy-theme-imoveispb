@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="{{ locale | replace: '_', '-' | default: 'pt-BR' }}">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {%- comment -%} Title: Home → "Brand | Slogan", inner pages → "Title | Brand" {%- endcomment -%}
+    {%- if current_path == '' or current_path == '/' -%}
+    <title>{{ workspace.name }}{% if slogan != blank %} &bull; {{ slogan }}{% endif %}</title>
+    {%- else -%}
+    <title>{{ title | default: workspace.name }} &bull; {{ workspace.name }}</title>
+    {%- endif -%}
+    {%- if meta_description != blank %}
+    <meta name="description" content="{{ meta_description | strip_html | truncate: 155 }}">
+    {%- endif %}
+    {%- if meta_keywords != blank %}
+    <meta name="keywords" content="{{ meta_keywords }}">
+    {%- endif %}
+    {%- if canonical_url %}
+    <link rel="canonical" href="{{ canonical_url }}">
+    {%- endif %}
+    {%- if theme_settings.brand_identity.favicon %}
+    <link rel="icon" href="{{ theme_settings.brand_identity.favicon }}" type="image/x-icon">
+    {%- endif %}
+
+    {%- comment -%} ======= OPEN GRAPH ======= {%- endcomment -%}
+    {%- if current_path == '' or current_path == '/' -%}
+      {%- capture _og_title %}{{ workspace.name }}{% if slogan != blank %} • {{ slogan }}{% endif %}{% endcapture -%}
+    {%- else -%}
+      {%- capture _og_title %}{{ title | default: workspace.name }} • {{ workspace.name }}{% endcapture -%}
+    {%- endif -%}
+    {%- assign _og_desc = meta_description | strip_html | truncate: 200 -%}
+    {%- assign _og_type = 'website' -%}
+    {%- assign _og_image = workspace.theme_settings.brand_identity.favicon | default: workspace.theme_settings.brand_identity.logo -%}
+    {%- comment -%}
+      OG image sizing note: width 400 forces the `sml` bucket on the Lopes
+      CDN (betaimages/franchiseimages), which maps width ≤450 → sml,
+      ≤1100 → med, >1100 → lrg. The `lrg` files are frequently 700KB+,
+      above WhatsApp's ~300KB preview threshold, and silently fall back to
+      the favicon. The `sml` bucket is ~150KB and is what the previous
+      WP-based theme used — proven to work reliably in WhatsApp previews.
+      For non-Lopes URLs the veploy image proxy produces a 400-wide JPEG,
+      also well under the limit.
+      We do NOT emit og:image:width/height because bucket CDNs don't
+      guarantee exact dimensions.
+    {%- endcomment -%}
+    {%- if property.id != blank -%}
+      {%- assign _og_type = 'product' -%}
+      {%- if property.images and property.images.size > 0 -%}
+        {%- assign _og_image = property.images[0].url | default: property.images[0] | img_resize: 400, 0 -%}
+      {%- endif -%}
+    {%- elsif article.slug != blank -%}
+      {%- assign _og_type = 'article' -%}
+      {%- if article.featured_image != blank -%}
+        {%- assign _og_image = article.featured_image | img_resize: 400, 0 -%}
+      {%- endif -%}
+    {%- endif -%}
+    <meta property="og:type" content="{{ _og_type }}">
+    <meta property="og:title" content="{{ _og_title | escape }}">
+    {%- if _og_desc != blank %}
+    <meta property="og:description" content="{{ _og_desc | escape }}">
+    {%- endif %}
+    <meta property="og:url" content="{{ canonical_url }}">
+    <meta property="og:site_name" content="{{ workspace.name | escape }}">
+    {%- if _og_image != blank %}
+    <meta property="og:image" content="{{ _og_image }}">
+    <meta property="og:image:secure_url" content="{{ _og_image }}">
+    <meta property="og:image:alt" content="{{ _og_title | escape }}">
+    {%- endif %}
+    <meta property="og:locale" content="{{ locale | default: 'pt_BR' }}">
+    {%- if property.id != blank -%}
+      {%- assign _prop_price = property.sale_price | default: property.rental_price -%}
+      {%- if _prop_price and _prop_price > 0 %}
+    <meta property="product:price:amount" content="{{ _prop_price }}">
+    <meta property="product:price:currency" content="{{ property.currency | default: 'BRL' }}">
+      {%- endif -%}
+    {%- endif -%}
+    {%- if article.slug != blank %}
+    <meta property="article:published_time" content="{{ article.published_at }}">
+      {%- if article.modified_at != blank %}
+    <meta property="article:modified_time" content="{{ article.modified_at }}">
+      {%- endif -%}
+    {%- endif %}
+
+    {%- comment -%} ======= TWITTER CARDS ======= {%- endcomment -%}
+    <meta name="twitter:card" content="{% if _og_image != blank %}summary_large_image{% else %}summary{% endif %}">
+    <meta name="twitter:title" content="{{ _og_title | escape }}">
+    {%- if _og_desc != blank %}
+    <meta name="twitter:description" content="{{ _og_desc | escape }}">
+    {%- endif %}
+    {%- if _og_image != blank %}
+    <meta name="twitter:image" content="{{ _og_image }}">
+    {%- endif %}
+
+    {%- comment -%} ======= HREFLANG ======= {%- endcomment -%}
+    {%- for alt in alternate_urls -%}
+    <link rel="alternate" hreflang="{{ alt[0] | replace: '_', '-' }}" href="{{ alt[1] }}">
+    {%- endfor -%}
+
+    <!-- Preconnect to external origins (non-render-blocking) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://assets.veploycdn.com" crossorigin>
+
+    <!-- Preload critical fonts — breaks the CSS→font chain so the browser
+         fetches the woff2 in parallel with theme.css instead of after it -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/Phosphor.woff2">
+
+    {%- comment -%} LCP: preload home hero background image so browser fetches it in parallel with HTML parse {%- endcomment -%}
+    {%- if current_path == '' or current_path == '/' -%}
+      {%- assign _hero_img = theme_settings.sections.home_hero.image -%}
+      {%- if _hero_img != blank -%}
+    <link rel="preload" as="image" fetchpriority="high" href="{{ _hero_img }}">
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} Dynamic Google Fonts based on theme settings {%- endcomment -%}
+    {%- assign font_heading = theme_settings.fonts.heading | default: 'Inter' -%}
+    {%- assign font_body = theme_settings.fonts.body | default: 'Inter' -%}
+    {%- assign font_header = theme_settings.fonts.header | default: font_body -%}
+    {%- assign font_buttons = theme_settings.fonts.buttons | default: font_body -%}
+
+    {%- comment -%} Self-hosted fonts (e.g. declared via custom_code.custom_css @font-face) — skip Google Fonts lookup {%- endcomment -%}
+    {%- assign _custom_fonts = theme_settings.fonts.custom_fonts | default: empty -%}
+    {%- assign _custom_files_for_skip = theme_settings.fonts.custom_files | default: empty -%}
+
+    {%- comment -%} Build a skip-marker string containing all self-hosted family names (manual + uploaded) {%- endcomment -%}
+    {%- assign _skip_markers = '' -%}
+    {%- for cf in _custom_fonts -%}
+      {%- assign _skip_markers = _skip_markers | append: '|' | append: cf | append: '|' -%}
+    {%- endfor -%}
+    {%- for cfile in _custom_files_for_skip -%}
+      {%- assign _skip_markers = _skip_markers | append: '|' | append: cfile.family | append: '|' -%}
+    {%- endfor -%}
+
+    {%- comment -%} Build deduplicated list of fonts, excluding self-hosted ones {%- endcomment -%}
+    {%- assign _all_fonts_str = font_body | append: '~~' | append: font_heading | append: '~~' | append: font_header | append: '~~' | append: font_buttons -%}
+    {%- assign _all_fonts = _all_fonts_str | split: '~~' -%}
+    {%- assign _font_list = '' -%}
+    {%- for f in _all_fonts -%}
+      {%- if f != blank -%}
+        {%- assign _skip_check = '|' | append: f | append: '|' -%}
+        {%- unless _skip_markers contains _skip_check -%}
+          {%- assign _marker = '|' | append: f | append: '|' -%}
+          {%- unless _font_list contains _marker -%}
+            {%- assign _font_list = _font_list | append: _marker -%}
+          {%- endunless -%}
+        {%- endunless -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- assign _fonts_arr = _font_list | split: '|' -%}
+    {%- assign fonts_url = '' -%}
+    {%- for f in _fonts_arr -%}
+      {%- if f != blank -%}
+        {%- assign _f_url = f | replace: ' ', '+' -%}
+        {%- if fonts_url == '' -%}
+          {%- assign fonts_url = 'https://fonts.googleapis.com/css2?family=' | append: _f_url | append: ':wght@400;500;600;700' -%}
+        {%- else -%}
+          {%- assign fonts_url = fonts_url | append: '&family=' | append: _f_url | append: ':wght@400;500;600;700' -%}
+        {%- endif -%}
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if fonts_url != '' -%}
+    {%- assign fonts_url = fonts_url | append: '&display=swap' -%}
+    <!-- Google Fonts: async loading with fallback -->
+    <link rel="preload" as="style" href="{{ fonts_url }}">
+    <link rel="stylesheet" href="{{ fonts_url }}" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{{ fonts_url }}"></noscript>
+    {%- endif -%}
+
+    {%- comment -%} Workspace-uploaded custom fonts — @font-face from theme_settings.fonts.custom_files {%- endcomment -%}
+    {%- assign _custom_files = theme_settings.fonts.custom_files | default: empty -%}
+    {%- if _custom_files != empty and _custom_files.size > 0 -%}
+    <style>
+      {%- for f in _custom_files -%}
+      @font-face { font-family: '{{ f.family | escape }}'; src: url('{{ f.url }}') format('{{ f.format | default: 'woff2' }}'); font-weight: {{ f.weight | default: 400 }}; font-style: {{ f.style | default: 'normal' }}; font-display: swap; }
+      {%- endfor -%}
+    </style>
+    {%- endif -%}
+
+    {%- comment -%} Dynamic CSS variables — must be inline (Liquid values) {%- endcomment -%}
+    <style>
+      :root {
+        --color-primary: {{ theme_settings.colors.primary | default: '#E31C5F' | hex_to_rgb }};
+        --color-secondary: {{ theme_settings.colors.secondary | default: '#1F2937' | hex_to_rgb }};
+        --color-accent: {{ theme_settings.colors.accent | default: '#10B981' | hex_to_rgb }};
+        --color-background: {{ theme_settings.colors.background | default: '#ffffff' }};
+        --color-text: {{ theme_settings.colors.text | default: '#1F2937' }};
+
+        --btn-primary-bg: {{ theme_settings.buttons.primary_bg | default: theme_settings.colors.primary | default: '#E31C5F' }};
+        --btn-primary-text: {{ theme_settings.buttons.primary_text | default: '#ffffff' }};
+        --btn-primary-hover: {{ theme_settings.buttons.primary_hover_bg | default: '#c4184f' }};
+        --btn-secondary-bg: {{ theme_settings.buttons.secondary_bg | default: theme_settings.colors.secondary | default: '#cdcdb2' }};
+        --btn-secondary-text: {{ theme_settings.buttons.secondary_text | default: '#2E4347' }};
+        --btn-secondary-hover: {{ theme_settings.buttons.secondary_hover_bg | default: '#bdbda2' }};
+        --btn-secondary-border: {{ theme_settings.buttons.secondary_border | default: '#d1d5db' }};
+
+        --font-heading: '{{ font_heading }}', sans-serif;
+        --font-body: '{{ font_body }}', sans-serif;
+        --font-header: '{{ font_header }}', sans-serif;
+        --font-buttons: '{{ font_buttons }}', sans-serif;
+      }
+    </style>
+
+    <!-- Critical CSS: blocks render but needed for initial paint (fetchpriority hints browser to prioritize) -->
+    {%- assign _cdn = theme.assets_url | default: '' -%}
+    <link
+      rel="stylesheet"
+      href="{{ _cdn }}/assets/dist/css/theme.css{% if theme.version %}?v={{ theme.version }}{% endif %}"
+      fetchpriority="high"
+    >
+    <!-- Swiper CSS: non-blocking -->
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
+    <!-- Phosphor Icons: non-blocking -->
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" media="print" onload="this.media='all'">
+    <link rel="preload" as="style" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css">
+    </noscript>
+    {% block head_assets %}
+    {% endblock %}
+
+    {%- comment -%} Custom CSS from theme settings {%- endcomment -%}
+    {%- if theme_settings.custom_code.custom_css != blank -%}
+    <style id="custom-css">{{ theme_settings.custom_code.custom_css }}</style>
+    {%- endif -%}
+
+    {%- comment -%} Analytics — omitido em desenvolvimento para não poluir dados. Carrega apenas após a 1ª interação do usuário (scroll/click/touch/key/mouse) para não impactar o PageSpeed. {%- endcomment -%}
+    {%- if env != 'development' -%}
+      {%- assign gtm_id = workspace.settings.gtm_id -%}
+      {%- assign ga4_id = workspace.settings.ga4_id -%}
+      {%- if gtm_id != blank or ga4_id != blank -%}
+      <script>
+      (function(){
+        window.dataLayer = window.dataLayer || [];
+        var loaded = false;
+        var events = ['scroll','mousemove','touchstart','click','keydown'];
+        var opts = { passive: true, capture: true };
+        function load(){
+          if (loaded) return;
+          loaded = true;
+          events.forEach(function(e){ window.removeEventListener(e, load, opts); });
+          {%- if gtm_id != blank -%}
+          (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ gtm_id }}');
+          {%- else -%}
+          var s=document.createElement('script');s.async=true;s.src='https://www.googletagmanager.com/gtag/js?id={{ ga4_id }}';document.head.appendChild(s);
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', '{{ ga4_id }}');
+          {%- endif -%}
+        }
+        events.forEach(function(e){ window.addEventListener(e, load, opts); });
+      })();
+      </script>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} ======= JSON-LD: Organization + WebSite ======= {%- endcomment -%}
+    {%- assign _url_parts = canonical_url | split: '/' -%}
+    {%- assign _site_url = _url_parts[0] | append: '//' | append: _url_parts[2] -%}
+    {%- comment -%} Build WhatsApp wa.me URL from theme settings (strip mask, assume BR if no country code) {%- endcomment -%}
+    {%- assign _wa_digits = theme_settings.contact.whatsapp | default: '' | remove: '(' | remove: ')' | remove: ' ' | remove: '-' | remove: '+' | remove: '.' -%}
+    {%- if _wa_digits != '' and _wa_digits.size < 12 -%}{%- assign _wa_digits = '55' | append: _wa_digits -%}{%- endif -%}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": ["RealEstateAgent", "LocalBusiness"],
+          "@id": "{{ _site_url }}/#organization",
+          "name": {{ workspace.name | json }},
+          "url": "{{ _site_url }}"
+          {%- if workspace.theme_settings.brand_identity.logo != blank %},
+          "logo": {
+            "@type": "ImageObject",
+            "url": "{{ workspace.theme_settings.brand_identity.logo }}",
+            "@id": "{{ _site_url }}/#logo"
+          },
+          "image": "{{ workspace.theme_settings.brand_identity.logo }}"
+          {%- endif -%}
+          {%- if theme_settings.contact.phone != blank %},
+          "telephone": {{ theme_settings.contact.phone | json }}
+          {%- endif -%}
+          {%- if theme_settings.contact.email != blank %},
+          "email": {{ theme_settings.contact.email | json }}
+          {%- endif -%}
+          {%- if theme_settings.contact.creci != blank %},
+          "identifier": {
+            "@type": "PropertyValue",
+            "propertyID": "CRECI",
+            "value": {{ theme_settings.contact.creci | json }}
+          }
+          {%- endif -%}
+          {%- if theme_settings.contact.hours != blank %},
+          "openingHours": {{ theme_settings.contact.hours | json }}
+          {%- endif -%}
+          {%- if theme_settings.contact.address != blank %},
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": {{ theme_settings.contact.address | json }}
+            {%- if workspace.city != blank %},
+            "addressLocality": {{ workspace.city | json }}
+            {%- endif %},
+            "addressCountry": "BR"
+          }
+          {%- endif -%}
+          {%- assign _social_arr = '' -%}
+          {%- if theme_settings.contact.facebook != blank -%}
+            {%- if _social_arr != '' -%}{%- assign _social_arr = _social_arr | append: ',' -%}{%- endif -%}
+            {%- assign _social_arr = _social_arr | append: '"' | append: theme_settings.contact.facebook | append: '"' -%}
+          {%- endif -%}
+          {%- if theme_settings.contact.instagram != blank -%}
+            {%- if _social_arr != '' -%}{%- assign _social_arr = _social_arr | append: ',' -%}{%- endif -%}
+            {%- assign _social_arr = _social_arr | append: '"' | append: theme_settings.contact.instagram | append: '"' -%}
+          {%- endif -%}
+          {%- if theme_settings.contact.youtube != blank -%}
+            {%- if _social_arr != '' -%}{%- assign _social_arr = _social_arr | append: ',' -%}{%- endif -%}
+            {%- assign _social_arr = _social_arr | append: '"' | append: theme_settings.contact.youtube | append: '"' -%}
+          {%- endif -%}
+          {%- if theme_settings.contact.tiktok != blank -%}
+            {%- if _social_arr != '' -%}{%- assign _social_arr = _social_arr | append: ',' -%}{%- endif -%}
+            {%- assign _social_arr = _social_arr | append: '"' | append: theme_settings.contact.tiktok | append: '"' -%}
+          {%- endif -%}
+          {%- if _wa_digits != '' -%}
+            {%- if _social_arr != '' -%}{%- assign _social_arr = _social_arr | append: ',' -%}{%- endif -%}
+            {%- assign _social_arr = _social_arr | append: '"https://wa.me/' | append: _wa_digits | append: '"' -%}
+          {%- endif -%}
+          {%- if _social_arr != '' %},
+          "sameAs": [{{ _social_arr }}]
+          {%- endif %}
+        },
+        {
+          "@type": "WebSite",
+          "@id": "{{ _site_url }}/#website",
+          "name": {{ workspace.name | json }},
+          "url": "{{ _site_url }}",
+          "publisher": { "@id": "{{ _site_url }}/#organization" },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "{{ _site_url }}{{ locale_prefix }}{{ routes.properties }}?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body class="vp-body min-h-screen flex flex-col">
+    {%- comment -%} GTM noscript body — obrigatório para rastreamento sem JavaScript {%- endcomment -%}
+    {%- if gtm_id != blank -%}
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ gtm_id }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    {%- endif -%}
+    {%- comment -%} Loading bar - color based on header background {%- endcomment -%}
+    {%- assign header_bg = workspace.theme_settings.header.bg_color | default: '#ffffff' -%}
+    {%- assign is_dark_header = false -%}
+    {%- if header_bg contains '#0' or header_bg contains '#1' or header_bg contains '#2' or header_bg contains '#3' or header_bg contains '#4' or header_bg contains '#5' or header_bg contains 'rgb(var(--color-primary))' or header_bg contains 'var(--color-primary)' -%}
+      {%- assign is_dark_header = true -%}
+    {%- endif -%}
+    <div class="page-loading-bar" id="pageLoadingBar" style="background: {% if is_dark_header %}#fff{% else %}rgb(var(--color-primary)){% endif %};"></div>
+    {% include 'components/global/header' %}
+
+    <main class="vp-main flex-1">
+      {% block content -%}
+      {%- endblock %}
+    </main>
+
+   {% comment %}  {% include 'components/global/pre-footer' %} {% endcomment %}
+    {% include 'components/global/footer' %}
+
+    {%- assign _is_property_page = false -%}
+    {%- if property.id != blank -%}{%- assign _is_property_page = true -%}{%- endif -%}
+    {% if theme_settings.features.whatsapp_show_float and theme_settings.contact.whatsapp != blank %}
+    {%- assign _wa_phone = theme_settings.contact.whatsapp | remove: '-' | remove: '(' | remove: ')' | remove: ' ' | prepend: '55' -%}
+    {% include 'components/global/whatsapp-float' %}
+    {% endif %}
+
+    {%- comment -%} Vendor libs {%- endcomment -%}
+    <script defer src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/imask@7.6.1/dist/imask.js"></script>
+
+    {%- comment -%}
+      Theme JS — config/scripts.json defines load order keyed by route.
+      Production: bundled into dist/js/theme.js + dist/js/theme.<route-slug>.js
+      Development: individual files loaded for debugging.
+    {%- endcomment -%}
+    {%- if theme.js_bundle -%}
+    <script defer src="{{ _cdn }}/assets/dist/js/theme.js{% if theme.version %}?v={{ theme.version }}{% endif %}"></script>
+    {%- assign _route_slug = route_key | replace: ':', '-' -%}
+    {%- assign _route_bundle = 'assets/dist/js/theme.' | append: _route_slug | append: '.js' -%}
+    {%- if theme.scripts[route_key] -%}
+    <script defer src="{{ _cdn }}/{{ _route_bundle }}{% if theme.version %}?v={{ theme.version }}{% endif %}"></script>
+    {%- endif -%}
+    {%- else -%}
+    {%- for script in theme.scripts.global -%}
+    <script defer src="{{ _cdn }}/assets/js/{{ script }}{% if theme.version %}?v={{ theme.version }}{% endif %}"></script>
+    {%- endfor -%}
+    {%- for script in theme.scripts[route_key] -%}
+    <script defer src="{{ _cdn }}/assets/js/{{ script }}{% if theme.version %}?v={{ theme.version }}{% endif %}"></script>
+    {%- endfor -%}
+    {%- endif -%}
+
+    {%- comment -%} Alpine.js — must be last (reads x-data from all components above) {%- endcomment -%}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+
+    {% block body_assets -%}
+    {%- endblock %}
+
+    {% if workspace.settings.turnstile.enabled %}
+      <!-- Cloudflare Turnstile -->
+      <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    {% endif %}
+
+    <script defer src="/js/analytics.js"></script>
+
+    {%- comment -%} Custom JS from theme settings - runs after DOM is ready {%- endcomment -%}
+    {%- if theme_settings.custom_code.custom_js != blank -%}
+    <script id="custom-js">
+      document.addEventListener('DOMContentLoaded', function() {
+        try {
+          {{ theme_settings.custom_code.custom_js }}
+        } catch (e) {
+          console.error('[Custom JS Error]', e);
+        }
+      });
+    </script>
+    {%- endif -%}
+  </body>
+</html>

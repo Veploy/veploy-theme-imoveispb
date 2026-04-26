@@ -1,0 +1,191 @@
+{
+  "fonts": {
+    "body": "Inter",
+    "header": "Inter",
+    "buttons": "Inter",
+    "heading": "Cormorant Garamond",
+    "custom_font": false
+  },
+  "colors": {
+    "primary": "#111111",
+    "secondary": "#C9A063",
+    "accent": "#CC0E3B"
+  },
+  "header": {
+    "bg_color": "#000000",
+    "text_color": "#FFFFFF",
+    "button_bg_color": "#F5EFE3",
+    "button_text_color": "#181A20",
+    "button_hover_bg_color": "#E5D9BF"
+  },
+  "buttons": {
+    "primary_bg": "#111111",
+    "primary_text": "#FFFFFF",
+    "secondary_bg": "#C9A063",
+    "secondary_text": "#FFFFFF"
+  },
+  "brand_identity": {
+    "logo": "https://www.lopeselegance.com.br/wp-content/uploads/2024/05/Logo-lopes-Elegance-horizontal-negativa.png",
+    "favicon": "https://www.lopeselegance.com.br/wp-content/uploads/2025/06/cropped-favicon-lopes-192x192.png"
+  },
+  "contact": {
+    "phone": "(19) 3490-0249",
+    "whatsapp": "(19) 3490-0249",
+    "whatsapp_link": "https://wa.me/551934900249",
+    "email": "atendimento@lopeselegance.com.br",
+    "address": "Avenida Itália, n° 300, Cidade Jardim, Piracicaba-SP, CEP 13416-490",
+    "hours": "Segunda à sexta-feira das 08h às 18h | Sábado das 09h às 13h",
+    "creci": "CRECI: 040399-J",
+    "instagram": "https://www.instagram.com/lopeselegance/",
+    "facebook": "https://www.facebook.com/lopeselegancepiracicaba",
+    "tiktok": "",
+    "linkedin": "https://www.linkedin.com/in/lopes-elegance-056362245/",
+    "pinterest": "",
+    "youtube": "https://www.youtube.com/@lopeselegance6106"
+  },
+  "features": {
+    "header_sticky": true,
+    "header_show_phone": false,
+    "footer_show_social": true,
+    "whatsapp_show_float": true
+  },
+  "listings": {
+    "default_sort": "recent",
+    "show_properties_count": true
+  },
+  "navigation": {
+    "main_menu": [
+      { "url": "{{routes.properties}}{{routes.operation_sale}}", "label": "Venda" },
+      { "url": "{{routes.properties}}{{routes.operation_rent}}", "label": "Locação" },
+      { "url": "{{routes.properties}}/lancamentos", "label": "Lançamentos" }
+    ],
+    "side_menu": [],
+    "mobile_menu": [
+      { "url": "{{routes.properties}}{{routes.operation_sale}}", "label": "Venda" },
+      { "url": "{{routes.properties}}{{routes.operation_rent}}", "label": "Locação" },
+      { "url": "{{routes.properties}}/lancamentos", "label": "Lançamentos" },
+      { "url": "{{routes.contact}}", "label": "Fale conosco" },
+      { "url": "{{routes.advertise}}", "label": "Anuncie seu imóvel" },
+      { "url": "{{routes.careers}}", "label": "Trabalhe conosco" },
+      { "url": "{{routes.privacy-policy}}", "label": "Política de Privacidade" },
+      { "url": "{{routes.favorites}}", "label": "Favoritos" }
+    ]
+  },
+  "sections": {
+    "home_hero": {
+      "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/Banner-home-Lopes-Elegance-comprimido.webp",
+      "title_line_1": "Explore um universo",
+      "title_line_2": "de sofisticação em",
+      "title_script": "cada detalhe",
+      "top_bar": "Compre seu imóvel em até 18 anos sem juros. Fale conosco e saiba mais."
+    },
+    "shortcuts-grid": {
+      "title": "Conheça nossa seleção com os imóveis mais buscados.",
+      "description": "",
+      "shortcuts": {
+        "items": [
+          {
+            "url": "{{routes.properties}}{{routes.operation_sale}}/tipo/casa-em-condominio",
+            "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/1.webp",
+            "title": "Casas em condomínio"
+          },
+          {
+            "url": "{{routes.properties}}{{routes.operation_sale}}/tipo/apartamento",
+            "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/2_11zon.webp",
+            "title": "Apartamentos"
+          },
+          {
+            "url": "{{routes.properties}}{{routes.operation_sale}}",
+            "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/3_11zon.webp",
+            "title": "Permuta"
+          },
+          {
+            "url": "{{routes.properties}}{{routes.operation_sale}}/comercial",
+            "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/6_11zon.webp",
+            "title": "Comerciais"
+          }
+        ]
+      }
+    },
+    "featured-properties": {
+      "featured_skus": {
+        "value": [
+          "REM21959",
+          "REM20626",
+          "REM20594",
+          "REM20371",
+          "REM20638",
+          "REM21389"
+        ],
+        "autofill_enabled": true,
+        "autofill_source": "price_above",
+        "price_threshold": 1000000
+      }
+    },
+    "promo-banners": {
+      "banners": {
+        "items": [
+          {
+            "url": "/imovel/REM24361/view-residence/",
+            "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/VIEW-RESIDENCE-Lopes-Elegance.png",
+            "title": "View Residence",
+            "description": "Inspirado pelos baixos do alto e projetado por grandes nomes da arquitetura, o empreendimento oferece um estilo de vida única e inesquecível. O View Residence se ergue como um símbolo de sofisticação que harmoniza design contemporâneo e uma vista que a tempo não apaga."
+          }
+        ]
+      }
+    },
+    "about-section": {
+      "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/Banner-home-sobre-nos.png",
+      "title": "Descubra a chave do seu novo lar com a imobiliária que transforma sonhos em endereços!",
+      "subtitle": "Assistência completa para venda, compra, locação e financiamento de imóveis.",
+      "description": "A Lopes Elegance Piracicaba, imobiliária premium do Grupo Lopes, destaca-se por ser especialista em imóveis de alto padrão, proporcionando um atendimento exclusivo no coração da cidade. Com ampla expertise nas questões jurídicas e burocráticas, nossa maior conquista é oferecer aos clientes a segurança jurídica necessária para negócios sólidos, superando expectativas e realizando sonhos. Possuímos uma equipe de corretores especializados em entender as demandas dos clientes, conectando desejos e necessidades de forma personalizada. A Lopes Elegance é a escolha ideal para aqueles que buscam qualidade, confiança e excelência no mercado imobiliário.",
+      "cta_text": "Conheça nossa história",
+      "bg_color": "#111111",
+      "text_color": "#FFFFFF"
+    },
+    "promocao": {
+      "title": "Compre seu imóvel em até 18 anos sem juros.",
+      "description": "Na Lopes Elegance, entendemos que adquirir o imóvel dos seus sonhos é um passo importante na vida de qualquer pessoa. Por isso, oferecemos uma oportunidade única: você pode conquistar o seu lar com financiamento facilitado em até 18 anos sem juros. Essa é uma oportunidade exclusiva para quem busca realizar o sonho da casa própria sem se preocupar com altas taxas de juros e parcelas extensas. Com a Lopes Elegance, você terá o suporte de profissionais qualificados e um atendimento personalizado para encontrar o imóvel ideal para você e sua família.",
+      "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/banner-home-18-anos-sem-juros.jpg"
+    },
+    "about": {
+      "bg_color": "#FFFFFF",
+      "text_color": "#181A20",
+      "hero_image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/Banner-home-Lopes-Elegance-comprimido.webp",
+      "hero_title": "Uma história de paixão pelo setor imobiliário, excelência e expertise.",
+      "hero_description": "A Lopes Elegance Piracicaba oferece segurança jurídica, negócios sólidos e realizações de sonhos aos clientes. Com ampla expertise legal e burocrática, proporcionamos atendimento diferenciado e exclusivo na cidade. Nossos especialistas conectam clientes, desejos e necessidades, tornando-nos a escolha perfeita para quem busca qualidade e excelência em Piracicaba. Seja bem-vindo à Lopes Elegance!"
+    },
+    "blog-section": {
+      "posts": {
+        "value": [],
+        "autofill_enabled": true,
+        "autofill_source": "recent",
+        "limit": 3
+      }
+    },
+    "careers": {
+      "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/Banner-pag-trabalhe-conosco-lopes-elegance-v2.png",
+      "benefits": {
+        "items": []
+      }
+    }
+  },
+  "footer": {
+    "bg_color": "#000000",
+    "text_color": "#FFFFFF",
+    "accent_color": "#C9A063",
+    "types_list": [
+      { "url": "/imoveis/venda/tipo/casa", "label": "Casas à venda" },
+      { "url": "/imoveis/venda/?location=Vila+Sonia", "label": "Vila Sonia" },
+      { "url": "/imoveis/venda/tipo/apartamento", "label": "Apartamentos à venda" },
+      { "url": "/imoveis/venda/tipo/apartamento-em-condominio", "label": "Apartamentos à venda em condomínios" },
+      { "url": "/imoveis/venda/comercial", "label": "Imóveis comerciais à venda" }
+    ],
+    "neighborhoods_list": [
+      { "url": "/imoveis/?location=Jardim+Caxambu", "label": "Jardim Caxambu" },
+      { "url": "/imoveis/?location=Vila+Sonia", "label": "Vila Sônia" },
+      { "url": "/imoveis/?location=Jardim+Parque+Jupia", "label": "Jardim Parque Jupiá" },
+      { "url": "/imoveis/?location=Sao+Dimas", "label": "São Dimas" }
+    ]
+  }
+}

@@ -1,0 +1,46 @@
+<section class="w-full bg-white py-16 md:py-24">
+  <div class="vp-section">
+    <div class="max-w-screen-2xl mx-auto px-[3%]">
+        <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-2 py-0.5 text-[13px] font-medium text-[#111827]">
+          Benefícios
+        </span>
+
+        <h2 class="mt-6 text-[32px] leading-[1.1] tracking-[-0.03em] text-[#111827] md:text-[45px]">
+          Vantagens de anunciar seu imóvel com a Lopes Urban
+        </h2>
+
+        <h3 class="mt-4 hidden md:block leading-[1.1] tracking-[-0.03em] text-[#C9A24A] md:text-[45px]">
+          Seu parceiro em todas as etapas do processo imobiliário.
+        </h3>
+
+        <p class="mt-6 text-lg text-[#6B7280] md:text-[15px]">
+          Maximize a visibilidade do seu imóvel com marketing eficaz, atendimento personalizado e avaliações precisas para obter os melhores resultados.
+        </p>
+
+        <div class="mt-10">
+          <a
+            href="{{ locale_prefix }}{{ routes.contact }}"
+            class="inline-flex min-h-[56px] items-center justify-center rounded-md bg-[#BE9A4D] px-8 py-4 text-lg font-medium text-white transition hover:opacity-90"
+          >
+            Falar com um corretor
+          </a>
+        </div>
+        
+      <div class="mt-20 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
+        {% for benefit in theme_settings.sections.careers.benefits.items %}
+        <div class="rounded-[12px] border border-[#E5E7EB] bg-[#fbfaf9] p-10 min-h-[250px] items-center">
+          <div class="">
+            <h4 class="text-[26px] leading-[1.08] tracking-[-0.02em] text-[#111827]">
+              {{ benefit.title }}
+            </h4>
+            <p class="mt-8 text-[15px] text-[#6B7280]">
+              {{ benefit.description }}
+            </p>
+          </div>
+        </div>
+      {% endfor %}
+
+      </div>
+    </div>
+  </div>
+</section>

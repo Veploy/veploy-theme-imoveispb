@@ -1,0 +1,31 @@
+{% layout 'base' %}
+{% block content %}
+{%- comment -%} ======= JSON-LD: AboutPage ======= {%- endcomment -%}
+{%- assign _url_parts = canonical_url | split: '/' -%}
+{%- assign _site_url = _url_parts[0] | append: '//' | append: _url_parts[2] -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "@id": "{{ canonical_url }}/#page",
+  "url": "{{ canonical_url }}",
+  "name": {{ title | default: 'Sobre nós' | json }},
+  "isPartOf": { "@id": "{{ _site_url }}/#website" },
+  "mainEntity": { "@id": "{{ _site_url }}/#organization" }
+}
+</script>
+{% include 'sections/about/hero' %}
+
+{% include 'sections/about/nossa-missao' %}
+
+{% include 'sections/about/nossos-lideres' %}
+
+{% include 'sections/about/diferenciais' %}
+
+{% include 'sections/about/servicos' %}
+
+{% include 'sections/about/anuncie-conosco' %}
+
+{% include 'sections/about/entre-em-contato' %}
+
+{% endblock %}

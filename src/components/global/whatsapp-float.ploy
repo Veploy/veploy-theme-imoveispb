@@ -1,0 +1,155 @@
+{%- comment -%}
+  WhatsApp floating widget — FAB + popup/bottom-sheet.
+  Included from layout/base.ploy when whatsapp float is enabled.
+
+  Desktop: popup above the FAB.
+  Mobile: full-width bottom-sheet.
+  Single form instance — container adapts via responsive CSS.
+
+  Expected variables:
+    - _wa_phone: sanitized phone number (digits only)
+    - _is_property_page: boolean
+    - property: property object (when on property page)
+{%- endcomment -%}
+
+<div
+  class="fixed bottom-8 right-8 z-50 flex flex-col items-end gap-3 {% if _is_property_page %}hidden lg:flex{% endif %}"
+  x-data="{ open: false }"
+  @click.away="open = false"
+  @keydown.escape.window="open = false"
+>
+  {%- comment -%} Backdrop — mobile only {%- endcomment -%}
+  <div
+    x-show="open"
+    x-transition.opacity
+    x-cloak
+    class="lg:hidden fixed inset-0 bg-black/50"
+    style="z-index: -1"
+    @click="open = false"
+  ></div>
+
+  {%- comment -%} Form card — responsive: bottom-sheet on mobile, popup on desktop {%- endcomment -%}
+  <div
+    x-show="open"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+    x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+    x-transition:leave-end="opacity-0 scale-95 translate-y-2"
+    x-cloak
+    class="fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[85vh] overflow-y-auto
+           lg:relative lg:bottom-auto lg:left-auto lg:right-auto lg:w-80 lg:rounded-2xl lg:max-h-none lg:overflow-hidden"
+    style="box-shadow: 0 20px 60px rgba(0,0,0,0.18), 0 4px 16px rgba(0,0,0,0.1);"
+    @click.stop
+  >
+    {%- comment -%} Mobile handle bar {%- endcomment -%}
+    <div class="lg:hidden flex justify-center pt-3 pb-1">
+      <div class="w-10 h-1 bg-gray-300 rounded-full"></div>
+    </div>
+
+    {%- comment -%} Desktop header {%- endcomment -%}
+    <div class="hidden lg:flex bg-[#16A34A] px-4 py-3 items-center justify-between">
+      <div class="flex items-center gap-2 text-white">
+        <i class="ph ph-whatsapp-logo text-lg"></i>
+        <span class="font-semibold text-sm">Falar no WhatsApp</span>
+      </div>
+      <button @click="open = false" class="w-6 h-6 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
+        <i class="ph ph-x text-xs"></i>
+      </button>
+    </div>
+
+    {%- comment -%} Mobile header {%- endcomment -%}
+    <div class="lg:hidden px-5 mb-4">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-full bg-[#22C55E]/10 flex items-center justify-center">
+          <i class="ph-fill ph-whatsapp-logo text-[#22C55E] text-lg"></i>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900">Falar no WhatsApp</h3>
+      </div>
+    </div>
+
+    {%- comment -%} Form body — single instance {%- endcomment -%}
+    <div class="px-5 pb-6 lg:p-4">
+      {% if _is_property_page %}
+        {% form 'property_interest', name: 'Interesse em imóvel' %}
+          <input type="hidden" name="property_interest[property_id]" value="{{ property.id }}">
+          <input type="hidden" name="property_interest[property_sku]" value="{{ property.sku }}">
+          <input type="hidden" name="property_interest[property_type]" value="{{ property.type }}">
+          <input type="hidden" name="property_interest[contact_type]" value="whatsapp">
+          <div class="space-y-2.5">
+            <input type="text" name="property_interest[name]" required placeholder="Seu nome" class="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-base focus:ring-2 focus:ring-[#22C55E]/25 focus:border-[#22C55E] transition-all outline-none shadow-sm">
+            <input type="email" name="property_interest[email]" required placeholder="Seu e-mail" class="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-base focus:ring-2 focus:ring-[#22C55E]/25 focus:border-[#22C55E] transition-all outline-none shadow-sm">
+            {% include 'components/global/form/phone-input', name: 'property_interest[phone]', placeholder: 'Seu celular', input_class: '!text-base !rounded-xl !px-3.5 shadow-sm' %}
+            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-[#22C55E] hover:bg-[#16A34A] active:bg-[#15803D] text-white px-4 py-3 rounded-xl font-semibold text-base transition-all shadow-md hover:shadow-lg mt-1">
+              <i class="ph ph-whatsapp-logo"></i>
+              Iniciar conversa
+            </button>
+          </div>
+        {% endform %}
+      {% else %}
+        {% form 'contact', name: 'Botão do Whatsapp' %}
+          <input type="hidden" name="contact[contact_type]" value="whatsapp">
+          <div class="space-y-2.5">
+            <input type="text" name="contact[name]" required placeholder="Seu nome" class="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-base focus:ring-2 focus:ring-[#22C55E]/25 focus:border-[#22C55E] transition-all outline-none shadow-sm">
+            <input type="email" name="contact[email]" required placeholder="Seu e-mail" class="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-base focus:ring-2 focus:ring-[#22C55E]/25 focus:border-[#22C55E] transition-all outline-none shadow-sm">
+            {% include 'components/global/form/phone-input', name: 'contact[phone]', placeholder: 'Seu celular', input_class: '!text-base !rounded-xl !px-3.5 shadow-sm' %}
+            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-[#22C55E] hover:bg-[#16A34A] active:bg-[#15803D] text-white px-4 py-3 rounded-xl font-semibold text-base transition-all shadow-md hover:shadow-lg mt-1">
+              <i class="ph ph-whatsapp-logo"></i>
+              Iniciar conversa
+            </button>
+          </div>
+        {% endform %}
+      {% endif %}
+    </div>
+  </div>
+
+  {%- comment -%} FAB Button {%- endcomment -%}
+  <button
+    @click="open = !open"
+    class="w-16 h-16 max-lg:w-12 max-lg:h-12 rounded-full flex items-center justify-center bg-[#22C55E] shadow-[0_4px_12px_rgba(0,0,0,0.15)] hover:scale-110 hover:shadow-[0_6px_16px_rgba(0,0,0,0.2)] transition-all duration-200"
+    aria-label="Contato WhatsApp"
+    :aria-expanded="open"
+    :class="open ? 'scale-90 max-lg:hidden' : ''"
+  >
+    <svg x-show="!open" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-white">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+    </svg>
+    <svg x-show="open" x-cloak xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-6 h-6 text-white">
+      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+  </button>
+</div>
+
+{%- comment -%} After form success, open WhatsApp with pre-filled message {%- endcomment -%}
+<script>
+(function() {
+  var waPhone = '{{ _wa_phone }}';
+  if (!waPhone) return;
+
+  function buildWaUrl(name) {
+    var text = 'Olá! Meu nome é ' + (name || '') + '. Gostaria de mais informações.';
+    {% if _is_property_page %}
+    text = 'Olá! Meu nome é ' + (name || '') + '. Tenho interesse no imóvel {{ property.title | escape }} ({{ property.sku }}).';
+    {% endif %}
+    return 'https://wa.me/' + waPhone + '?text=' + encodeURIComponent(text);
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    var floatEl = document.querySelector('.fixed.bottom-6.right-6');
+    if (!floatEl) return;
+    var form = floatEl.querySelector('form[data-ajax]');
+    if (!form) return;
+
+    var pendingName = '';
+    form.addEventListener('submit', function() {
+      var nameInput = form.querySelector('[name$="[name]"]');
+      pendingName = nameInput ? nameInput.value : '';
+    }, true);
+
+    form.addEventListener('form:success', function() {
+      window.open(buildWaUrl(pendingName), '_blank');
+    });
+  });
+})();
+</script>

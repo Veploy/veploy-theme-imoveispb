@@ -1,0 +1,36 @@
+{% layout 'base' %}
+
+{% block head_assets %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Allura&family=Cormorant+Garamond:wght@300;400;500;600&display=swap">
+{% endblock %}
+
+{% block content %}
+
+<!-- 1. Hero (top promo bar + dark hero with luxury house + search filter) -->
+{% include 'sections/home/hero' %}
+
+<!-- 2. Property categories grid (Casas em condomínio, Apartamentos, Permuta, Comerciais) -->
+{% include 'sections/home/imoveis-selecionados' %}
+
+<!-- 3. Destaque banner (View Residence) -->
+{% include 'sections/home/destaques' %}
+
+<!-- 4. Featured properties grid (3x2) -->
+{% include 'sections/home/imoveis-grid' %}
+
+<!-- 5. Quem somos / Alto padrão -->
+{% include 'sections/home/sobre-nos' %}
+
+<!-- 6. Fale conosco (form + contact info) -->
+{% include 'sections/home/entre-em-contato' %}
+
+<!-- 7. Promoção especial (18 anos sem juros) -->
+{% include 'sections/home/promocao' %}
+
+{% endblock %}
+
+{% block body_assets %}
+  <script src="/assets/js/custom-select.js{% if theme.version %}?v={{ theme.version }}{% endif %}"></script>
+{% endblock %}

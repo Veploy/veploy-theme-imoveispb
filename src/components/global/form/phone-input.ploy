@@ -1,0 +1,33 @@
+{% comment %}
+  Phone input with IMask. BR format: (00) 90000-0000 or (00) 0000-0000.
+  Submits digits only via hidden (e.g. "11912345678").
+  Props:
+    - name: form field name (required)
+    - value or init_value: initial value, digits or formatted (optional)
+    - placeholder, label, id, disabled, input_class, x_model (optional)
+  Requires: IMask (CDN in layout).
+  Logic: Alpine.data('phoneInput') in main.js.
+{% endcomment %}
+{% assign init = value | default: init_value | default: '' %}
+{% assign inp_id = id | default: 'phone' | append: name %}
+{% assign inp_class = input_class | default: '' %}
+
+<div class="phone-input" x-data="phoneInput" data-init="{{ init }}"{% if required != false %} data-required{% endif %}>
+  {% if label != blank %}
+  <label for="{{ inp_id }}" class="block text-base font-semibold text-gray-900 mb-2">{{ label }}</label>
+  {% endif %}
+  <input
+    type="text"
+    inputmode="tel"
+    autocomplete="tel"
+    placeholder="{{ placeholder | default: '' }}"
+    id="{{ inp_id }}"
+    {% if disabled %}disabled{% endif %}
+    {% if inp_class != blank %}
+    class="{{ inp_class }}"
+    {% else %}
+    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+    {% endif %}
+  >
+  <input type="hidden" name="{{ name }}"{% if x_model != blank %} x-model="{{ x_model }}"{% endif %}>
+</div>

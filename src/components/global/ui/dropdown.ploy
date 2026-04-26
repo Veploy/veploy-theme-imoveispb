@@ -1,0 +1,57 @@
+{% comment %}
+  Dropdown Component – Reusable dropdown panel that opens on trigger click
+  Props:
+    - open_state: Alpine.js variable name for open state (e.g. "open")
+    - trigger_content: HTML content for the trigger button
+    - trigger_class: Additional classes for the trigger (optional)
+    - panel_class: Additional classes for the panel (optional)
+    - panel_content: HTML content for the dropdown panel
+    - check_position: boolean - whether to check if dropdown should open upwards (default true)
+    - close_on_outside: boolean - whether to close when clicking outside (default true)
+    - role: ARIA role (default "combobox")
+    - haspopup: ARIA haspopup value (default "listbox")
+{% endcomment %}
+
+{% assign open_var = open_state | default: 'open' %}
+{% assign check_pos = check_position | default: true %}
+{% assign close_outside = close_on_outside | default: true %}
+{% assign aria_role = role | default: 'combobox' %}
+{% assign aria_haspopup = haspopup | default: 'listbox' %}
+
+<div class="dropdown relative z-[100]" {% if close_outside %}@click.outside="{{ open_var }} = false"{% endif %}>
+  <!-- Trigger -->
+  <div
+    role="{{ aria_role }}"
+    aria-expanded="false"
+    aria-haspopup="{{ aria_haspopup }}"
+    :aria-expanded="{{ open_var }}"
+    tabindex="0"
+    @focus="{{ open_var }} = true"
+    @mousedown="{{ open_var }} = !{{ open_var }}"
+    @keydown.escape="{{ open_var }} = false"
+    @keydown.space.prevent="{{ open_var }} = !{{ open_var }}"
+    class="dropdown-trigger w-full flex items-center justify-between gap-2 px-4 py-2.5 text-left text-base border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none cursor-pointer transition-colors {{ trigger_class }}"
+  >
+    {{ trigger_content }}
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-gray-400 flex-shrink-0 transition-transform" :class="{{ open_var }} && 'rotate-180'">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+    </svg>
+  </div>
+
+  <!-- Panel -->
+  <div
+    x-show="{{ open_var }}"
+    x-transition:enter="transition ease-out duration-150"
+    x-transition:enter-start="opacity-0 scale-95"
+    x-transition:enter-end="opacity-100 scale-100"
+    x-transition:leave="transition ease-in duration-100"
+    x-transition:leave-start="opacity-100 scale-100"
+    x-transition:leave-end="opacity-0 scale-95"
+    class="dropdown-panel absolute z-[100] py-2 bg-white border border-gray-200 rounded-xl shadow-lg max-h-64 overflow-y-auto {{ panel_class }}"
+    {% if check_pos %}:class="(openUpwards ? 'bottom-full mb-1.5' : 'top-full mt-1.5') + (openToLeft ? ' right-0' : ' left-0')"{% else %}class="top-full mt-1.5 left-0"{% endif %}
+    role="{{ aria_haspopup }}"
+    x-cloak
+  >
+    {{ panel_content }}
+  </div>
+</div>

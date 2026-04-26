@@ -1,0 +1,48 @@
+<!-- Article Card Component -->
+<article class="vp-article-card bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all group">
+  <!-- Image -->
+  <a href="{{ locale_prefix }}{{ routes.blog }}/{{ article.slug }}" class="vp-article-card__image block relative overflow-hidden">
+    <div class="aspect-[16/9]">
+      <img
+        src="{{ article.featured_image | default: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&q=80' | img_resize: 450, 253, true }}"
+        alt="{{ article.title }}"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        loading="lazy"
+      >
+    </div>
+    <!-- Category Badge -->
+    {% if article.category %}
+    <span class="absolute top-4 left-4 bg-secondary text-white text-xs font-semibold px-3 py-1.5 rounded">
+      {{ article.category }}
+    </span>
+    {% endif %}
+  </a>
+
+  <!-- Content -->
+  <div class="vp-article-card__content p-6">
+    <!-- Date -->
+    <time class="text-sm text-gray-400 mb-3 block" datetime="{{ article.published_at }}">
+      {{ article.published_at | date: "%d/%m/%Y" }}
+    </time>
+
+    <!-- Title -->
+    <h3 class="text-lg font-bold text-gray-900 mb-3 min-h-[56px]">
+      <a href="{{ locale_prefix }}{{ routes.blog }}/{{ article.slug }}" class="hover:text-primary transition-colors">
+        {{ article.title }}
+      </a>
+    </h3>
+
+    <!-- Excerpt -->
+    <p class="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
+      {{ article.excerpt }}
+    </p>
+
+    <!-- Read More Link -->
+    <a href="{{ locale_prefix }}{{ routes.blog }}/{{ article.slug }}" class="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors group/link">
+      {{ t.blog_page.read_more }}
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 ml-1 group-hover/link:translate-x-1 transition-transform">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+      </svg>
+    </a>
+  </div>
+</article>

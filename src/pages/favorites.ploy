@@ -1,0 +1,57 @@
+{% layout 'base' %}
+{% block content %}
+<section class="py-12 md:py-16 bg-white min-h-[60vh]" x-data="favoritesPage()" x-init="init()">
+  <div class="max-w-screen-xl mx-auto px-4 lg:px-8">
+    <div class="mb-8">
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900">{{ t.favorites_page.title | default: 'Meus Favoritos' }}</h1>
+    </div>
+
+    <!-- Control bar — only when there is at least one favorite -->
+    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8" x-show="$store.favorites.list.length > 0" x-cloak>
+      <div class="text-sm text-gray-600">
+        <span x-text="$store.favorites.list.length"></span> {{ t.favorites_page.items_saved }}
+      </div>
+      <button
+        @click="clearAll()"
+        class="text-sm font-medium text-red-600 hover:text-red-700 transition-colors flex items-center gap-2">
+        <i class="ph ph-trash text-base"></i>
+        {{ t.favorites_page.clear_all }}
+      </button>
+    </div>
+
+    <!-- Loading skeleton -->
+    <div x-show="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <template x-for="i in 3" :key="i">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div class="aspect-[16/9] bg-gray-100 animate-pulse"></div>
+          <div class="p-5 space-y-3">
+            <div class="h-3 bg-gray-100 rounded animate-pulse w-2/3"></div>
+            <div class="h-4 bg-gray-100 rounded animate-pulse"></div>
+            <div class="h-5 bg-gray-100 rounded animate-pulse w-1/3"></div>
+          </div>
+        </div>
+      </template>
+    </div>
+
+    <!-- Fragment mount point (server-rendered HTML is injected here by init()) -->
+    <div x-show="!loading && $store.favorites.list.length > 0" x-cloak data-favorites-mount></div>
+
+    <!-- Empty state -->
+    <div x-show="!loading && $store.favorites.list.length === 0" x-cloak class="max-w-lg mx-auto text-center py-16">
+      <div class="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10 text-gray-400">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+        </svg>
+      </div>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ t.favorites_page.no_favorites }}</h2>
+      <p class="text-gray-600 mb-8">{{ t.favorites_page.no_favorites_description }}</p>
+      <a href="{{ locale_prefix }}{{ routes.properties }}" class="inline-block bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+        {{ t.favorites_page.browse_properties }}
+      </a>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
+
+{% comment %} Scripts loaded via config/scripts.json route key page:favorites {% endcomment %}

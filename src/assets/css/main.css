@@ -1,0 +1,432 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+@layer base {
+  body {
+    @apply font-sans antialiased;
+  }
+
+  html {
+    font-size: 15px;
+    scroll-behavior: smooth;
+  }
+
+  [x-cloak] {
+    display: none !important;
+  }
+}
+
+/* ============================================
+   ELEGANCE THEME — TYPOGRAPHY
+   ============================================ */
+.font-serif {
+  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  font-weight: 400;
+}
+
+.vp-home-hero__title-script {
+  font-family: 'Allura', 'Great Vibes', cursive;
+}
+
+/* ============================================
+   COMPONENTS
+   ============================================ */
+@layer components {
+  /* Hero Swiper */
+  .hero-swiper .swiper-button-prev,
+  .hero-swiper .swiper-button-next {
+    @apply text-white w-12 h-12 rounded-full transition-colors;
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  .hero-swiper .swiper-button-prev:hover,
+  .hero-swiper .swiper-button-next:hover {
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .hero-swiper .swiper-button-prev:after,
+  .hero-swiper .swiper-button-next:after {
+    @apply text-lg font-bold;
+  }
+
+  .hero-swiper .swiper-pagination-bullet {
+    @apply bg-white w-2.5 h-2.5;
+    opacity: 0.5;
+  }
+
+  .hero-swiper .swiper-pagination-bullet-active {
+    opacity: 1;
+  }
+
+  /* WhatsApp Float */
+  .whatsapp-float {
+    @apply w-14 h-14 rounded-full flex items-center justify-center transition-transform;
+    background: #22C55E;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .whatsapp-float:hover {
+    @apply scale-110;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Property Card */
+  .property-card {
+    @apply bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow;
+  }
+
+  .swiper-nav-disabled {
+    @apply !opacity-0 !pointer-events-none;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity;
+    background-color: var(--btn-primary-bg, #E31C5F);
+    color: var(--btn-primary-text, #ffffff);
+  }
+
+  .btn-secondary {
+    @apply px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity;
+    background-color: var(--btn-secondary-bg, #cdcdb2);
+    color: var(--btn-secondary-text, #2E4347);
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary text-primary px-6 py-3 rounded-lg font-medium hover:bg-primary hover:text-white transition-colors;
+  }
+
+  /* ============================================
+     PROSE / EDITOR CONTENT STYLES
+     Typography styles for WordPress editor content
+     ============================================ */
+  .prose {
+    @apply text-gray-700;
+    font-size: 1.125rem;
+    line-height: 1.8;
+  }
+
+  .prose > * + * {
+    margin-top: 1.5em;
+  }
+
+  /* Headings */
+  .prose h1 {
+    @apply text-gray-900 font-bold;
+    font-size: 2.25rem;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .prose h2 {
+    @apply text-gray-900 font-bold;
+    font-size: 1.875rem;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
+  }
+
+  .prose h3 {
+    @apply text-gray-900 font-semibold;
+    font-size: 1.5rem;
+    margin-top: 1.75rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+  }
+
+  .prose h4 {
+    @apply text-gray-900 font-semibold;
+    font-size: 1.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+  }
+
+  .prose h5 {
+    @apply text-gray-900 font-medium;
+    font-size: 1.125rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .prose h6 {
+    @apply text-gray-800 font-medium;
+    font-size: 1rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  /* Paragraphs */
+  .prose p {
+    margin-bottom: 1.25rem;
+    line-height: 1.8;
+  }
+
+  /* Links */
+  .prose a {
+    @apply text-primary font-medium;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .prose a:hover {
+    text-decoration: underline;
+  }
+
+  /* Strong / Bold */
+  .prose strong,
+  .prose b {
+    @apply text-gray-900 font-semibold;
+  }
+
+  /* Italic / Emphasis */
+  .prose em,
+  .prose i {
+    font-style: italic;
+  }
+
+  /* Lists */
+  .prose ul {
+    @apply list-disc;
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .prose ol {
+    @apply list-decimal;
+    padding-left: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .prose li {
+    margin-bottom: 0.5rem;
+    padding-left: 0.375rem;
+    line-height: 1.8;
+  }
+
+  .prose li > ul,
+  .prose li > ol {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+  }
+
+  /* Nested lists */
+  .prose ul ul {
+    list-style-type: circle;
+  }
+
+  .prose ul ul ul {
+    list-style-type: square;
+  }
+
+  /* Blockquotes */
+  .prose blockquote {
+    @apply border-l-4 border-primary text-gray-600 italic;
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .prose blockquote p {
+    margin-bottom: 0;
+  }
+
+  /* Code - inline */
+  .prose code {
+    @apply text-primary bg-gray-100 rounded;
+    padding: 0.125rem 0.375rem;
+    font-size: 0.875em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+
+  /* Code - blocks */
+  .prose pre {
+    @apply bg-gray-900 text-gray-100 rounded-xl overflow-x-auto;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+    font-size: 0.875rem;
+    line-height: 1.7;
+  }
+
+  .prose pre code {
+    @apply bg-transparent text-inherit p-0;
+    font-size: inherit;
+  }
+
+  /* Images */
+  .prose img {
+    @apply rounded-xl shadow-md;
+    max-width: 100%;
+    height: auto;
+    margin: 2rem 0;
+  }
+
+  .prose figure {
+    margin: 2rem 0;
+  }
+
+  .prose figcaption {
+    @apply text-gray-500 text-sm text-center;
+    margin-top: 0.75rem;
+  }
+
+  /* Horizontal rule */
+  .prose hr {
+    @apply border-gray-200;
+    margin: 2.5rem 0;
+  }
+
+  /* Tables */
+  .prose table {
+    @apply w-full text-left border-collapse;
+    margin: 1.5rem 0;
+  }
+
+  .prose thead th {
+    @apply bg-gray-50 text-gray-900 font-semibold border-b-2 border-gray-200;
+    padding: 0.75rem 1rem;
+  }
+
+  .prose tbody td {
+    @apply border-b border-gray-100;
+    padding: 0.75rem 1rem;
+  }
+
+  .prose tbody tr:hover {
+    @apply bg-gray-50;
+  }
+
+  /* Definition lists */
+  .prose dl {
+    margin: 1.5rem 0;
+  }
+
+  .prose dt {
+    @apply text-gray-900 font-semibold;
+    margin-top: 1rem;
+  }
+
+  .prose dd {
+    @apply text-gray-600;
+    padding-left: 1.5rem;
+    margin-top: 0.25rem;
+  }
+
+  /* Subscript / Superscript */
+  .prose sub,
+  .prose sup {
+    font-size: 0.75em;
+  }
+
+  /* Mark / Highlight */
+  .prose mark {
+    @apply bg-yellow-100 text-gray-900;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.125rem;
+  }
+
+  /* Abbreviations */
+  .prose abbr[title] {
+    text-decoration: underline dotted;
+    cursor: help;
+  }
+
+  /* Video embeds */
+  .prose iframe,
+  .prose video {
+    @apply rounded-xl;
+    max-width: 100%;
+    margin: 2rem 0;
+  }
+
+  /* WordPress specific classes */
+  .prose .wp-block-image {
+    margin: 2rem 0;
+  }
+
+  .prose .wp-block-image img {
+    margin: 0;
+  }
+
+  .prose .wp-block-image figcaption {
+    @apply text-gray-500 text-sm text-center;
+    margin-top: 0.5rem;
+  }
+
+  .prose .aligncenter {
+    @apply mx-auto;
+    display: block;
+  }
+
+  .prose .alignleft {
+    @apply float-left mr-6 mb-4;
+  }
+
+  .prose .alignright {
+    @apply float-right ml-6 mb-4;
+  }
+
+  .prose .wp-block-quote {
+    @apply border-l-4 border-primary;
+  }
+
+  .prose .has-text-align-center {
+    text-align: center;
+  }
+
+  .prose .has-text-align-right {
+    text-align: right;
+  }
+
+  /* Size variants */
+  .prose-sm {
+    font-size: 0.9375rem;
+  }
+
+  .prose-lg {
+    font-size: 1.125rem;
+  }
+
+  .prose-xl {
+    font-size: 1.25rem;
+  }
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .hero-swiper .swiper-button-prev,
+  .hero-swiper .swiper-button-next {
+    @apply w-9 h-9;
+  }
+
+  .whatsapp-float {
+    @apply w-12 h-12;
+  }
+}

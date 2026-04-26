@@ -1,0 +1,317 @@
+<section class="w-full bg-white py-6 md:py-10">
+  <div class="mx-auto px-[0.3%]">
+    <div class="relative overflow-hidden rounded-[10px] min-h-[820px] md:min-h-[900px]">
+      <!-- Imagem de fundo estática -->
+      <div class="absolute inset-0">
+        <img
+          src="{{ theme_settings.sections.advertise.anuncie_agora.image | default: '/assets/images/entre-em-contato.jpg' }}"
+          alt="Anuncie seu imóvel"
+          class="h-full w-full object-cover"
+        >
+      </div>
+
+      <!-- Overlay opcional suave -->
+      <div class="absolute inset-0 bg-black/5"></div>
+
+      <!-- Card principal -->
+      <div class="relative z-10 flex min-h-[820px] items-center justify-center px-4 py-10 md:px-8 md:py-16">
+        <div class="w-full max-w-[1320px] rounded-[5px] bg-white px-8 py-10 shadow-sm md:px-12 md:py-14 xl:px-16 xl:py-16">
+          <div class="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_1.08fr] lg:gap-16 xl:gap-20">
+            <!-- Lado esquerdo -->
+            <div class="flex flex-col justify-center">
+              <span class="inline-flex w-fit items-center rounded-full border border-[#D9D9D9] px-4 py-1.5 text-sm font-medium text-[#111827]">
+                Anuncie agora
+              </span>
+
+              <h2 class="mt-8 max-w-[520px] text-[30px] font-semibold tracking-[-0.03em] text-[#0F172A] md:text-[56px]">
+                Anuncie seu imóvel agora mesmo!
+              </h2>
+
+              <p class="mt-8 max-w-[560px] text-[15px] text-[#6B7280]">
+                Estamos aqui para ajudar você a anunciar seu imóvel com sucesso. Entre em contato com nossa equipe de especialistas para tirar suas dúvidas e obter suporte em todas as etapas do processo. Preencha o formulário abaixo e responderemos rapidamente.
+              </p>
+
+              <div class="mt-12 flex w-full max-w-[520px] flex-col gap-4 rounded-[4px] bg-[#EEF6EE] p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div class="text-[15px] font-semibold text-[#0F172A]">
+                  Prefere falar por whatsapp?
+                </div>
+
+                <a
+                  href="https://wa.me/5511999999999"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex min-h-[56px] items-center justify-center gap-2 rounded-[4px] bg-[#005C4B] px-8 text-[14px] font-medium text-white transition hover:opacity-90"
+                >
+                  <i class="ph ph-whatsapp-logo text-lg flex-shrink-0"></i>
+                  Chamar
+                </a>
+              </div>
+            </div>
+
+            <!-- Lado direito -->
+            <div
+              class="w-full"
+              data-multistep-form
+            >
+              <!-- Indicador -->
+              <div class="mx-auto mb-10 w-full max-w-[560px]">
+                <div class="flex items-center justify-between">
+                  <div class="flex flex-col items-center">
+                    <div
+                      class="flex h-[38px] w-[38px] items-center justify-center rounded-full border text-[20px] font-medium transition-all duration-300"
+                      data-step-indicator="1"
+                    >
+                      1
+                    </div>
+                    <span class="mt-3 text-center text-[16px] font-medium leading-7 text-[#4B5563]">
+                      Informações<br>pessoais
+                    </span>
+                  </div>
+
+                  <div class="mx-4 h-[1px] flex-1 bg-[#D1D5DB]"></div>
+
+                  <div class="flex flex-col items-center">
+                    <div
+                      class="flex h-[38px] w-[38px] items-center justify-center rounded-full border text-[20px] font-medium transition-all duration-300"
+                      data-step-indicator="2"
+                    >
+                      2
+                    </div>
+                    <span class="mt-3 text-center text-[16px] font-medium leading-7 text-[#4B5563]">
+                      Informações<br>do imóvel
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <form class="mx-auto w-full max-w-[560px]" data-form-root>
+                <!-- ETAPA 1 -->
+                <div data-step-panel="1">
+                  <div class="space-y-6">
+                    <div>
+                      <input
+                        type="text"
+                        name="nome"
+                        placeholder="Nome Completo"
+                        class="h-[56px] w-full rounded-[2px] border border-[#E5E7EB] bg-white px-4 text-[17px] text-[#111827] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#111827]"
+                      >
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="E-mail"
+                        class="h-[56px] w-full rounded-[2px] border border-[#E5E7EB] bg-white px-4 text-[17px] text-[#111827] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#111827]"
+                      >
+
+                      <input
+                        type="text"
+                        name="telefone"
+                        placeholder="Telefone"
+                        class="h-[56px] w-full rounded-[2px] border border-[#E5E7EB] bg-white px-4 text-[17px] text-[#111827] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#111827]"
+                      >
+                    </div>
+
+                    <div class="pt-2">
+                      <p class="mb-4 text-[18px] font-medium text-[#111827]">
+                        Estou interessado em
+                      </p>
+
+                      <div class="flex flex-wrap gap-x-6 gap-y-3">
+                        <label class="inline-flex items-center gap-3 text-[18px] text-[#111827]">
+                          <input type="checkbox" name="interesse[]" value="vender" class="h-5 w-5 border-[#D1D5DB]">
+                          <span>Vender</span>
+                        </label>
+
+                        <label class="inline-flex items-center gap-3 text-[18px] text-[#111827]">
+                          <input type="checkbox" name="interesse[]" value="alugar" class="h-5 w-5 border-[#D1D5DB]">
+                          <span>Alugar</span>
+                        </label>
+
+                        <label class="inline-flex items-center gap-3 text-[18px] text-[#111827]">
+                          <input type="checkbox" name="interesse[]" value="permutar" class="h-5 w-5 border-[#D1D5DB]">
+                          <span>Permutar</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <div class="pt-3">
+                      <button
+                        type="button"
+                        data-next-step
+                        class="inline-flex h-[58px] w-full items-center justify-center rounded-[4px] bg-[#111827] px-8 text-[20px] font-medium text-white transition hover:opacity-90"
+                      >
+                        Próximo
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ETAPA 2 -->
+                <div class="hidden" data-step-panel="2">
+                  <div class="space-y-6">
+                    <div>
+                      <input
+                        type="text"
+                        name="endereco_imovel"
+                        placeholder="Endereço do imóvel"
+                        class="h-[56px] w-full rounded-[2px] border border-[#E5E7EB] bg-white px-4 text-[17px] text-[#111827] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#111827]"
+                      >
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:items-end">
+                      <div>
+                        <input
+                          type="text"
+                          name="valor_estimado"
+                          placeholder="Valor estimado R$"
+                          class="h-[56px] w-full rounded-[2px] border border-[#E5E7EB] bg-white px-4 text-[17px] text-[#111827] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#111827]"
+                        >
+                      </div>
+
+                      <div>
+                        <label class="mb-2 block text-[18px] font-medium text-[#111827]">
+                          Tipo do imóvel <span class="text-red-500">*</span>
+                        </label>
+                        <select
+                          name="tipo_imovel"
+                          class="h-[56px] w-full rounded-[2px] border border-[#E5E7EB] bg-white px-4 text-[17px] text-[#111827] outline-none transition focus:border-[#111827]"
+                        >
+                          <option value="">Selecione</option>
+                          <option value="terreno">Terreno</option>
+                          <option value="casa">Casa</option>
+                          <option value="apartamento">Apartamento</option>
+                          <option value="sobrado">Sobrado</option>
+                          <option value="comercial">Comercial</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <textarea
+                        name="mais_informacoes"
+                        rows="4"
+                        placeholder="Escreva aqui mais informações sobre o imóvel"
+                        class="min-h-[92px] w-full rounded-[2px] border border-[#E5E7EB] bg-white px-4 py-4 text-[17px] text-[#111827] outline-none transition placeholder:text-[#9CA3AF] focus:border-[#111827]"
+                      ></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <button
+                        type="button"
+                        data-prev-step
+                        class="inline-flex h-[58px] w-full items-center justify-center rounded-[4px] bg-[#111827] px-8 text-[20px] font-medium text-white transition hover:opacity-90"
+                      >
+                        Voltar
+                      </button>
+
+                      <button
+                        type="submit"
+                        class="inline-flex h-[58px] w-full items-center justify-center rounded-[4px] bg-[#111827] px-8 text-[20px] font-medium text-white transition hover:opacity-90"
+                      >
+                        Enviar
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+
+              <script>
+                (() => {
+                  const root = document.querySelector('[data-multistep-form]');
+                  if (!root) return;
+
+                  const form = root.querySelector('[data-form-root]');
+                  const step1 = root.querySelector('[data-step-panel="1"]');
+                  const step2 = root.querySelector('[data-step-panel="2"]');
+                  const nextButton = root.querySelector('[data-next-step]');
+                  const prevButton = root.querySelector('[data-prev-step]');
+                  const indicator1 = root.querySelector('[data-step-indicator="1"]');
+                  const indicator2 = root.querySelector('[data-step-indicator="2"]');
+
+                  let currentStep = 1;
+
+                  function paintIndicators() {
+                    const activeClass = {
+                      bg: 'bg-[#2F2F2F]',
+                      text: 'text-white',
+                      border: 'border-[#2F2F2F]'
+                    };
+
+                    const inactiveClass = {
+                      bg: 'bg-white',
+                      text: 'text-[#6B7280]',
+                      border: 'border-[#9CA3AF]'
+                    };
+
+                    [indicator1, indicator2].forEach((el, index) => {
+                      const stepNumber = index + 1;
+                      const isActive = stepNumber === currentStep || (currentStep === 2 && stepNumber === 1);
+
+                      el.classList.remove(
+                        activeClass.bg,
+                        activeClass.text,
+                        activeClass.border,
+                        inactiveClass.bg,
+                        inactiveClass.text,
+                        inactiveClass.border
+                      );
+
+                      if (isActive) {
+                        el.classList.add(activeClass.bg, activeClass.text, activeClass.border);
+                      } else {
+                        el.classList.add(inactiveClass.bg, inactiveClass.text, inactiveClass.border);
+                      }
+                    });
+                  }
+
+                  function updateSteps() {
+                    if (currentStep === 1) {
+                      step1.classList.remove('hidden');
+                      step2.classList.add('hidden');
+                    } else {
+                      step1.classList.add('hidden');
+                      step2.classList.remove('hidden');
+                    }
+
+                    paintIndicators();
+                  }
+
+                  nextButton?.addEventListener('click', () => {
+                    currentStep = 2;
+                    updateSteps();
+                  });
+
+                  prevButton?.addEventListener('click', () => {
+                    currentStep = 1;
+                    updateSteps();
+                  });
+
+                  form?.addEventListener('submit', (event) => {
+                    event.preventDefault();
+
+                    const formData = new FormData(form);
+                    const data = Object.fromEntries(formData.entries());
+
+                    console.log('Formulário enviado:', data);
+
+                    // Exemplo:
+                    // fetch('/sua-rota', {
+                    //   method: 'POST',
+                    //   body: formData
+                    // });
+
+                    alert('Formulário enviado com sucesso!');
+                  });
+
+                  updateSteps();
+                })();
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

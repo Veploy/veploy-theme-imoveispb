@@ -1,0 +1,33 @@
+{% comment %}
+  Currency input with IMask. Submits raw numeric (e.g. "1234.56") via hidden.
+  Props:
+    - name: form field name (required)
+    - value or init_value: initial value, "1234.56" or "1234,56" (optional)
+    - currency: 'BRL' | 'USD' | 'EUR' (default 'BRL')
+    - placeholder, label, id, disabled, input_class (optional)
+  Requires: IMask (CDN in layout) and window.CURRENCY_MASKS (main.js).
+  Logic: Alpine.data('currencyInput') in main.js.
+{% endcomment %}
+{% assign curr = currency | default: 'BRL' | upcase %}
+{% assign init = value | default: init_value | default: '' %}
+{% assign inp_id = id | default: 'curr' | append: name %}
+{% assign inp_class = input_class | default: '' %}
+
+<div class="currency-input" x-data="currencyInput" data-currency="{{ curr }}" data-init="{{ init }}">
+  {% if label != blank %}
+  <label for="{{ inp_id }}" class="block text-base font-semibold text-gray-900 mb-2">{{ label }}</label>
+  {% endif %}
+  <div class="relative">
+    <span class="currency-symbol"></span>
+    <input
+      type="text"
+      inputmode="decimal"
+      autocomplete="off"
+      placeholder="{{ placeholder | default: '' }}"
+      id="{{ inp_id }}"
+      {% if disabled %}disabled{% endif %}
+      class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors {{ inp_class }}"
+    >
+  </div>
+  <input type="hidden" name="{{ name }}">
+</div>

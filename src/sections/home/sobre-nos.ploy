@@ -1,0 +1,61 @@
+<!-- Section: Quem Somos (dark) + Alto Padrão (white with image) -->
+{% assign about = theme_settings.sections.about-section %}
+{% assign quem_somos_title = about.title | default: 'Descubra a chave do seu novo lar com a imobiliária que transforma sonhos em endereços!' %}
+{% assign alto_padrao_title = about.subtitle | default: 'Assistência completa para venda, compra, locação e financiamento de imóveis.' %}
+{% assign alto_padrao_description = about.description %}
+{% assign about_image = about.image | default: 'https://www.lopeselegance.com.br/wp-content/uploads/2025/08/Banner-home-sobre-nos.png' %}
+
+<!-- /QUEM SOMOS — dark band -->
+<section class="vp-home-quemsomos w-full bg-[#111111] py-14 md:py-20">
+  <div class="max-w-screen-2xl mx-auto px-[3%]">
+    <div class="text-center mx-auto max-w-[1080px]">
+      <span class="block text-[12px] md:text-[13px] font-medium tracking-[0.16em] text-[#C9A063] mb-5">
+        /QUEM SOMOS
+      </span>
+      <h2 class="font-serif text-[24px] md:text-[34px] xl:text-[42px] leading-[1.2] tracking-[-0.01em] text-white">
+        {{ quem_somos_title }}
+      </h2>
+    </div>
+  </div>
+</section>
+
+<!-- /ALTO PADRÃO — white section, text left + image right -->
+<section class="vp-home-altopadrao w-full bg-white py-16 md:py-20 xl:py-24">
+  <div class="max-w-screen-2xl mx-auto px-[3%]">
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-[1.05fr_1fr] lg:gap-14 xl:gap-20 items-center">
+      <!-- Left: text -->
+      <div>
+        <span class="block text-[12px] md:text-[13px] font-medium tracking-[0.16em] text-[#C9A063] mb-5">
+          /ALTO PADRÃO
+        </span>
+
+        <h2 class="font-serif text-[26px] md:text-[36px] xl:text-[42px] leading-[1.15] tracking-[-0.01em] text-[#111111] mb-7 max-w-[600px]">
+          {{ alto_padrao_title }}
+        </h2>
+
+        {% if alto_padrao_description != blank %}
+        <p class="text-[14px] md:text-[15px] leading-[1.7] text-[#5C5C5C] mb-8 max-w-[600px]">
+          {{ alto_padrao_description }}
+        </p>
+        {% endif %}
+
+        <a
+          href="{{ locale_prefix }}{{ routes.about }}"
+          class="inline-flex items-center justify-center rounded-[4px] bg-[#111111] px-7 py-4 text-[12px] font-semibold uppercase tracking-[0.1em] text-white transition hover:opacity-90"
+        >
+          {{ about.cta_text | default: 'Conheça nossa história' }}
+        </a>
+      </div>
+
+      <!-- Right: image -->
+      <div class="relative overflow-hidden rounded-[4px] aspect-[4/5] lg:aspect-[5/6]">
+        <img
+          src="{{ about_image }}"
+          alt="Lopes Elegance"
+          class="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+        >
+      </div>
+    </div>
+  </div>
+</section>

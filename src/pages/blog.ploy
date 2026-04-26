@@ -1,0 +1,220 @@
+{% layout 'base' %}
+{% block content %}
+<!-- Blog Page Header -->
+<section class="pt-16 md:pt-20 pb-8 bg-gradient-to-br from-gray-50 to-white">
+  <div class="max-w-screen-xl mx-auto px-4 lg:px-8">
+    <div class="text-center max-w-3xl mx-auto">
+      <h1 class="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+        {% if filters.category_name != '' %}{{ filters.category_name }}{% elsif filters.category != '' %}{{ filters.category }}{% else %}{{ t.blog_page.title }}{% endif %}
+      </h1>
+      <p class="text-gray-600 text-lg">
+        {{ t.blog_page.subtitle }}
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- Blog Articles Grid -->
+<section class="py-12 bg-white">
+  <div class="max-w-screen-2xl mx-auto px-[5%]">
+    <!-- Search and Filters -->
+    <div class="mb-10 max-w-screen-md mx-auto" x-data="{ search: {{ filters.search | default: '' | json }} }">
+      <form action="{{ locale_prefix }}{{ routes.blog }}" method="GET" class="flex flex-col sm:flex-row gap-4">
+        <!-- Search Input -->
+        <div class="relative flex-1">
+          <input
+            type="text"
+            name="search"
+            x-model="search"
+            placeholder="{{ t.blog_page.search_placeholder | default: 'Buscar artigos...' }}"
+            class="w-full pl-12 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+          >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+          <button
+            type="button"
+            x-show="search.length > 0"
+            @click="search = ''; $el.closest('form').querySelector('input[name=search]').value = ''"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Category Filter -->
+        {% if categories.size > 0 %}
+        <div class="sm:w-56">
+          <select
+            name="category"
+            class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer"
+            onchange="this.form.submit()"
+          >
+            <option value="">{{ t.blog_page.all_categories | default: 'Todas as categorias' }}</option>
+            {% for cat in categories %}
+              <option value="{{ cat.slug }}" {% if filters.category == cat.slug %}selected{% endif %}>
+                {{ cat.name }} ({{ cat.count }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endif %}
+
+        <!-- Search Button -->
+        <button
+          type="submit"
+          class="px-6 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-xl transition-colors flex items-center justify-center gap-2"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+          </svg>
+          <span class="hidden sm:inline">{{ t.blog_page.search_button | default: 'Buscar' }}</span>
+        </button>
+      </form>
+
+      <!-- Active Filters -->
+      {% if filters.search != '' or filters.category != '' %}
+      <div class="flex flex-wrap items-center gap-2 mt-4">
+        <span class="text-sm text-gray-500">{{ t.blog_page.active_filters | default: 'Filtros ativos:' }}</span>
+        {% if filters.search != '' %}
+        <a
+          href="{{ locale_prefix }}{{ routes.blog }}{% if filters.category != '' %}?category={{ filters.category | url_encode }}{% endif %}"
+          class="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary text-sm rounded-full hover:bg-primary/20 transition-colors"
+        >
+          "{{ filters.search | escape }}"
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </a>
+        {% endif %}
+        {% if filters.category != '' %}
+        <a
+          href="{{ locale_prefix }}{{ routes.blog }}{% if filters.search != '' %}?search={{ filters.search | url_encode }}{% endif %}"
+          class="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary text-sm rounded-full hover:bg-primary/20 transition-colors"
+        >
+          {{ filters.category_name | default: filters.category }}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </a>
+        {% endif %}
+        <a
+          href="{{ locale_prefix }}{{ routes.blog }}"
+          class="text-sm text-gray-500 hover:text-gray-700 underline ml-2"
+        >
+          {{ t.blog_page.clear_filters | default: 'Limpar filtros' }}
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+    {% if articles.size > 0 %}
+      <!-- Articles Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        {% for article in articles %}
+          {% include 'components/article-card' %}
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if pagination.total_pages > 1 %}
+        <nav class="flex items-center justify-center gap-2">
+          {% if pagination.current_page > 1 %}
+            <a
+              href="{{ locale_prefix }}{{ routes.blog }}?pagina={{ pagination.current_page | minus: 1 }}"
+              class="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="w-4 h-4"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+              {{ t.pagination.previous }}
+            </a>
+          {% endif %}
+
+          <div class="flex items-center gap-1">
+            {% assign start_page = pagination.current_page | minus: 2 %}
+            {% if start_page < 1 %}{% assign start_page = 1 %}{% endif %}
+            {% assign end_page = start_page | plus: 4 %}
+            {% if end_page > pagination.total_pages %}{% assign end_page = pagination.total_pages %}{% endif %}
+
+            {% for i in (start_page..end_page) %}
+              {% if i == pagination.current_page %}
+                <span class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-lg font-semibold">
+                  {{- i -}}
+                </span>
+              {% else %}
+                <a
+                  href="{{ locale_prefix }}{{ routes.blog }}?pagina={{ i }}"
+                  class="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
+                >
+                  {{ i }}
+                </a>
+              {% endif %}
+            {% endfor %}
+          </div>
+
+          {% if pagination.current_page < pagination.total_pages %}
+            <a
+              href="{{ locale_prefix }}{{ routes.blog }}?pagina={{ pagination.current_page | plus: 1 }}"
+              class="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
+            >
+              {{ t.pagination.next }}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="2"
+                stroke="currentColor"
+                class="w-4 h-4"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </a>
+          {% endif %}
+        </nav>
+
+        <p class="text-center text-gray-500 text-sm mt-4">
+          {{ t.pagination.page }}
+          {{ pagination.current_page }}
+          {{ t.pagination.of }}
+          {{ pagination.total_pages }}
+        </p>
+      {% endif %}
+
+    {% else %}
+      <!-- Empty State -->
+      <div class="max-w-md mx-auto text-center py-16">
+        <div class="w-20 h-20 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-10 h-10 text-gray-400"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ t.blog_page.no_articles }}</h2>
+        <p class="text-gray-600 mb-8">{{ t.blog_page.no_articles_description }}</p>
+        <a
+          href="/"
+          class="inline-block bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-semibold transition-colors"
+        >
+          {{ t.common.back }}
+        </a>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

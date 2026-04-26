@@ -1,0 +1,41 @@
+<section class="w-full bg-[#F7F7F7] py-20 md:py-24 xl:py-28">
+  <div class="vp-section">
+    <div class="max-w-screen-2xl mx-auto px-[3%]">
+      <!-- Topo -->
+      <div class="max-w-[1120px]">
+        <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-2 py-0.5 text-[13px] font-medium text-[#111827]">
+          Diferenciais
+        </span>
+
+        <div class="mt-7 max-w-[1180px]">
+          <h2 class="text-[34px] font-normal leading-[1.08] tracking-[-0.035em] text-[#111827] md:text-[46px]">
+            Simplifique a jornada de compra e venda de imóveis.
+          </h2>
+
+          <h3 class="mt-2 text-[34px] font-normal leading-[1.08] tracking-[-0.035em] text-[#BE9A4D] md:text-[46px]">
+            Seu parceiro em todas as etapas do processo.
+          </h3>
+
+          <p class="mt-5 max-w-[920px] text-[16px] leading-[1.45] text-[#6B7280]">
+            Facilitamos cada etapa da compra e venda de imóveis, oferecendo suporte completo e soluções inteligentes para você fechar negócios.
+          </p>
+        </div>
+      </div>
+
+      <!-- Itens -->
+      <div class="mt-16 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
+        {% for item in theme_settings.sections.differentials.items %}
+          <div class="border-t border-[#E5E7EB] px-0 py-4 md:border-t-0 md:border-l md:px-8 md:pt-18 items-start">
+            <h4 class="text-[15px] font-semibold leading-[1.15] tracking-[-0.02em] text-[#111827]">
+              {{ item.title }}
+            </h4>
+
+            <p class="mt-4 md:max-w-[260px] text-[15px] text-[#6B7280]">
+              {{ item.description }}
+            </p>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>

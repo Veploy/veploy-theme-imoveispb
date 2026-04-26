@@ -1,0 +1,29 @@
+{
+  "default_locale": "pt_BR",
+  "supported_locales": ["pt_BR"],
+  "locales": {
+    "pt_BR": {
+      "code": "pt_BR",
+      "prefix": "",
+      "routes": {
+        "home": { "path": "/", "filename": "home.ploy" },
+        "archive:property": { "path": "/imoveis", "filename": "properties.ploy" },
+        "single:property": { "path": "/imovel", "filename": "property.ploy" },
+        "archive:post": { "path": "/blog", "filename": "blog.ploy" },
+        "single:post": { "path": "/blog", "filename": "article.ploy" },
+        "page:contact": { "path": "/contato", "filename": "contact.ploy" },
+        "page:about-us": { "path": "/sobre-nos", "filename": "about-us.ploy" },
+        "page:advertise": { "path": "/anuncie-seu-imovel", "filename": "advertise.ploy" },
+        "page:careers": { "path": "/trabalhe-conosco", "filename": "careers.ploy" },
+        "page:favorites": { "path": "/favoritos", "filename": "favorites.ploy" },
+        "page:privacy-policy": { "path": "/politica-de-privacidade", "filename": "privacy-policy.ploy" }
+      },
+      "segments": {
+        "type_prefix": "tipo",
+        "operation_sale": "comprar",
+        "operation_rent": "alugar",
+        "operation_short_term": "temporada"
+      }
+    }
+  }
+}

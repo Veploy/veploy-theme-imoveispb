@@ -1,0 +1,36 @@
+{% comment %}
+  Checkbox component – styled with Tailwind, accessible.
+  Use standalone: name, value, checked, label, id.
+  Use inside popover: value, label, alpine_model (e.g. "selected"), alpine_change (e.g. "if (closeOnSelect) open = false").
+  For "select all" behaviour: alpine_checked (e.g. "options.every(o => selected.includes(o.value))"), alpine_change (e.g. "selected = options.map(o => o.value); ..."), no alpine_model.
+  Omit 'name' when using with popover (hidden inputs are used instead).
+{% endcomment %}
+{% assign val = value | default: '' %}
+{% assign lid = id | default: 'cb' | append: val %}
+{% assign box_cls = box_class | default: 'w-5 h-5' %}
+{% assign wrapper_cls = wrapper_class | default: 'flex items-center gap-3 cursor-pointer group select-none' %}
+{% assign label_cls = label_class | default: 'text-base text-gray-700 group-hover:text-gray-900' %}
+<label class="{{ wrapper_cls }}">
+  <span class="relative {{ box_cls }} flex-shrink-0">
+    <input
+      type="checkbox"
+      {% if name %}name="{{ name }}"{% endif %}
+      value="{{ val }}"
+      {% if alpine_checked %}:checked="{{ alpine_checked }}"{% endif %}
+      {% if alpine_model %}x-model="{{ alpine_model }}"{% endif %}
+      {% if alpine_change %}@change="{{ alpine_change }}"{% endif %}
+      {% if checked and alpine_model == blank and alpine_change == blank and alpine_checked == blank %}checked{% endif %}
+      id="{{ lid }}"
+      class="peer absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+    >
+    <span class="absolute inset-0 rounded border-2 border-gray-300 bg-white pointer-events-none transition-colors group-hover:border-gray-400 peer-checked:bg-primary peer-checked:border-primary peer-focus-visible:ring-2 peer-focus-visible:ring-primary/40 peer-focus-visible:ring-offset-1" aria-hidden="true"></span>
+    <span class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 scale-75 transition-all duration-200 peer-checked:opacity-100 peer-checked:scale-100" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-3.5 h-3.5 text-white">
+        <path fill-rule="evenodd" d="M12.416 3.376a.75.75 0 01.208 1.04l-5 7.5a.75.75 0 01-1.154.114l-3-3a.75.75 0 011.06-1.06l2.353 2.353 4.493-6.74a.75.75 0 011.04-.207z" clip-rule="evenodd"/>
+      </svg>
+    </span>
+  </span>
+  {% if label != blank %}
+  <span class="{{ label_cls }}">{{ label }}</span>
+  {% endif %}
+</label>

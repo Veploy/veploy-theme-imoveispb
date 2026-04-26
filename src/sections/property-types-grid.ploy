@@ -1,0 +1,131 @@
+<!-- Property Types Grid Section -->
+<section class="vp-section vp-property-types py-12 md:py-16 bg-white">
+  <div class="vp-section__container max-w-screen-xl mx-auto px-4 lg:px-8">
+    <!-- Section Header -->
+    <div class="vp-section__header text-center mb-10 max-w-2xl mx-auto">
+      <h2 class="text-2xl md:text-4xl font-light text-gray-900 mb-4">
+        Explore os tipos de imóveis mais buscados
+        <span class="font-bold">em {{ workspace.city | default: 'Sorocaba' }} e região.</span>
+      </h2>
+      <p class="text-gray-500 text-base">
+        Veja as melhores opções de imóveis para comprar ou alugar agora em {{ workspace.city | default: 'Sorocaba' }} e região.
+      </p>
+    </div>
+
+    <!-- Property Types Grid -->
+    <div class="vp-types-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      {% if property_types.size > 0 %}
+        {% for type in property_types %}
+        <a href="{{ type.url }}" class="group property-type-card relative block rounded-lg overflow-hidden aspect-[16/9]">
+          <!-- Background Image -->
+          <img
+            src="{{ type.image }}"
+            alt="{{ type.title }}"
+            class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          >
+
+          <!-- Dark Overlay -->
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors"></div>
+
+          <!-- Title -->
+          <div class="absolute top-5 left-5 right-5">
+            <h3 class="text-white text-base font-semibold drop-shadow-lg">
+              {{ type.title }}
+            </h3>
+          </div>
+        </a>
+        {% endfor %}
+      {% else %}
+        <!-- Default Property Types -->
+        <a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}/tipo/casa-em-condominio" class="group property-type-card relative block rounded-lg overflow-hidden aspect-[4/5]">
+          <!-- Background Image -->
+          <div class="absolute inset-0 bg-gradient-to-br from-amber-600 to-amber-800">
+            <img
+              src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80"
+              alt="Casas em Condomínio"
+              class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            >
+          </div>
+
+          <!-- Dark Overlay -->
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors"></div>
+
+          <!-- Title -->
+          <div class="absolute top-5 left-5 right-5">
+            <h3 class="text-white text-base font-semibold drop-shadow-lg">
+              Casas em Condomínio
+            </h3>
+          </div>
+        </a>
+
+        <a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}/tipo/casa" class="group property-type-card relative block rounded-lg overflow-hidden aspect-[4/5]">
+          <!-- Background Image -->
+          <div class="absolute inset-0 bg-gradient-to-br from-emerald-600 to-emerald-800">
+            <img
+              src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80"
+              alt="Casas de Bairro"
+              class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            >
+          </div>
+
+          <!-- Dark Overlay -->
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors"></div>
+
+          <!-- Title -->
+          <div class="absolute top-5 left-5 right-5">
+            <h3 class="text-white text-base font-semibold drop-shadow-lg">
+              Casas de Bairro
+            </h3>
+          </div>
+        </a>
+
+        <a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}/tipo/apartamento" class="group property-type-card relative block rounded-lg overflow-hidden aspect-[4/5]">
+          <!-- Background Image -->
+          <div class="absolute inset-0 bg-gradient-to-br from-blue-600 to-blue-800">
+            <img
+              src="https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=600&q=80"
+              alt="Apartamentos"
+              class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            >
+          </div>
+
+          <!-- Dark Overlay -->
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors"></div>
+
+          <!-- Title -->
+          <div class="absolute top-5 left-5 right-5">
+            <h3 class="text-white text-base font-semibold drop-shadow-lg">
+              Apartamentos
+            </h3>
+          </div>
+        </a>
+
+        <a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}/tipo/terreno" class="group property-type-card relative block rounded-lg overflow-hidden aspect-[4/5]">
+          <!-- Background Image -->
+          <div class="absolute inset-0 bg-gradient-to-br from-stone-600 to-stone-800">
+            <img
+              src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80"
+              alt="Terrenos"
+              class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+            >
+          </div>
+
+          <!-- Dark Overlay -->
+          <div class="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors"></div>
+
+          <!-- Title -->
+          <div class="absolute top-5 left-5 right-5">
+            <h3 class="text-white text-base font-semibold drop-shadow-lg">
+              Terrenos
+            </h3>
+          </div>
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</section>

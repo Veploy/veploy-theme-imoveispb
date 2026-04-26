@@ -1,0 +1,62 @@
+{% assign section_data = sections['differentials'] %}
+{% assign items = section_data.items %}
+
+<!-- Differentials Section -->
+{% if items and items.size > 0 %}
+<section class="vp-section vp-features py-10 md:py-24 bg-white">
+  <div class="vp-section__container max-w-screen-2xl mx-auto px-4 lg:px-8">
+    <!-- Section Header -->
+    <div class="vp-section__header text-left sm:text-center mb-16">
+      <h2 class="text-2xl md:text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+        {% if section_data.title %}{{ section_data.title }}{% else %}{{ 'diferenciais.section_title' | t }}{% endif %}
+      </h2>
+      <p class="text-gray-500 text-lg max-w-3xl mx-auto leading-relaxed">
+        {% if section_data.description %}{{ section_data.description }}{% else %}{{ 'diferenciais.section_description' | t }}{% endif %}
+      </p>
+    </div>
+
+    <!-- Differentials Grid -->
+    <div class="vp-features-grid grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-12 max-w-5xl mx-auto">
+      {% for item in items %}
+      <div class="flex gap-5">
+        <div class="flex-shrink-0">
+          <div class="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 text-primary">
+              <path stroke-linecap="round" stroke-linejoin="round" d="{{ item.icon_path }}" />
+            </svg>
+          </div>
+        </div>
+        <div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">{{ item.title }}</h3>
+          <p class="text-gray-500 leading-relaxed">
+            {{ item.description }}
+          </p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Differentials",
+  "page": "home",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Section Title" },
+    { "type": "textarea", "id": "description", "label": "Section Description" },
+    {
+      "type": "repeater",
+      "id": "differentials",
+      "label": "Differentials",
+      "max_items": 8,
+      "settings": [
+        { "type": "text", "id": "icon_path", "label": "SVG Icon Path" },
+        { "type": "text", "id": "title", "label": "Title" },
+        { "type": "textarea", "id": "description", "label": "Description" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,15 @@
+{
+  "name": "veploy-theme-elegance",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Veploy customized theme — Elegance",
+  "scripts": {
+    "dev": "veploy dev",
+    "preview": "veploy preview",
+    "deploy": "veploy deploy global",
+    "deploy:workspace": "veploy deploy"
+  },
+  "devDependencies": {
+    "@veploy/front-engine": "file:../veploy-front-engine"
+  }
+}

@@ -1,0 +1,124 @@
+<!-- Hero Carousel Section -->
+<section class="vp-section vp-hero relative">
+  <!-- Swiper Container with CSS containment for better performance -->
+  <div class="vp-hero__carousel swiper hero-swiper" style="contain: layout;" x-data="{}" x-init="
+    const initSwiper = () => {
+      if (typeof Swiper !== 'undefined') {
+        new Swiper($el, {
+          loop: true,
+          speed: 80,
+          autoplay: { delay: 5000, disableOnInteraction: false },
+          effect: 'fade',
+          fadeEffect: { crossFade: true },
+          pagination: { el: $el.querySelector('.swiper-pagination'), clickable: true },
+          navigation: { nextEl: $el.querySelector('.swiper-button-next'), prevEl: $el.querySelector('.swiper-button-prev') }
+        });
+      }
+    };
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(initSwiper, { timeout: 500 });
+    } else {
+      setTimeout(initSwiper, 100);
+    }
+  ">
+    <div class="swiper-wrapper">
+      {% assign hero_slides = sections['hero-carousel'].items %}
+      {% for slide in hero_slides %}
+      <div class="swiper-slide relative">
+        <!-- Desktop Image -->
+        <picture>
+          <source media="(min-width: 768px)" srcset="{{ slide.image_desktop }}">
+          <img
+            src="{{ slide.image_mobile | default: slide.image_desktop }}"
+            alt="{{ slide.alt | default: 'Banner' }}"
+            class="w-full object-cover"
+            loading="eager"
+            fetchpriority="high"
+          >
+        </picture>
+
+        <!-- Overlay with content (optional - if slide has text) -->
+        {% if slide.title or slide.subtitle or slide.cta_text %}
+        <div class="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent">
+          <div class="max-w-screen-xl mx-auto px-4 lg:px-8 h-full flex items-center">
+            <div class="max-w-xl text-white">
+              {% if slide.title %}
+              <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+                {{ slide.title }}
+              </h2>
+              {% endif %}
+
+              {% if slide.subtitle %}
+              <p class="text-lg md:text-xl mb-6 opacity-90">
+                {{ slide.subtitle }}
+              </p>
+              {% endif %}
+
+              {% if slide.cta_text and slide.cta_url %}
+              <a href="{{ slide.cta_url }}"
+                 class="inline-block bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-full font-semibold text-lg transition-colors">
+                {{ slide.cta_text }}
+              </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        {% if slide.redirect_url %}
+        <a href="{{ slide.redirect_url }}" class="absolute inset-0 z-10"></a>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <!-- Default slide if no slides configured -->
+      {% if hero_slides == nil or hero_slides.size == 0 %}
+      <div class="swiper-slide">
+        <div class="w-full min-h-[300px] md:min-h-[400px] bg-gradient-to-r from-gray-700 to-gray-900 flex items-center justify-center py-20">
+          <div class="max-w-screen-xl mx-auto px-4 lg:px-8 text-center text-white">
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              {{ 'home.hero_title' | t }}
+            </h2>
+            <p class="text-lg md:text-xl mb-6 opacity-90">
+              {{ workspace.name }} {{ 'home.hero_subtitle' | t }}
+            </p>
+            <a href="{{ locale_prefix }}{{ routes.properties }}"
+               class="inline-block bg-primary hover:bg-primary/90 text-white px-8 py-4 rounded-full font-semibold text-lg transition-colors">
+              {{ 'home.hero_cta' | t }}
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Navigation buttons -->
+    <div class="swiper-button-prev"></div>
+    <div class="swiper-button-next"></div>
+
+    <!-- Pagination -->
+    <div class="swiper-pagination"></div>
+  </div>
+
+  <!-- Search Form Overlay -->
+  {% include 'components/property-filters-compact' %}
+</section>
+
+{% schema %}
+{
+  "name": "Hero Carousel",
+  "page": "home",
+  "settings": [
+    {
+      "type": "repeater",
+      "id": "slides",
+      "label": "Slides",
+      "max_items": 4,
+      "settings": [
+        { "type": "image_picker", "id": "image_desktop", "label": "Desktop Image" },
+        { "type": "image_picker", "id": "image_mobile", "label": "Mobile Image" },
+        { "type": "url", "id": "redirect_url", "label": "Redirect URL" }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,15 @@
+{% layout 'base' %}
+{% block content %}
+<!-- Header Section -->
+
+{% include 'sections/advertise/hero'%}
+
+{% include 'sections/advertise/beneficios' %}
+
+{% include 'sections/advertise/relatos' %}
+
+{% include 'sections/advertise/como-anunciar' %}
+
+{% include 'sections/advertise/anuncie-agora' %}
+
+{% endblock %}

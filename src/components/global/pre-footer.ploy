@@ -1,0 +1,212 @@
+{% comment %}
+  Pre-Footer SEO Links Section
+  Minimalist link building section for SEO purposes
+  Uses dynamic data from workspace (top_cities, top_neighborhoods, top_types)
+{% endcomment %}
+
+<section class="bg-gradient-to-b from-gray-50 to-white border-t border-gray-100">
+  <div class="max-w-screen-2xl mx-auto px-[5%] py-16">
+    
+    <!-- Section Header -->
+    <div class="text-center mb-12">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+        Explore todos os imóveis
+      </h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">
+        Encontre o imóvel ideal navegando por cidades, bairros e características específicas
+      </p>
+    </div>
+
+    <!-- Links Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+      
+      <!-- Column 1: Top Cities -->
+      {% if workspace.top_cities.size > 0 %}
+      <div class="space-y-4">
+        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200 pb-2">
+          Imóveis por Cidade
+        </h3>
+        <ul class="space-y-2.5">
+          {% for city in workspace.top_cities limit: 6 %}
+          <li>
+            <a 
+              href="{{ routes.properties }}?location={{ city.name | url_encode }}" 
+              class="text-base text-gray-600 hover:text-primary transition-colors duration-200 flex items-center group"
+            >
+              <svg 
+                class="w-3 h-3 mr-2 text-gray-400 group-hover:text-primary transition-colors duration-200 flex-shrink-0" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              <span class="group-hover:translate-x-0.5 transition-transform duration-200">
+                {{ city.name }}
+              </span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Column 2: Top Property Types -->
+      {% if workspace.top_types.size > 0 %}
+      <div class="space-y-4">
+        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200 pb-2">
+          Imóveis por Tipo
+        </h3>
+        <ul class="space-y-2.5">
+          {% for type in workspace.top_types limit: 6 %}
+          <li>
+            <a 
+              href="{{ routes.properties }}?type={{ type.name | url_encode }}" 
+              class="text-base text-gray-600 hover:text-primary transition-colors duration-200 flex items-center group"
+            >
+              <svg 
+                class="w-3 h-3 mr-2 text-gray-400 group-hover:text-primary transition-colors duration-200 flex-shrink-0" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              <span class="group-hover:translate-x-0.5 transition-transform duration-200">
+                {{ type.name | capitalize }}
+              </span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Column 3: Top Neighborhoods -->
+      {% if workspace.top_neighborhoods.size > 0 %}
+      <div class="space-y-4">
+        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200 pb-2">
+          Imóveis por Bairro
+        </h3>
+        <ul class="space-y-2.5">
+          {% for neighborhood in workspace.top_neighborhoods limit: 6 %}
+          <li>
+            <a 
+              href="{{ routes.properties }}?location={{ neighborhood.name | url_encode }}" 
+              class="text-base text-gray-600 hover:text-primary transition-colors duration-200 flex items-center group"
+            >
+              <svg 
+                class="w-3 h-3 mr-2 text-gray-400 group-hover:text-primary transition-colors duration-200 flex-shrink-0" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              <span class="group-hover:translate-x-0.5 transition-transform duration-200">
+                {{ neighborhood.name }}
+              </span>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <!-- Column 4: Operations (Sale/Rent) -->
+      {% if workspace.operations.size > 0 %}
+      <div class="space-y-4">
+        <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wider border-b border-gray-200 pb-2">
+          Imóveis por Operação
+        </h3>
+        <ul class="space-y-2.5">
+          {% for operation in workspace.operations %}
+          <li>
+            {% if operation == 'for_sale' %}
+            <a 
+              href="{{ routes.properties }}?operation=sale" 
+              class="text-base text-gray-600 hover:text-primary transition-colors duration-200 flex items-center group"
+            >
+              <svg 
+                class="w-3 h-3 mr-2 text-gray-400 group-hover:text-primary transition-colors duration-200 flex-shrink-0" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              <span class="group-hover:translate-x-0.5 transition-transform duration-200">
+                Imóveis à Venda
+              </span>
+            </a>
+            {% elsif operation == 'for_rent' %}
+            <a 
+              href="{{ routes.properties }}?operation=rent" 
+              class="text-base text-gray-600 hover:text-primary transition-colors duration-200 flex items-center group"
+            >
+              <svg 
+                class="w-3 h-3 mr-2 text-gray-400 group-hover:text-primary transition-colors duration-200 flex-shrink-0" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              <span class="group-hover:translate-x-0.5 transition-transform duration-200">
+                Imóveis para Alugar
+              </span>
+            </a>
+            {% elsif operation == 'for_short_term' %}
+            <a 
+              href="{{ routes.properties }}?operation=short_term" 
+              class="text-base text-gray-600 hover:text-primary transition-colors duration-200 flex items-center group"
+            >
+              <svg 
+                class="w-3 h-3 mr-2 text-gray-400 group-hover:text-primary transition-colors duration-200 flex-shrink-0" 
+                fill="none" 
+                viewBox="0 0 24 24" 
+                stroke="currentColor"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+              <span class="group-hover:translate-x-0.5 transition-transform duration-200">
+                Imóveis para Temporada
+              </span>
+            </a>
+            {% endif %}
+          </li>
+          {% endfor %}
+          
+          <!-- Combined operations links -->
+          {% if workspace.top_types.size > 0 and workspace.operations.size > 1 %}
+            {% for type in workspace.top_types limit: 3 %}
+              {% if workspace.operations contains 'for_sale' %}
+              <li>
+                <a 
+                  href="{{ routes.properties }}?type={{ type.name | url_encode }}&operation=sale" 
+                  class="text-base text-gray-600 hover:text-primary transition-colors duration-200 flex items-center group"
+                >
+                  <svg 
+                    class="w-3 h-3 mr-2 text-gray-400 group-hover:text-primary transition-colors duration-200 flex-shrink-0" 
+                    fill="none" 
+                    viewBox="0 0 24 24" 
+                    stroke="currentColor"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                  </svg>
+                  <span class="group-hover:translate-x-0.5 transition-transform duration-200">
+                    {{ type.name | capitalize }} à venda
+                  </span>
+                </a>
+              </li>
+              {% endif %}
+            {% endfor %}
+          {% endif %}
+        </ul>
+      </div>
+      {% endif %}
+
+    </div>
+
+  </div>
+</section>

@@ -1,0 +1,308 @@
+{% assign header_bg = workspace.theme_settings.header.bg_color | default: '#ffffff' %}
+{% assign header_text = workspace.theme_settings.header.text_color | default: '#374151' %}
+{% assign header_btn_bg = workspace.theme_settings.header.button_bg_color | default: nil %}
+{% assign header_btn_text = workspace.theme_settings.header.button_text_color | default: '#ffffff' %}
+{% assign header_btn_hover = workspace.theme_settings.header.button_hover_bg_color | default: nil %}
+{% assign header_sticky = false %}{%- comment -%}{% assign header_sticky = workspace.theme_settings.features.header_sticky %}{%- endcomment -%}
+
+<style>
+  .header-cta {
+    background-color: {{ header_btn_bg | default: 'rgb(var(--color-primary))' }};
+    color: {{ header_btn_text }};
+  }
+  .header-cta:hover {
+    background-color: {{ header_btn_hover | default: header_btn_bg | default: 'rgb(var(--color-primary))' }};
+    opacity: {{ header_btn_hover | default: nil | default: '0.9' }};{% if header_btn_hover %} opacity: 1;{% endif %}
+  }
+  .header-cta-outline {
+    color: {{ header_text }};
+    border: 1px solid {{ header_text }}80;
+    background-color: transparent;
+  }
+  .header-cta-outline:hover {
+    background-color: {{ header_text }};
+    color: {{ header_bg }};
+  }
+  .vp-header,
+  .vp-header__content,
+  .vp-header__logo {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+</style>
+
+<header class="vp-header shadow-sm z-50{% if header_sticky %} sticky top-0{% endif %}" style="background-color: {{ header_bg }};"{% if header_sticky %} :style="{ transitionDuration: scrolled ? '650ms' : '250ms' }"{% endif %}>
+  <nav class="vp-header__nav mx-auto px-[3%]" x-data="{ mobileOpen: false{% if header_sticky %}, scrolled: false{% endif %} }"{% if header_sticky %} @scroll.window="scrolled = window.scrollY > 10"{% endif %}>
+    <div class="vp-header__content flex items-center justify-between py-2" :class="{% if header_sticky %}scrolled ? 'min-h-14' : 'min-h-20'{% else %}'min-h-20'{% endif %}"{% if header_sticky %} :style="{ transitionDuration: scrolled ? '650ms' : '250ms' }"{% endif %}>
+      <div class="vp-header__left flex items-center gap-24">
+        <!-- Logo -->
+        <a href="{{ locale_prefix }}/" class="vp-header__logo flex-shrink-0 block" :class="{% if header_sticky %}scrolled ? 'h-8 lg:h-10' : 'h-12 lg:h-16'{% else %}'h-12 lg:h-16'{% endif %}"{% if header_sticky %} :style="{ transitionDuration: scrolled ? '650ms' : '250ms' }"{% endif %}>
+          {% if workspace.theme_settings.brand_identity.logo %}
+            <img
+              src="{{ workspace.theme_settings.brand_identity.logo }}"
+              alt="{{ workspace.name }}"
+              class="h-full max-w-[150px] w-auto object-contain"
+              width="150"
+              height="40"
+            >
+          {% else %}
+            <span class="text-2xl font-bold leading-[2.5rem] lg:leading-[4rem]" style="color: {{ header_text }};">{{ workspace.name }}</span>
+          {% endif %}
+        </a>
+
+        <!-- Desktop Navigation (dynamic from theme_settings.navigation.main_menu) -->
+        {% assign nav_items = workspace.theme_settings.navigation.main_menu %}
+        {% if nav_items and nav_items.size > 0 %}
+        <ul class="vp-header__menu hidden lg:flex items-center gap-8">
+          {% for item in nav_items %}
+          <li>
+            {% assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about}}', routes.about | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites %}
+            {% assign is_absolute = false %}
+            {% if resolved_url contains 'http://' or resolved_url contains 'https://' %}
+              {% assign is_absolute = true %}
+            {% endif %}
+            <a
+              href="{% if is_absolute %}{{ resolved_url }}{% else %}{{ locale_prefix }}{{ resolved_url }}{% endif %}"
+              class="hover:text-primary font-medium transition-colors" style="color: {{ header_text }};"
+              {% if item.target == '_blank' or is_absolute %}target="_blank" rel="noopener noreferrer"{% endif %}
+            >
+              {{ item.label }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% endif %}
+      </div>
+
+      <!-- Desktop Actions -->
+      <div class="vp-header__actions hidden lg:flex items-center gap-8">
+        <!-- Language Selector -->
+       {% comment %}  {% if t and alternate_urls %}
+          <div class="flex items-center gap-1 p-0.5 bg-gray-100 rounded-md">
+            <a
+              href="{{ alternate_urls.pt_BR }}"
+              class="flex items-center gap-1 px-2 py-1 rounded transition-all {% if locale == 'pt_BR' %}bg-white shadow-sm{% else %}hover:bg-gray-50{% endif %}"
+              title="Português"
+            >
+              <span class="text-lg leading-none">🇧🇷</span>
+              <span class="text-xs font-medium {% if locale == 'pt_BR' %}text-primary{% else %}text-gray-600{% endif %}"
+                >PT</span
+              >
+            </a>
+            <a
+              href="{{ alternate_urls.en_US }}"
+              class="flex items-center gap-1 px-2 py-1 rounded transition-all {% if locale == 'en_US' %}bg-white shadow-sm{% else %}hover:bg-gray-50{% endif %}"
+              title="English"
+            >
+              <span class="text-lg leading-none">🇺🇸</span>
+              <span class="text-xs font-medium {% if locale == 'en_US' %}text-primary{% else %}text-gray-600{% endif %}"
+                >EN</span
+              >
+            </a>
+            <a
+              href="{{ alternate_urls.es_ES }}"
+              class="flex items-center gap-1 px-2 py-1 rounded transition-all {% if locale == 'es_ES' %}bg-white shadow-sm{% else %}hover:bg-gray-50{% endif %}"
+              title="Español"
+            >
+              <span class="text-lg leading-none">🇪🇸</span>
+              <span class="text-xs font-medium {% if locale == 'es_ES' %}text-primary{% else %}text-gray-600{% endif %}"
+                >ES</span
+              >
+            </a>
+          </div>
+        {% endif %} {% endcomment %}
+
+        <!-- Favoritos -->
+        <a
+          href="{{ locale_prefix }}{{ routes.favorites }}"
+          class="flex items-center gap-2 hover:text-primary transition-colors" style="color: {{ header_text }};"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none" :fill="$store.favorites.count > 0 ? '#ef4444' : 'none'"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor" :stroke="$store.favorites.count > 0 ? '#ef4444' : 'currentColor'"
+            class="w-5 h-5 transition-colors"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+          </svg>
+          <span class="font-medium">{{ t.nav.favorites }}</span>
+        </a>
+
+        <!-- Fale Conosco (outline) -->
+        <a
+          href="{{ locale_prefix }}{{ routes.contact }}"
+          class="header-cta-outline px-5 py-2.5 rounded-[4px] text-[12px] font-semibold uppercase tracking-[0.1em] transition-colors"
+        >
+          Fale Conosco
+        </a>
+
+        <!-- Anuncie seu imóvel CTA -->
+        <a
+          href="{{ locale_prefix }}{{ routes.advertise }}"
+          class="header-cta px-5 py-2.5 rounded-[4px] text-[12px] font-semibold uppercase tracking-[0.1em] transition-colors"
+        >
+          {{ t.nav.advertise }}
+        </a>
+      </div>
+
+      <!-- Mobile Actions: Heart + Hamburger -->
+      <div class="lg:hidden flex items-center gap-1">
+        <a
+          href="{{ locale_prefix }}{{ routes.favorites }}"
+          class="p-2 hover:text-primary transition-colors relative" style="color: {{ header_text }};"
+          aria-label="{{ t.nav.favorites }}"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            :fill="$store.favorites.count > 0 ? '#ef4444' : 'none'"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            :stroke="$store.favorites.count > 0 ? '#ef4444' : 'currentColor'"
+            class="w-6 h-6 transition-colors"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+          </svg>
+          <span
+            x-show="$store.favorites.count > 0"
+            x-text="$store.favorites.count"
+            class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1 leading-none"
+            x-cloak
+          ></span>
+        </a>
+        <button
+          type="button"
+          class="vp-header__mobile-toggle p-2 hover:text-primary" style="color: {{ header_text }};"
+          aria-label="Menu"
+          @click="mobileOpen = !mobileOpen"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-6 h-6"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Drawer Backdrop -->
+    <div
+      class="lg:hidden fixed inset-0 bg-black/40 z-[998]"
+      x-cloak
+      x-show="mobileOpen"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0"
+      x-transition:enter-end="opacity-100"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+      @click="mobileOpen = false"
+    ></div>
+
+    <!-- Mobile Drawer (slide-in from right) -->
+    <div
+      class="lg:hidden fixed inset-y-0 right-0 w-[85vw] max-w-[360px] z-[999] shadow-2xl flex flex-col"
+      style="background-color: {{ header_bg }}; color: {{ header_text }};"
+      x-cloak
+      x-show="mobileOpen"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="translate-x-full"
+      x-transition:enter-end="translate-x-0"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="translate-x-0"
+      x-transition:leave-end="translate-x-full"
+      @keydown.escape.window="mobileOpen = false"
+    >
+      <!-- Drawer Header -->
+      <div class="flex items-center justify-between px-5 py-4 flex-shrink-0" style="border-bottom: 1px solid {{ header_text }}15;">
+        <a href="{{ locale_prefix }}/" class="block h-8">
+          {% if workspace.theme_settings.brand_identity.logo %}
+            <img src="{{ workspace.theme_settings.brand_identity.logo }}" alt="{{ workspace.name }}" class="h-full w-auto object-contain" width="120" height="32">
+          {% else %}
+            <span class="text-lg font-bold" style="color: {{ header_text }};">{{ workspace.name }}</span>
+          {% endif %}
+        </a>
+        <button @click="mobileOpen = false" class="w-9 h-9 flex items-center justify-center rounded-full transition-colors" style="color: {{ header_text }};" aria-label="Fechar menu">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Drawer Body (scrollable) -->
+      <div class="flex-1 overflow-y-auto">
+
+        <!-- Navigation Links -->
+        <nav class="py-2">
+          {% assign mobile_items = workspace.theme_settings.navigation.mobile_menu | default: nav_items %}
+          {% for item in mobile_items %}
+            {% assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about}}', routes.about | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites %}
+            {% assign is_absolute = false %}
+            {% if resolved_url contains 'http://' or resolved_url contains 'https://' %}
+              {% assign is_absolute = true %}
+            {% endif %}
+            <a
+              href="{% if is_absolute %}{{ resolved_url }}{% else %}{{ locale_prefix }}{{ resolved_url }}{% endif %}"
+              class="flex items-center justify-between px-5 py-3.5 transition-colors"
+              style="color: {{ header_text }};"
+              {% if item.target == '_blank' or is_absolute %}target="_blank" rel="noopener noreferrer"{% endif %}
+            >
+              <span class="text-base font-medium">{{ item.label }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 opacity-40">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+            </a>
+          {% endfor %}
+        </nav>
+
+        <!-- Favorites -->
+        <div style="border-top: 1px solid {{ header_text }}15;">
+          <a
+            href="{{ locale_prefix }}{{ routes.favorites }}"
+            class="flex items-center justify-between px-5 py-3.5 transition-colors"
+            style="color: {{ header_text }};"
+          >
+            <div class="flex items-center gap-3">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                :fill="$store.favorites.count > 0 ? '#ef4444' : 'none'"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                :stroke="$store.favorites.count > 0 ? '#ef4444' : 'currentColor'"
+                class="w-5 h-5 transition-colors"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              </svg>
+              <span class="text-base font-medium">{{ t.nav.favorites }}</span>
+            </div>
+            <span
+              x-show="$store.favorites.count > 0"
+              x-text="$store.favorites.count"
+              class="min-w-[22px] h-[22px] flex items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold px-1.5"
+              x-cloak
+            ></span>
+          </a>
+        </div>
+
+        <!-- CTA -->
+        <div class="px-5 py-4" style="border-top: 1px solid {{ header_text }}15;">
+          <a
+            href="{{ locale_prefix }}{{ routes.advertise }}"
+            class="header-cta flex items-center justify-center gap-2 w-full px-6 py-3 rounded-xl font-semibold text-sm transition-colors"
+          >
+            {{ t.nav.advertise }}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>

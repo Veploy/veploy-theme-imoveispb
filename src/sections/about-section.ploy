@@ -1,0 +1,58 @@
+{% assign about = sections['about-section'] %}
+
+<!-- About Section -->
+{% if about %}
+<section class="vp-section vp-about mb-20">
+    <div class="vp-about__card max-w-screen-2xl mx-auto px-[3%]">
+      <div class="vp-about__grid grid grid-cols-1 lg:grid-cols-2  bg-white rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:shadow-[0_20px_60px_rgb(0,0,0,0.12)] transition-shadow duration-300">
+        <!-- Content -->
+        <div class="vp-about__content px-6 py-12 md:px-12 lg:px-16 md:py-16 lg:py-20 flex flex-col justify-center">
+          <span class="text-gray-400 text-sm mb-4">{{ 'home.about_breadcrumb' | t }}</span>
+
+          <h2 class="text-3xl md:text-4xl font-bold text-black mb-6">
+            {% if about.title %}{{ about.title }}{% else %}{{ 'home.about_title' | t }}{% endif %}
+          </h2>
+
+          <p class="text-black font-semibold text-lg mb-4">
+            {% if about.subtitle %}{{ about.subtitle }}{% else %}{{ 'home.about_subtitle' | t }}{% endif %}
+          </p>
+
+          <p class="text-gray-600 leading-relaxed mb-10 max-w-xl">
+            {% if about.description %}{{ about.description }}{% else %}{{ 'home.about_description' | t }}{% endif %}
+          </p>
+
+          <div>
+            <a href="{{ url.about-us }}" class="inline-block bg-primary hover:bg-secondary/90 text-white px-8 py-3.5 rounded-lg font-semibold transition-colors">
+              {{ 'home.about_cta' | t }}
+            </a>
+          </div>
+        </div>
+
+        <!-- Image -->
+        {% if about.image %}
+        <div class="relative min-h-[400px] lg:min-h-full">
+          <img
+            src="{{ about.image }}"
+            alt="{{ about.title | default: workspace.name }}"
+            class="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+          >
+        </div>
+        {% endif %}
+      </div>
+    </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "About Section",
+  "page": "home",
+  "settings": [
+    { "type": "text", "id": "title", "label": "Title" },
+    { "type": "text", "id": "subtitle", "label": "Subtitle" },
+    { "type": "textarea", "id": "description", "label": "Description" },
+    { "type": "image_picker", "id": "image", "label": "About Image" }
+  ]
+}
+{% endschema %}

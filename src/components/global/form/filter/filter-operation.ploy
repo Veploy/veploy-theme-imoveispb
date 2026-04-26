@@ -1,0 +1,20 @@
+{% comment %}
+  Filter: Operation (Comprar / Alugar / Temporada)
+  Props:
+    - init_selected: pre-selected value (e.g. 'sale')
+{% endcomment %}
+{% assign operation_label = 'search.operation' | t %}
+{% if workspace.operations.size > 0 %}
+  {% capture operacao_opts %}{% for op in workspace.operations %}{% if op == 'for_sale' %}sale|{{ 'search.buy' | t }}{% elsif op == 'for_rent' %}rent|{{ 'search.rent' | t }}{% elsif op == 'for_short_term' %}short_term|{{ 'search.seasonal' | t }}{% endif %}{% unless forloop.last %}||{% endunless %}{% endfor %}{% endcapture %}
+{% else %}
+  {% capture operacao_opts %}sale|{{ 'search.buy' | t }}||rent|{{ 'search.rent' | t }}||short_term|{{ 'search.seasonal' | t }}{% endcapture %}
+{% endif %}
+{% assign op_init = init_selected | default: 'sale' %}
+{% render 'components/global/form/select',
+  options_str: operacao_opts,
+  name: 'operation',
+  init_selected: op_init,
+  placeholder: operation_label,
+  label: operation_label,
+  close_on_select: true
+%}

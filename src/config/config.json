@@ -1,0 +1,308 @@
+{
+  "name": "Tema Elegance",
+  "version": "1.0.0",
+  "description": "Tema customizado para a Lopes Elegance Piracicaba",
+  "author": "Veploy",
+  "license": "MIT",
+  "default_locale": "pt_BR",
+  "supported_locales": [
+    "pt_BR"
+  ],
+  "settings_schema": {
+    "brand_identity": {
+      "name": "Logo e Favicon",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo",
+          "info": "PNG, SVG ou JPG. 150x60px"
+        },
+        {
+          "type": "image_picker",
+          "id": "favicon",
+          "label": "Favicon",
+          "info": "ICO, PNG ou SVG. 192x192px"
+        }
+      ]
+    },
+    "colors": {
+      "name": "Cores",
+      "settings": [
+        {
+          "type": "color",
+          "id": "primary",
+          "label": "Cor primaria",
+          "default": "#181A20"
+        },
+        {
+          "type": "color",
+          "id": "secondary",
+          "label": "Cor secundaria",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "accent",
+          "label": "Cor de destaque",
+          "default": "#FFEBCD"
+        },
+        {
+          "type": "color",
+          "id": "background",
+          "label": "Cor de fundo",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "text",
+          "label": "Cor do texto",
+          "default": "#181A20"
+        }
+      ]
+    },
+    "buttons": {
+      "name": "Botões",
+      "settings": [
+        {
+          "type": "color",
+          "id": "primary_bg",
+          "label": "Fundo primario",
+          "default": ""
+        },
+        {
+          "type": "color",
+          "id": "primary_text",
+          "label": "Texto primario",
+          "default": ""
+        },
+        {
+          "type": "color",
+          "id": "primary_hover_bg",
+          "label": "Hover primario",
+          "default": ""
+        },
+        {
+          "type": "color",
+          "id": "secondary_bg",
+          "label": "Fundo secundario",
+          "default": "#FFEBCD"
+        },
+        {
+          "type": "color",
+          "id": "secondary_text",
+          "label": "Texto secundario",
+          "default": "#181A20"
+        },
+        {
+          "type": "color",
+          "id": "secondary_hover_bg",
+          "label": "Hover secundario",
+          "default": "#CC0E3B"
+        },
+        {
+          "type": "color",
+          "id": "secondary_border",
+          "label": "Borda secundario",
+          "default": ""
+        }
+      ]
+    },
+    "fonts": {
+      "name": "Tipografia",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Fonte dos titulos",
+          "default": "Inter",
+          "placeholder": "Ex: Inter, Roboto, Noto Serif Georgian"
+        },
+        {
+          "type": "text",
+          "id": "body",
+          "label": "Fonte do corpo",
+          "default": "Inter",
+          "placeholder": "Ex: Inter, Roboto, Open Sans"
+        },
+        {
+          "type": "text",
+          "id": "header",
+          "label": "Fonte do cabecalho",
+          "default": "",
+          "placeholder": "Deixe vazio para usar a fonte do corpo"
+        },
+        {
+          "type": "text",
+          "id": "buttons",
+          "label": "Fonte dos botoes",
+          "default": "",
+          "placeholder": "Deixe vazio para usar a fonte do corpo"
+        },
+        {
+          "type": "font_upload",
+          "id": "custom_files",
+          "label": "Fontes personalizadas",
+          "info": "Faça upload de WOFF2, WOFF, TTF ou OTF. Máx. 2MB por arquivo, 10 arquivos no total."
+        }
+      ]
+    },
+    "header": {
+      "name": "Cabeçalho",
+      "settings": [
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Cor de fundo",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Cor do texto",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "button_bg_color",
+          "label": "Fundo do botao",
+          "default": "#FFEBCD"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Texto do botao",
+          "default": "#181A20"
+        },
+        {
+          "type": "color",
+          "id": "button_hover_bg_color",
+          "label": "Hover do botao",
+          "default": "#CC0E3B"
+        }
+      ]
+    },
+    "footer": {
+      "name": "Rodapé",
+      "settings": [
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Cor de fundo",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Cor do texto",
+          "default": "#FFFFFF"
+        }
+      ]
+    },
+    "contact": {
+      "name": "Dados de Contato",
+      "settings": [
+        {
+          "type": "text",
+          "id": "phone",
+          "label": "Telefone",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "whatsapp",
+          "label": "WhatsApp",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "email",
+          "label": "E-mail",
+          "default": ""
+        },
+        {
+          "type": "textarea",
+          "id": "address",
+          "label": "Endereco",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "hours",
+          "label": "Horario de funcionamento",
+          "default": ""
+        },
+        {
+          "type": "url",
+          "id": "facebook",
+          "label": "Facebook",
+          "default": ""
+        },
+        {
+          "type": "url",
+          "id": "instagram",
+          "label": "Instagram",
+          "default": ""
+        },
+        {
+          "type": "url",
+          "id": "youtube",
+          "label": "YouTube",
+          "default": ""
+        },
+        {
+          "type": "url",
+          "id": "tiktok",
+          "label": "TikTok",
+          "default": ""
+        }
+      ]
+    },
+    "features": {
+      "name": "Funcionalidades",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "whatsapp_show_float",
+          "label": "Mostrar botao flutuante WhatsApp",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "header_sticky",
+          "label": "Header fixo",
+          "default": true
+        },
+        {
+          "type": "checkbox",
+          "id": "header_show_phone",
+          "label": "Mostrar telefone no header",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "footer_show_social",
+          "label": "Mostrar redes sociais no footer",
+          "default": true
+        }
+      ]
+    },
+    "custom_code": {
+      "name": "Código personalizado",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "custom_css",
+          "label": "CSS Personalizado",
+          "default": ""
+        },
+        {
+          "type": "textarea",
+          "id": "custom_js",
+          "label": "JavaScript Personalizado",
+          "default": ""
+        }
+      ]
+    }
+  }
+}

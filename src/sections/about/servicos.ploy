@@ -1,0 +1,189 @@
+<section class="w-full bg-white pb-20 md:py-28 xl:py-32">
+  <div class="vp-section">
+    <div class="max-w-screen-2xl mx-auto px-[3%]">
+      <!-- Topo -->
+        <div class="grid grid-cols-1 gap-8 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] xl:items-start xl:gap-16">
+            <div class="max-w-[560px]">
+                <span class="inline-flex items-center rounded-full border border-[#E5E7EB] px-2 py-0.5 text-[13px] font-medium text-[#111827]">
+                Serviços
+                </span>
+
+                <h2 class="mt-6 text-[28px] font-normal leading-[1.08] tracking-[-0.03em] text-[#111827] md:text-[38px] xl:text-[46px]">
+                Atuamos em todas as suas necessidades
+                </h2>
+            </div>
+
+            <div class="max-w-[760px] xl:pt-14">
+                <p class="text-[16px] leading-[1.5] text-[#6B7280] md:text-[17px]">
+                Na Lopes Urban, oferecemos uma ampla gama de serviços especializados para atender todas as suas necessidades no mercado imobiliário. Nossa equipe de profissionais está pronta para auxiliar em cada etapa do processo, garantindo soluções eficazes e personalizadas para você.
+                </p>
+            </div>
+        </div>
+
+      <!-- Grade -->
+      <div class="mt-14 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <!-- Card texto superior esquerdo -->
+        <div class="flex min-h-[300px] flex-col justify-between rounded-[10px] border border-[#E5E7EB] bg-white p-12 md:min-h-[340px] xl:min-h-[360px]">
+          <div class="max-w-[220px]">
+            <h3 class="text-[27px] font-normal leading-[1.05] tracking-[-0.03em] text-[#111827]">
+              Conheça nossas especialidades
+            </h3>
+          </div>
+
+          <div class="max-w-[260px]">
+            <p class="text-[16px] leading-[1.45] text-[#6B7280]">
+              Conheça os serviços que oferecemos para facilitar sua jornada imobiliária, com soluções completas e personalizadas para você.
+            </p>
+          </div>
+        </div>
+
+        <!-- Serviço 1 -->
+        <a
+          href="{{ locale_prefix }}{{ routes.contact }}"
+          class="group relative block min-h-[300px] overflow-hidden rounded-[10px] md:min-h-[340px] xl:min-h-[360px]"
+        >
+          <img
+            src="{{ theme_settings.sections.servicos.images[0] }}"
+            alt="Assessoria jurídica"
+            class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          >
+
+          <div class="absolute inset-0 bg-black/10"></div>
+
+          <div class="absolute inset-x-0 bottom-0 p-5">
+            <div class="rounded-[10px] border border-white/60 bg-[rgba(120,110,96,0.78)] px-5 py-4 backdrop-blur-[3px]">
+              <span class="text-[24px] font-normal leading-[1.1] text-white md:text-[28px]">
+                Assessoria jurídica
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Serviço 2 -->
+        <a
+          href="{{ locale_prefix }}{{ routes.contact }}"
+          class="group relative block min-h-[300px] overflow-hidden rounded-[10px] md:min-h-[340px] xl:min-h-[360px]"
+        >
+          <img
+            src="{{ theme_settings.sections.servicos.images[1] }}"
+            alt="Avaliação de imóveis"
+            class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          >
+
+          <div class="absolute inset-0 bg-black/10"></div>
+
+          <div class="absolute inset-x-0 bottom-0 p-5">
+            <div class="rounded-[10px] border border-white/60 bg-[rgba(120,110,96,0.78)] px-5 py-4 backdrop-blur-[3px]">
+              <span class="text-[24px] font-normal leading-[1.1] text-white md:text-[28px]">
+                Avaliação de imóveis
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Serviço 3 -->
+        <a
+          href="{{ locale_prefix }}{{ routes.contact }}"
+          class="group relative block min-h-[300px] overflow-hidden rounded-[10px] md:min-h-[340px] xl:min-h-[360px]"
+        >
+          <img
+            src="{{ theme_settings.sections.servicos.images[2] }}"
+            alt="Compra, venda e locação"
+            class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          >
+
+          <div class="absolute inset-0 bg-black/10"></div>
+
+          <div class="absolute inset-x-0 bottom-0 p-5">
+            <div class="rounded-[10px] border border-white/60 bg-[rgba(120,110,96,0.78)] px-5 py-4 backdrop-blur-[3px]">
+              <span class="text-[24px] font-normal leading-[1.1] text-white md:text-[28px]">
+                Compra, venda e locação
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Card texto inferior esquerdo -->
+        <div class="flex min-h-[300px] flex-col justify-between rounded-[10px] bg-[#D9D4CB] p-14 md:min-h-[340px] xl:min-h-[360px]">
+          <div class="max-w-[230px]">
+            <h3 class="text-[27px] font-normal leading-[1.05] tracking-[-0.03em] text-[#111827]">
+              Conte conosco e nossos parceiros em todas as etapas
+            </h3>
+          </div>
+
+          <div class="max-w-[260px] pt-4">
+            <p class="text-[16px] leading-[1.45] text-[#181A20]">
+              Atendimento especializado para orientar decisões e garantir segurança em cada fase do seu negócio.
+            </p>
+          </div>
+        </div>
+
+        <!-- Serviço 4 -->
+        <a
+          href="{{ locale_prefix }}{{ routes.contact }}"
+          class="group relative block min-h-[300px] overflow-hidden rounded-[10px] md:min-h-[340px] xl:min-h-[360px]"
+        >
+          <img
+            src="{{ theme_settings.sections.servicos.images[3] }}"
+            alt="Consultoria imobiliária"
+            class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          >
+
+          <div class="absolute inset-0 bg-black/10"></div>
+
+          <div class="absolute inset-x-0 bottom-0 p-5">
+            <div class="rounded-[10px] border border-white/60 bg-[rgba(120,110,96,0.78)] px-5 py-4 backdrop-blur-[3px]">
+              <span class="text-[24px] font-normal leading-[1.1] text-white md:text-[28px]">
+                Consultoria imobiliária
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Serviço 5 -->
+        <a
+          href="{{ locale_prefix }}{{ routes.contact }}"
+          class="group relative block min-h-[300px] overflow-hidden rounded-[10px] md:min-h-[340px] xl:min-h-[360px]"
+        >
+          <img
+            src="{{ theme_settings.sections.servicos.images[4] }}"
+            alt="Planejamento de venda"
+            class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          >
+
+          <div class="absolute inset-0 bg-black/10"></div>
+
+          <div class="absolute inset-x-0 bottom-0 p-5">
+            <div class="rounded-[10px] border border-white/60 bg-[rgba(120,110,96,0.78)] px-5 py-4 backdrop-blur-[3px]">
+              <span class="text-[24px] font-normal leading-[1.1] text-white md:text-[28px]">
+                Planejamento de venda
+              </span>
+            </div>
+          </div>
+        </a>
+
+        <!-- Serviço 6 -->
+        <a
+          href="{{ locale_prefix }}{{ routes.contact }}"
+          class="group relative block min-h-[300px] overflow-hidden rounded-[10px] md:min-h-[340px] xl:min-h-[360px]"
+        >
+          <img
+            src="{{ theme_settings.sections.servicos.images[5] }}"
+            alt="Suporte documental"
+            class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          >
+
+          <div class="absolute inset-0 bg-black/10"></div>
+
+          <div class="absolute inset-x-0 bottom-0 p-5">
+            <div class="rounded-[10px] border border-white/60 bg-[rgba(120,110,96,0.78)] px-5 py-4 backdrop-blur-[3px]">
+              <span class="text-[24px] font-normal leading-[1.1] text-white md:text-[28px]">
+                Suporte documental
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>

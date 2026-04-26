@@ -1,0 +1,44 @@
+<!-- Section: Destaque banner (single highlighted property — e.g. View Residence) -->
+{% assign destaque = theme_settings.sections.promo-banners.banners.items[0] %}
+
+{% if destaque %}
+<section class="vp-home-destaque w-full bg-white pb-16 md:pb-20 xl:pb-24">
+  <div class="max-w-screen-2xl mx-auto px-[3%]">
+    <div class="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-0 overflow-hidden rounded-[4px]">
+      <!-- Left image -->
+      <a href="{{ destaque.url }}" class="relative block overflow-hidden aspect-[16/12] lg:aspect-auto lg:min-h-[520px]">
+        <img
+          src="{{ destaque.image }}"
+          alt="{{ destaque.title }}"
+          class="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+        >
+      </a>
+
+      <!-- Right content -->
+      <div class="bg-white px-6 py-10 md:px-10 md:py-14 lg:px-14 xl:px-16 flex flex-col justify-center">
+        <span class="block text-[12px] md:text-[13px] font-medium tracking-[0.16em] text-[#C9A063] mb-4">
+          /DESTAQUE
+        </span>
+
+        <h3 class="font-serif text-[32px] md:text-[40px] xl:text-[46px] leading-[1.1] tracking-[-0.01em] text-[#111111] mb-6">
+          {{ destaque.title }}
+        </h3>
+
+        <p class="text-[14px] md:text-[15px] leading-[1.7] text-[#5C5C5C] mb-8 max-w-[440px]">
+          {{ destaque.description | default: 'Inspirado pelos baixos do alto e projetado por grandes nomes da arquitetura, o empreendimento oferece um estilo de vida única e inesquecível. O View Residence se ergue como um símbolo de sofisticação que harmoniza design contemporâneo e uma vista que a tempo não apaga.' }}
+        </p>
+
+        <div>
+          <a
+            href="{{ destaque.url }}"
+            class="inline-flex items-center justify-center rounded-[4px] bg-[#111111] px-7 py-4 text-[12px] font-semibold uppercase tracking-[0.1em] text-white transition hover:opacity-90"
+          >
+            Ver imóvel
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}

@@ -1,0 +1,50 @@
+{% comment %}
+  Fragment template — rendered by the engine's /_fragments/favorites-cards
+  endpoint and injected into /favoritos by the client.
+
+  Inputs:
+    properties  – array of Property objects for the current page
+    pagination  – { current_page, total_pages, total_properties, per_page }
+{% endcomment %}
+
+{% if properties.size > 0 %}
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for property in properties %}
+      <div data-favorite-item data-property-sku="{{ property.sku }}">
+        {% include 'components/property-card' %}
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if pagination.total_pages > 1 %}
+    <nav class="mt-10 flex items-center justify-center gap-2 flex-wrap">
+      {% if pagination.current_page > 1 %}
+        <a
+          href="?page={{ pagination.current_page | minus: 1 }}"
+          data-favorites-page-link
+          class="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+          </svg>
+          {{ t.pagination.previous }}
+        </a>
+      {% endif %}
+      <span class="text-sm text-gray-500">
+        {{ pagination.current_page }} / {{ pagination.total_pages }}
+      </span>
+      {% if pagination.current_page < pagination.total_pages %}
+        <a
+          href="?page={{ pagination.current_page | plus: 1 }}"
+          data-favorites-page-link
+          class="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+        >
+          {{ t.pagination.next }}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+          </svg>
+        </a>
+      {% endif %}
+    </nav>
+  {% endif %}
+{% endif %}

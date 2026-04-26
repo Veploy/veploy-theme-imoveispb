@@ -1,0 +1,16 @@
+{% layout 'base' %}
+{% block content %}
+<section class="vp-page vp-privacy py-16 md:py-20 bg-white">
+  <div class="vp-page__container max-w-screen-xl mx-auto px-4 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+        {{ t.privacy_policy.title }}
+      </h1>
+
+      <div class="prose prose-gray max-w-none text-gray-700 space-y-6">
+        {{ t.privacy_policy.content }}
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

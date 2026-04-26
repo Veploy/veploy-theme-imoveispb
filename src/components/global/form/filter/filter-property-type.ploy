@@ -1,0 +1,32 @@
+{% comment %}
+  Filter: Property Type (Tipo do Imóvel)
+  Props:
+    - init_selected: pre-selected value(s), comma-separated
+    - close_on_select: whether to close panel on select (default: true)
+{% endcomment %}
+{% assign property_type_label = 'search.property_type' | t %}
+{% assign show_all_label = 'search.show_all' | t %}
+
+{% if workspace.property_types.size > 0 %}
+  {% assign tipo_opts = workspace.property_types %}
+{% else %}
+  {% assign tipo_opts = '' %}
+  {% assign residential_label = 'Residencial' | t %}
+  {% assign commercial_label = 'Comercial' | t %}
+  {% capture tipo_opts %}house|{{ 'search.house' | t }}|residential||apartment|{{ 'search.apartment' | t }}|residential||condo|Condomínio|residential||land|{{ 'search.land' | t }}|residential||commercial|{{ 'search.commercial' | t }}|commercial{% endcapture %}
+{% endif %}
+
+{% render 'components/global/form/select',
+  options: tipo_opts,
+  option_value_key: 'slug',
+  option_label_key: 'label',
+  option_type_key: 'purpose',
+  show_all_label: show_all_label,
+  name: 'type[]',
+  init_selected: init_selected,
+  placeholder: 'Todos',
+  label: property_type_label,
+  multiple: true,
+  close_on_select: close_on_select,
+  searchable: true
+%}

@@ -1,0 +1,185 @@
+{% assign footer_bg = workspace.theme_settings.footer.bg_color | default: '#000000' %}
+{% assign footer_text = workspace.theme_settings.footer.text_color | default: '#FFFFFF' %}
+{% assign footer_accent = workspace.theme_settings.footer.accent_color | default: '#C9A063' %}
+
+{%- assign _footer_bg_hex = footer_bg -%}
+{%- if footer_bg == 'white' -%}{%- assign _footer_bg_hex = '#ffffff' -%}
+{%- elsif footer_bg == 'black' -%}{%- assign _footer_bg_hex = '#000000' -%}
+{%- elsif footer_bg == 'grey' or footer_bg == 'gray' -%}{%- assign _footer_bg_hex = '#808080' -%}
+{%- endif -%}
+{%- assign _footer_rgb = _footer_bg_hex | hex_to_rgb | split: ' ' -%}
+{%- assign _footer_r = _footer_rgb[0] | plus: 0 | times: 299 -%}
+{%- assign _footer_g = _footer_rgb[1] | plus: 0 | times: 587 -%}
+{%- assign _footer_b = _footer_rgb[2] | plus: 0 | times: 114 -%}
+{%- assign _footer_yiq = _footer_r | plus: _footer_g | plus: _footer_b | divided_by: 1000 -%}
+{%- if _footer_yiq < 128 -%}
+  {%- assign veploy_credits_logo = '/assets/images/logo-veploy-branca.png' -%}
+{%- else -%}
+  {%- assign veploy_credits_logo = '/assets/images/logo-veploy.png' -%}
+{%- endif -%}
+
+{%- assign _wa = theme_settings.contact.whatsapp | remove: '-' | remove: '(' | remove: ')' | remove: ' ' -%}
+{%- assign whatsapp_url = theme_settings.contact.whatsapp_link | default: '' -%}
+{%- if whatsapp_url == '' -%}
+  {%- assign whatsapp_url = 'https://wa.me/55' | append: _wa -%}
+{%- endif -%}
+
+{%- assign footer_links_types = theme_settings.footer.types_list | default: empty -%}
+{%- assign footer_links_neighborhoods = theme_settings.footer.neighborhoods_list | default: empty -%}
+
+<footer class="vp-footer" style="background-color: {{ footer_bg }}; color: {{ footer_text }};">
+  <div class="max-w-screen-2xl mx-auto px-[5%] py-14 md:py-16">
+    <!-- Top: Logo + Social -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 pb-10 mb-10 border-b border-white/10">
+      <a href="{{ locale_prefix }}/" class="block">
+        {% if theme_settings.brand_identity.logo %}
+          <img src="{{ theme_settings.brand_identity.logo }}" alt="{{ workspace.name }}" class="max-h-14 w-auto object-contain" width="160" height="56">
+        {% else %}
+          <h3 class="text-2xl font-bold" style="color: {{ footer_text }};">{{ workspace.name }}</h3>
+        {% endif %}
+      </a>
+
+      <div class="flex items-center gap-4">
+        <span class="text-[13px]" style="color: {{ footer_text }}AA;">Acompanhe nossas redes</span>
+        <div class="flex items-center gap-2">
+          {% if theme_settings.contact.facebook != blank %}
+          <a href="{{ theme_settings.contact.facebook }}" target="_blank" rel="noopener" class="w-8 h-8 rounded-full flex items-center justify-center border border-white/30 hover:border-white transition-colors" aria-label="Facebook">
+            <i class="ph ph-facebook-logo text-[14px]"></i>
+          </a>
+          {% endif %}
+          {% if theme_settings.contact.instagram != blank %}
+          <a href="{{ theme_settings.contact.instagram }}" target="_blank" rel="noopener" class="w-8 h-8 rounded-full flex items-center justify-center border border-white/30 hover:border-white transition-colors" aria-label="Instagram">
+            <i class="ph ph-instagram-logo text-[14px]"></i>
+          </a>
+          {% endif %}
+          {% if theme_settings.contact.linkedin != blank %}
+          <a href="{{ theme_settings.contact.linkedin }}" target="_blank" rel="noopener" class="w-8 h-8 rounded-full flex items-center justify-center border border-white/30 hover:border-white transition-colors" aria-label="LinkedIn">
+            <i class="ph ph-linkedin-logo text-[14px]"></i>
+          </a>
+          {% endif %}
+          {% if theme_settings.contact.youtube != blank %}
+          <a href="{{ theme_settings.contact.youtube }}" target="_blank" rel="noopener" class="w-8 h-8 rounded-full flex items-center justify-center border border-white/30 hover:border-white transition-colors" aria-label="YouTube">
+            <i class="ph ph-youtube-logo text-[14px]"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Columns -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10">
+      <!-- Institucional -->
+      <div>
+        <h3 class="font-serif text-[18px] mb-5" style="color: {{ footer_text }};">Institucional</h3>
+        <ul class="space-y-2.5 text-[14px]" style="color: {{ footer_text }}CC;">
+          <li><a href="{{ locale_prefix }}/" class="hover:text-white transition-colors">Home</a></li>
+          <li><a href="{{ locale_prefix }}{{ routes.about }}" class="hover:text-white transition-colors">Sobre nós</a></li>
+          <li><a href="{{ locale_prefix }}{{ routes.privacy-policy }}" class="hover:text-white transition-colors">Política de Privacidade</a></li>
+          <li><a href="{{ locale_prefix }}{{ routes.careers }}" class="hover:text-white transition-colors">Trabalhe conosco</a></li>
+          <li><a href="{{ locale_prefix }}{{ routes.advertise }}" class="hover:text-white transition-colors">Anuncie seu imóvel</a></li>
+        </ul>
+      </div>
+
+      <!-- Tipos de imóvel -->
+      <div>
+        <h3 class="font-serif text-[18px] mb-5" style="color: {{ footer_text }};">Tipos de imóvel</h3>
+        <ul class="space-y-2.5 text-[14px]" style="color: {{ footer_text }}CC;">
+          {% if footer_links_types != empty and footer_links_types.size > 0 %}
+            {% for item in footer_links_types %}
+              <li><a href="{{ item.url }}" class="hover:text-white transition-colors">{{ item.label }}</a></li>
+            {% endfor %}
+          {% else %}
+            <li><a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}/tipo/casa-em-condominio" class="hover:text-white transition-colors">Casas à venda</a></li>
+            <li><a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}/tipo/apartamento" class="hover:text-white transition-colors">Apartamentos à venda</a></li>
+            <li><a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}/tipo/apartamento-em-condominio" class="hover:text-white transition-colors">Apartamentos à venda em condomínios</a></li>
+            <li><a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}/comercial" class="hover:text-white transition-colors">Imóveis comerciais à venda</a></li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <!-- Imóveis por bairros -->
+      <div>
+        <h3 class="font-serif text-[18px] mb-5" style="color: {{ footer_text }};">Imóveis por bairros</h3>
+        <ul class="space-y-2.5 text-[14px]" style="color: {{ footer_text }}CC;">
+          {% if footer_links_neighborhoods != empty and footer_links_neighborhoods.size > 0 %}
+            {% for item in footer_links_neighborhoods %}
+              <li><a href="{{ item.url }}" class="hover:text-white transition-colors">{{ item.label }}</a></li>
+            {% endfor %}
+          {% else %}
+            <li><a href="{{ locale_prefix }}{{ routes.properties }}?location=Jardim+Caxambu" class="hover:text-white transition-colors">Jardim Caxambu</a></li>
+            <li><a href="{{ locale_prefix }}{{ routes.properties }}?location=Vila+Sonia" class="hover:text-white transition-colors">Vila Sônia</a></li>
+            <li><a href="{{ locale_prefix }}{{ routes.properties }}?location=Jardim+Parque+Jupia" class="hover:text-white transition-colors">Jardim Parque Jupiá</a></li>
+            <li><a href="{{ locale_prefix }}{{ routes.properties }}?location=Sao+Dimas" class="hover:text-white transition-colors">São Dimas</a></li>
+          {% endif %}
+        </ul>
+      </div>
+
+      <!-- Fale conosco -->
+      <div>
+        <h3 class="font-serif text-[18px] mb-5" style="color: {{ footer_text }};">Fale conosco</h3>
+        <ul class="space-y-2.5 text-[14px]" style="color: {{ footer_text }}CC;">
+          {% if theme_settings.contact.phone != blank %}
+          <li class="flex items-center gap-2">
+            <i class="ph ph-phone text-[14px]" style="color: {{ footer_accent }};"></i>
+            <a href="tel:{{ theme_settings.contact.phone | remove: '-' | remove: '(' | remove: ')' | remove: ' ' }}" class="hover:text-white transition-colors">
+              {{ theme_settings.contact.phone }}
+            </a>
+          </li>
+          {% endif %}
+
+          {% if theme_settings.contact.whatsapp != blank %}
+          <li class="flex items-center gap-2">
+            <i class="ph ph-whatsapp-logo text-[14px]" style="color: {{ footer_accent }};"></i>
+            <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="hover:text-white transition-colors">
+              Veja nossas mensagens
+            </a>
+          </li>
+          {% endif %}
+
+          {% if theme_settings.contact.email != blank %}
+          <li class="flex items-center gap-2">
+            <i class="ph ph-envelope text-[14px]" style="color: {{ footer_accent }};"></i>
+            <a href="mailto:{{ theme_settings.contact.email }}" class="hover:text-white transition-colors break-all">
+              {{ theme_settings.contact.email }}
+            </a>
+          </li>
+          {% endif %}
+
+          {% if theme_settings.contact.address != blank %}
+          <li class="pt-2 border-t border-white/10">
+            <span class="block font-medium mb-1" style="color: {{ footer_text }};">Conheça nosso espaço</span>
+            <span>{{ theme_settings.contact.address }}</span>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Copyright -->
+  <div class="border-t border-white/10">
+    <div class="max-w-screen-2xl mx-auto px-[5%] py-5">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-2 text-[12px]" style="color: {{ footer_text }}99;">
+        <div class="flex flex-col md:flex-row items-center gap-2">
+          {% if workspace.cnpj %}
+          <span>{{ workspace.cnpj }}</span>
+          <span class="hidden md:inline">|</span>
+          {% endif %}
+          {% if theme_settings.contact.creci != blank %}
+          <span>{{ theme_settings.contact.creci }}</span>
+          <span class="hidden md:inline">|</span>
+          {% endif %}
+          <span>Copyright {{ 'now' | date: '%Y' }} - Todos os Direitos Reservados</span>
+        </div>
+
+        {%- assign _footer_host = canonical_url | split: '/' -%}
+        <span class="inline-flex items-center gap-2">
+          <span>Desenvolvido por</span>
+          <a href="https://veploy.com?utm_source={{ _footer_host[2] | url_encode }}&utm_medium=referral&utm_campaign=footer_badge" target="_blank" rel="noopener" class="inline-flex items-center hover:opacity-80 transition-opacity">
+            <img src="{{ veploy_credits_logo }}" alt="Veploy" class="h-4 w-auto" width="60" height="16">
+          </a>
+        </span>
+      </div>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,14 @@
+{% comment %}
+  Filter: Search by Property Code
+  Props: none
+  Supports multiple codes separated by commas (e.g. AP001, AP002)
+{% endcomment %}
+<label class="block text-base font-semibold text-gray-900 mb-2">{{ 'search.property_code' | t }}</label>
+<input
+  type="text"
+  name="code"
+  value="{{ filters.code | default: '' }}"
+  placeholder="{{ 'search.code_placeholder' | t }}"
+  class="w-full px-4 py-2.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors"
+>
+<p class="mt-1 text-xs text-gray-400">{{ 'search.code_multiple_hint' | t }}</p>

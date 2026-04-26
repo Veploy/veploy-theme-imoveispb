@@ -1,0 +1,48 @@
+<section class="relative w-full min-h-[640px] overflow-hidden">
+  <!-- Imagem de fundo -->
+  <div class="absolute inset-0">
+    <img
+      src="{{ theme_settings.sections.advertise.hero.image | default: '/assets/images/anuncie-conosco.png' }}"
+      alt="Anuncie seu imóvel"
+      class="h-full w-full object-cover"
+    >
+  </div>
+
+  <!-- Overlay escuro com gradiente -->
+  <div class="absolute inset-0 bg-gradient-to-r from-[#0B1220]/95 via-[#0B1220]/88 to-[#0B1220]/20"></div>
+
+  <!-- Conteúdo -->
+  <div class="relative z-10">
+    <div class="vp-section">
+      <div class="max-w-screen-2xl mx-auto px-[3%] flex min-h-[640px] items-center">
+        <div class="max-w-[620px] py-16 text-white md:py-24">
+          <!-- Tag -->
+          <span class="inline-flex items-center rounded-full bg-white px-4 py-1.5 text-sm font-medium text-[#111827]">
+            Anuncie seu imóvel
+          </span>
+
+          <!-- Título -->
+          <h1 class="mt-8 text-4xl font-semibold tracking-[-0.02em] text-white md:text-5xl xl:text-[56px] xl:leading-[1.08]">
+            Conecte seu imóvel aos clientes mais interessados
+          </h1>
+
+          <!-- Descrição -->
+          <p class="mt-6 max-w-[560px] text-base leading-7 text-white/90 md:text-lg">
+            Transformar seu imóvel em uma oportunidade de sucesso é nossa prioridade. Com anos de experiência no mercado e uma equipe dedicada, oferecemos a visibilidade e o suporte necessários para que seu imóvel alcance os compradores ideais.
+          </p>
+
+          <!-- Botão -->
+          <div class="mt-10">
+            <a
+              href="{{ locale_prefix }}{{ routes.contact }}"
+              class="inline-flex items-center justify-center rounded-md px-7 py-4 text-base font-semibold text-white transition-all duration-300 hover:opacity-90"
+              style="background-color: {{ theme_settings.colors.primary | default: '#E31C5F' }};"
+            >
+              Cadastrar agora
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

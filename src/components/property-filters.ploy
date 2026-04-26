@@ -1,0 +1,418 @@
+<div
+  class="vp-property-filters bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+  :class="expanded ? 'overflow-y-auto' : ''"
+  :style="expanded ? 'max-height:' + Math.floor(window.innerHeight * 0.9) + 'px' : ''"
+  x-data="{
+    searchByCode: {% if filters.code %}true{% else %}false{% endif %},
+    expanded: false,
+    overflows: false,
+    availableH: 0,
+    get needsExpand() { return this.overflows && !this.expanded; },
+    measureOverflow() {
+      const body = this.$refs.filtersBody;
+      if (!body) return;
+      const submitEl = body.closest('form')?.querySelector('[data-submit-wrap]');
+      const submitH = submitEl ? submitEl.offsetHeight : 80;
+      const bodyTop = body.getBoundingClientRect().top;
+      const available = window.innerHeight - bodyTop - submitH - 24;
+      this.availableH = Math.max(available, 120);
+      this.overflows = body.scrollHeight > available;
+    },
+    init() {
+      requestAnimationFrame(() => this.measureOverflow());
+      const onResize = () => { this.measureOverflow(); this.expanded = false; };
+      window.addEventListener('resize', onResize, { passive: true });
+    }
+  }"
+>
+  <!-- Toggle Search by Code -->
+  <div class="mb-6">
+    {% include 'components/global/form/checkbox',
+      alpine_model: 'searchByCode',
+      label: t.search.search_by_code,
+      id: 'search-by-code',
+      box_class: 'w-4 h-4',
+      label_class: 'text-sm text-gray-500'
+    %}
+  </div>
+
+  <!-- Code Search Form (isolated, only submits code) -->
+  <form x-show="searchByCode" {% if not filters.code %}style="display: none"{% endif %} method="GET" action="{{ routes.properties | default: '/imoveis' }}">
+    <div class="mb-5">
+      <label class="block text-base font-semibold text-gray-900 mb-2">{{ t.search.property_code }}</label>
+      <input
+        type="text"
+        name="code"
+        value="{{ filters.code }}"
+        placeholder="{{ t.search.code_placeholder }}"
+        class="w-full px-4 py-2.5 border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors"
+      >
+    </div>
+    <button type="submit" class="w-full btn-secondary px-6 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 inline-block mr-2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+      </svg>
+      {{ t.search.search }}
+    </button>
+  </form>
+
+  <!-- Normal Filters Form -->
+  <form class="vp-property-filters__form" x-show="!searchByCode" {% if filters.code %}style="display: none"{% endif %} method="GET" action="{{ routes.properties | default: '/imoveis' }}">
+    <!-- Collapsible filters body -->
+    <div
+      x-ref="filtersBody"
+      class="relative transition-[max-height] duration-300"
+      :class="overflows && !expanded ? 'overflow-hidden' : ''"
+      :style="overflows && !expanded ? 'max-height:' + availableH + 'px' : ''"
+    >
+    <!-- Operation Tabs (Comprar / Alugar) -->
+    {% unless workspace.operations.size == 1 %}
+    <div class="vp-property-filters__operation mb-5">
+      <div class="inline-flex w-full bg-white/80 backdrop-blur-sm rounded-lg p-0.5 shadow-sm border border-gray-200/50">
+        {% if workspace.operations.size > 0 %}
+          {% for op in workspace.operations %}
+            {% if op == 'for_sale' %}
+              <label class="relative flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200 cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50 has-[:checked]:bg-gray-100 has-[:checked]:text-gray-900">
+                <input
+                  type="radio"
+                  name="operation"
+                  value="sale"
+                  class="sr-only"
+                  onchange="this.form.submit()"
+                  {% if filters.operation == 'sale' %}checked{% endif %}
+                >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+                </svg>
+                {{ t.listings.sale_tab }}
+              </label>
+            {% elsif op == 'for_rent' %}
+              <label class="relative flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200 cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50 has-[:checked]:bg-gray-100 has-[:checked]:text-gray-900">
+                <input
+                  type="radio"
+                  name="operation"
+                  value="rent"
+                  class="sr-only"
+                  onchange="this.form.submit()"
+                  {% if filters.operation == 'rent' %}checked{% endif %}
+                >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25z" />
+                </svg>
+                {{ t.listings.rent_tab }}
+              </label>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <label class="relative flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200 cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50 has-[:checked]:bg-gray-100 has-[:checked]:text-gray-900">
+            <input
+              type="radio"
+              name="operation"
+              value="sale"
+              class="sr-only"
+              onchange="this.form.submit()"
+              {% if filters.operation == 'sale' %}checked{% endif %}
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
+            </svg>
+            {{ t.listings.sale_tab }}
+          </label>
+          <label class="relative flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-sm font-semibold rounded-md transition-all duration-200 cursor-pointer text-gray-600 hover:text-gray-900 hover:bg-gray-50 has-[:checked]:bg-gray-100 has-[:checked]:text-gray-900">
+            <input
+              type="radio"
+              name="operation"
+              value="rent"
+              class="sr-only"
+              onchange="this.form.submit()"
+              {% if filters.operation == 'rent' %}checked{% endif %}
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25z" />
+            </svg>
+            {{ t.listings.rent_tab }}
+          </label>
+        {% endif %}
+      </div>
+    </div>
+    {% endunless %}
+
+    <!-- Location/Development -->
+      <div class="mb-5">
+        {% include 'components/global/form/filter/filter-location', init_selected: filters.location, resolved_locations: resolved_filters.locations %}
+      </div>
+
+      <!-- Property Type -->
+      <div class="mb-5">
+        {% include 'components/global/form/filter/filter-property-type',
+          init_selected: filters.type,
+          close_on_select: true
+        %}
+      </div>
+
+      <!-- Price Range -->
+      <div class="mb-5">
+        <span class="block text-base font-semibold text-gray-900 mb-2">{{ t.search.price_label }}</span>
+        <div class="grid grid-cols-2 gap-3">
+          {% include 'components/global/form/currency-input',
+            name: 'price_min',
+            value: filters.price_min,
+            currency: 'BRL',
+            placeholder: t.search.min
+          %}
+          {% include 'components/global/form/currency-input',
+            name: 'price_max',
+            value: filters.price_max,
+            currency: 'BRL',
+            placeholder: t.search.max
+          %}
+        </div>
+      </div>
+
+      <!-- Area Range -->
+      <div class="mb-5">
+        <label class="block text-base font-semibold text-gray-900 mb-2">{{ t.search.area_label }}</label>
+        <div class="grid grid-cols-2 gap-3">
+          <input
+            type="text"
+            name="area_min"
+            value="{{ filters.area_min }}"
+            placeholder="{{ t.search.min }}"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+          >
+          <input
+            type="text"
+            name="area_max"
+            value="{{ filters.area_max }}"
+            placeholder="{{ t.search.max }}"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+          >
+        </div>
+      </div>
+
+      <!-- Total Area Range -->
+      <div class="mb-5">
+        <label class="block text-base font-semibold text-gray-900 mb-2">{{ t.search.total_area_label }}</label>
+        <div class="grid grid-cols-2 gap-3">
+          <input
+            type="text"
+            name="total_area_min"
+            value="{{ filters.total_area_min }}"
+            placeholder="{{ t.search.min }}"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+          >
+          <input
+            type="text"
+            name="total_area_max"
+            value="{{ filters.total_area_max }}"
+            placeholder="{{ t.search.max }}"
+            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+          >
+        </div>
+      </div>
+
+      <!-- Compact Rooms Grid (2x2) -->
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <!-- Bedrooms -->
+        <div>
+          <label class="block text-base font-semibold text-gray-900 mb-2">{{ t.search.bedrooms }}</label>
+          <div class="flex gap-1">
+            {% assign beds_options = '1,2,3,4' | split: ',' %}
+            {% assign selected_beds = filters.beds | split: ',' %}
+            {% for opt in beds_options %}
+              <label class="flex-1">
+                <input
+                  type="checkbox"
+                  name="beds[]"
+                  value="{{ opt }}"
+                  {% if selected_beds contains opt %}
+                    checked
+                  {% endif %}
+                  class="peer sr-only"
+                >
+                <span class="block text-center py-1.5 px-2 border border-gray-200 rounded text-base cursor-pointer transition-colors peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary hover:border-gray-300">
+                  {% if opt == '4' %}4+{% else %}{{ opt }}{% endif %}
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Bathrooms -->
+        <div>
+          <label class="block text-base font-semibold text-gray-900 mb-2">{{ t.search.bathrooms }}</label>
+          <div class="flex gap-1">
+            {% assign baths_options = '1,2,3,4' | split: ',' %}
+            {% assign selected_baths = filters.baths | split: ',' %}
+            {% for opt in baths_options %}
+              <label class="flex-1">
+                <input
+                  type="checkbox"
+                  name="baths[]"
+                  value="{{ opt }}"
+                  {% if selected_baths contains opt %}
+                    checked
+                  {% endif %}
+                  class="peer sr-only"
+                >
+                <span class="block text-center py-1.5 px-2 border border-gray-200 rounded text-base cursor-pointer transition-colors peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary hover:border-gray-300">
+                  {% if opt == '4' %}4+{% else %}{{ opt }}{% endif %}
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Suites -->
+        <div>
+          <label class="block text-base font-semibold text-gray-900 mb-2">{{ t.search.suites }}</label>
+          <div class="flex gap-1">
+            {% assign suites_options = '1,2,3,4' | split: ',' %}
+            {% assign selected_suites = filters.suites | split: ',' %}
+            {% for opt in suites_options %}
+              <label class="flex-1">
+                <input
+                  type="checkbox"
+                  name="suites[]"
+                  value="{{ opt }}"
+                  {% if selected_suites contains opt %}
+                    checked
+                  {% endif %}
+                  class="peer sr-only"
+                >
+                <span class="block text-center py-1.5 px-2 border border-gray-200 rounded text-base cursor-pointer transition-colors peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary hover:border-gray-300">
+                  {% if opt == '4' %}4+{% else %}{{ opt }}{% endif %}
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Parking -->
+        <div>
+          <label class="block text-base font-semibold text-gray-900 mb-2">{{ t.search.parking }}</label>
+          <div class="flex gap-1">
+            {% assign parking_options = '1,2,3,4' | split: ',' %}
+            {% assign selected_parking = filters.parking | split: ',' %}
+            {% for opt in parking_options %}
+              <label class="flex-1">
+                <input
+                  type="checkbox"
+                  name="parking[]"
+                  value="{{ opt }}"
+                  {% if selected_parking contains opt %}
+                    checked
+                  {% endif %}
+                  class="peer sr-only"
+                >
+                <span class="block text-center py-1.5 px-2 border border-gray-200 rounded text-base cursor-pointer transition-colors peer-checked:bg-primary peer-checked:text-white peer-checked:border-primary hover:border-gray-300">
+                  {% if opt == '4' %}4+{% else %}{{ opt }}{% endif %}
+                </span>
+              </label>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Amenities -->
+      {% if amenities.size > 0 %}
+        {% capture amenity_names %}{% for a in amenities %}{{ a.name }}{% unless forloop.last %}||{% endunless %}{% endfor %}{% endcapture %}
+        {% if filters.amenities %}
+          {% assign selected_amenities = filters.amenities | split: ',' %}
+        {% else %}
+          {% assign selected_amenities = '' | split: ',' %}
+        {% endif %}
+        <div
+          class="mb-6 border-t border-gray-100 pt-5"
+          x-data="{ search: '', names: [] }"
+          x-init="names = ($el.dataset.names || '').split('||').filter(Boolean)"
+          data-names="{{ amenity_names | escape }}"
+        >
+          <label class="block text-base font-semibold text-gray-900 mb-2">{{ t.search.amenities }}</label>
+          <div class="flex flex-col max-h-[220px] border border-gray-200 rounded-lg overflow-hidden bg-white">
+            <!-- Fixed search at top -->
+            <div class="flex-shrink-0 p-2 border-b border-gray-200 bg-gray-50">
+              <input
+                type="text"
+                x-model="search"
+                placeholder="{{ t.search.amenities_placeholder }}"
+                class="w-full px-3 py-2 text-base border border-gray-200 rounded-md focus:ring-2 focus:ring-primary/20 focus:border-primary"
+              >
+            </div>
+            <!-- Scrollable list -->
+            <div class="overflow-y-auto flex-1 min-h-0 space-y-2 p-2">
+              <p
+                class="text-base text-gray-500 py-2"
+                x-show="search && !names.some(n => n.toLowerCase().includes(search.toLowerCase()))"
+                x-cloak
+              >
+                {{ t.search.no_option_found }}
+              </p>
+              {% for amenity in amenities %}
+                <div
+                  data-name="{{ amenity.name | escape }}"
+                  x-show="!search || ($el.dataset.name || '').toLowerCase().includes(search.toLowerCase())"
+                >
+                  {% assign is_checked = false %}
+                  {% if selected_amenities.size > 0 %}
+                    {% for sel in selected_amenities %}
+                      {% if sel == amenity.slug %}
+                        {% assign is_checked = true %}
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                  {% include 'components/global/form/checkbox',
+                    name: 'amenities[]',
+                    value: amenity.slug,
+                    label: amenity.name,
+                    checked: is_checked
+                  %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Gradient + Ver mais filtros -->
+      <div
+        x-show="needsExpand && !expanded"
+        class="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-white to-transparent flex items-end justify-center pb-2 pointer-events-none"
+        x-cloak
+      >
+        <button
+          type="button"
+          @click.prevent="expanded = true; $nextTick(() => { const el = $el.closest('.vp-property-filters'); if (el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }); })"
+          class="pointer-events-auto text-sm font-semibold text-primary flex items-center gap-1.5 bg-white/90 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-sm border border-gray-200"
+        >
+          {{ t.search.show_more_filters | default: 'Ver mais filtros' }}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+          </svg>
+        </button>
+      </div>
+    </div><!-- end filtersBody -->
+
+    <!-- Submit Button (always visible) -->
+    <div data-submit-wrap class="-mx-6 -mb-6 px-6 pb-6 pt-4 sticky bottom-0">
+      <button
+        type="submit"
+        class="w-full btn-secondary px-6 py-3 rounded-lg font-semibold transition-all shadow-lg hover:shadow-xl"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+          stroke="currentColor"
+          class="w-5 h-5 inline-block mr-2"
+        >
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+        </svg>
+        {{ t.search.search }}
+      </button>
+
+      {% comment %} Clear filters link moved to desktop control bar in properties.ploy {% endcomment %}
+    </div>
+  </form>
+</div>

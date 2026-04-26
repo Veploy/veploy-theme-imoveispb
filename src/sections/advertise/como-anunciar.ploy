@@ -1,0 +1,99 @@
+<section class="w-full bg-white pb-20 md:py-28 xl:py-32">
+  <div class="vp-section">
+    <div class="max-w-screen-2xl mx-auto px-[3%]">
+      <!-- Topo -->
+      <div class="mx-auto max-w-[920px] text-center">
+        <span class="inline-flex items-center rounded-full border bg-[#FBFAF9] border-[#D9D9D9] px-2 py-1 text-sm font-medium text-[#111827]">
+          Como anunciar
+        </span>
+
+        <h2 class="mt-6 text-[34px] leading-[1.05] tracking-[-0.03em] text-[#0F172A] md:text-[54px] lg:text-[68px]">
+          Simplifique seu anúncio imobiliário conosco
+        </h2>
+
+        <p class="mx-auto mt-6 max-w-[760px] text-base text-[#6B7280] md:text-[19px]">
+          Preencha o formulário, receba avaliação, tenha seu imóvel anunciado com a maior rede de imobiliárias da América Latina e finalize a transação com nosso suporte especializado.
+        </p>
+      </div>
+
+      <!-- Etapas -->
+      <div class="mt-20 grid grid-cols-1 md:grid-cols-2 md:gap-x-10 xl:mt-24 xl:grid-cols-4 xl:gap-x-0">
+        <!-- Item 1 -->
+        <div class="relative border-b border-[#EAEAEA] px-6 py-10 md:border-b-0 md:px-0 md:py-0 xl:px-8">
+          <div class="mb-8 flex justify-center">
+            <div class="flex h-[48px] w-[48px] md:h-[56px] md:w-[56px] items-center justify-center rounded-full border border-[#EEE7D8] text-[24px] font-medium text-[#BE9A4D]">
+              01
+            </div>
+          </div>
+
+          <div class="md:max-w-[320px] xl:border-l xl:border-[#EAEAEA] xl:pl-8">
+            <h3 class="text-[15px] md:text-[24px] font-semibold leading-[1.15] text-[#0F172A]">
+              Cadastro rápido
+            </h3>
+
+            <p class="mt-4 max-w-[290px] text-base text-[#6B7280]">
+              Preencha nosso formulário online e um dos nossos corretores entrará em contato para obter mais detalhes do seu imóvel.
+            </p>
+          </div>
+        </div>
+
+        <!-- Item 2 -->
+        <div class="relative border-b border-[#EAEAEA] px-6 py-10 md:border-b-0 md:px-0 md:py-0 xl:px-8">
+          <div class="mb-8 flex justify-center">
+            <div class="flex h-[48px] w-[48px] md:h-[56px] md:w-[56px] items-center justify-center rounded-full border border-[#EEE7D8] text-[24px] font-medium text-[#BE9A4D]">
+              02
+            </div>
+          </div>
+
+          <div class="md:max-w-[320px] xl:border-l xl:border-[#EAEAEA] xl:pl-8">
+            <h3 class="text-[15px] md:text-[24px] font-semibold leading-[1.15] text-[#0F172A]">
+              Avaliação profissional
+            </h3>
+
+            <p class="mt-4 max-w-[290px] text-base text-[#6B7280]">
+              Nossa equipe realizará uma avaliação inicial do seu imóvel, auxiliando na definição do melhor preço.
+            </p>
+          </div>
+        </div>
+
+        <!-- Item 3 -->
+        <div class="relative border-b border-[#EAEAEA] px-6 py-10 md:border-b-0 md:px-0 md:py-0 xl:px-8">
+          <div class="mb-8 flex justify-center">
+            <div class="flex h-[48px] w-[48px] md:h-[56px] md:w-[56px] items-center justify-center rounded-full border border-[#EEE7D8] text-[24px] font-medium text-[#BE9A4D]">
+              03
+            </div>
+          </div>
+
+          <div class="md:max-w-[320px] xl:border-l xl:border-[#EAEAEA] xl:pl-8">
+            <h3 class="text-[15px] md:text-[24px] font-semibold leading-[1.15] text-[#0F172A]">
+              Anúncio e divulgação
+            </h3>
+
+            <p class="mt-4 max-w-[290px] text-base text-[#6B7280]">
+              Seu imóvel é anunciado em nosso site, redes sociais e em portais imobiliários, contando com campanhas de marketing eficientes.
+            </p>
+          </div>
+        </div>
+
+        <!-- Item 4 -->
+        <div class="relative px-6 py-10 md:px-0 md:py-0 xl:px-8">
+          <div class="mb-8 flex justify-center">
+            <div class="flex h-[48px] w-[48px] md:h-[56px] md:w-[56px] items-center justify-center rounded-full border border-[#EEE7D8] text-[24px] font-medium text-[#BE9A4D]">
+              04
+            </div>
+          </div>
+
+          <div class="md:max-w-[320px] xl:border-l xl:border-[#EAEAEA] xl:pl-8">
+            <h3 class="text-[15px] md:text-[24px] font-semibold leading-[1.15] text-[#0F172A]">
+              Negociação e conclusão
+            </h3>
+
+            <p class="mt-4 max-w-[320px] text-base text-[#6B7280]">
+              Organizamos e acompanhamos visitas com segurança, auxiliamos na negociação e concluímos a venda ou aluguel com total transparência.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

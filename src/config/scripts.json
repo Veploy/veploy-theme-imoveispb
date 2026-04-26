@@ -1,0 +1,23 @@
+{
+  "global": [
+    "form-ajax.js",
+    "favorites.js",
+    "currency-input.js",
+    "phone-input.js",
+    "hero-swiper.js",
+    "custom-select.js",
+    "location-select.js",
+    "location-filter.js",
+    "property-filters.js",
+    "main.js",
+    "contact-autofill.js"
+  ],
+  "single:property": [
+    "gallery-modal.js",
+    "property-map.js",
+    "mobile-drawer.js"
+  ],
+  "page:favorites": [
+    "favorites-page.js"
+  ]
+}
