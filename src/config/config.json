@@ -1,6 +1,7 @@
 {
   "name": "Tema Elegance",
   "version": "1.0.0",
+  "custom_theme": true,
   "description": "Tema customizado para a Lopes Elegance Piracicaba",
   "author": "Veploy",
   "license": "MIT",

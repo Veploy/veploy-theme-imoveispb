@@ -1,6 +1,13 @@
 node_modules/
 .env
-assets/dist/
 .DS_Store
 .claude
 .cursor
+
+# Saída do build local. O padrão precisa do `src/`: com barra no meio, o git
+# ancora na raiz, e `assets/dist/` sozinho não pegava `src/assets/dist/`.
+src/assets/dist/
+
+# Valores de UM site (cores, contatos, conteúdo das seções). Este repositório é
+# o TEMA; os valores vivem na imobiliária e chegam pelo `veploy pull`.
+src/config/settings_data.json

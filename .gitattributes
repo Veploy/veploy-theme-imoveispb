@@ -1,0 +1,17 @@
+# Fim de linha LF em todo texto, em qualquer sistema. A CLI compara o hash do
+# conteúdo local com o do servidor; um checkout em CRLF (Windows) fazia todo
+# arquivo de texto parecer alterado a cada `npm run dev`.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.otf binary
+*.eot binary

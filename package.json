@@ -5,11 +5,12 @@
   "description": "Veploy customized theme — Elegance",
   "scripts": {
     "dev": "veploy dev",
-    "preview": "veploy preview",
-    "deploy": "veploy deploy global",
-    "deploy:workspace": "veploy deploy"
+    "push": "veploy push",
+    "pull": "veploy pull",
+    "status": "veploy status",
+    "publish": "veploy publish"
   },
   "devDependencies": {
-    "@veploy/front-engine": "file:../veploy-front-engine"
+    "@veploy/cli": "0.3.2"
   }
 }
