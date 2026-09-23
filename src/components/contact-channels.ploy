@@ -1,0 +1,52 @@
+{%- comment -%}
+  Lista de canais de atendimento (telefone, WhatsApp, e-mail, endereço, horário) + redes sociais.
+  Usada no "Fale conosco" da home e no formulário de "Anuncie seu imóvel".
+  Params:
+    - social_style: 'solid' (quadrado preto, padrão) | 'outline' (quadrado com borda)
+    - show_email: false para esconder o e-mail da lista (quando já aparece no texto acima)
+    - show_whatsapp_social: true para incluir o WhatsApp entre as redes
+{%- endcomment -%}
+{%- assign _wa = theme_settings.contact.whatsapp | remove: '-' | remove: '(' | remove: ')' | remove: ' ' -%}
+{%- assign _wa_url = theme_settings.contact.whatsapp_link | default: '' -%}
+{%- if _wa_url == '' -%}{%- assign _wa_url = 'https://wa.me/55' | append: _wa -%}{%- endif -%}
+{%- if social_style == 'outline' -%}
+  {%- assign _social_cls = 'w-10 h-10 border border-[#DDDDDD] bg-transparent text-black flex items-center justify-center text-[20px] hover:bg-black hover:text-white transition-colors' -%}
+{%- else -%}
+  {%- assign _social_cls = 'w-9 h-9 bg-black text-white flex items-center justify-center text-[18px] hover:opacity-80' -%}
+{%- endif -%}
+
+<ul class="space-y-[15px] text-[14px] leading-[1.6em] tracking-[1px] text-black">
+  {% if theme_settings.contact.phone != blank %}
+  <li class="flex items-center gap-4"><i class="ph-fill ph-phone text-[16px]"></i><a href="tel:{{ theme_settings.contact.phone | remove: '-' | remove: '(' | remove: ')' | remove: ' ' }}">{{ theme_settings.contact.phone }}</a></li>
+  {% endif %}
+  {% if theme_settings.contact.whatsapp != blank %}
+  <li class="flex items-center gap-4"><i class="ph ph-whatsapp-logo text-[16px]"></i><a href="{{ _wa_url }}" target="_blank" rel="noopener">{{ theme_settings.contact.whatsapp }}</a></li>
+  {% endif %}
+  {% if show_email != false and theme_settings.contact.email != blank %}
+  <li class="flex items-center gap-4"><i class="ph-fill ph-envelope-simple text-[16px]"></i><a href="mailto:{{ theme_settings.contact.email }}">{{ theme_settings.contact.email }}</a></li>
+  {% endif %}
+  {% if theme_settings.contact.address != blank %}
+  <li class="flex items-center gap-4"><i class="ph-fill ph-map-pin text-[16px]"></i><span>{{ theme_settings.contact.address }}</span></li>
+  {% endif %}
+  {% if theme_settings.contact.hours != blank %}
+  <li class="flex items-center gap-4"><i class="ph ph-clock text-[16px]"></i><span>{{ theme_settings.contact.hours }}</span></li>
+  {% endif %}
+</ul>
+
+<div class="mt-5 flex items-center gap-[10px]">
+  {% if theme_settings.contact.facebook != blank %}
+  <a href="{{ theme_settings.contact.facebook }}" target="_blank" rel="noopener" class="{{ _social_cls }}" aria-label="Facebook"><i class="ph-fill ph-facebook-logo"></i></a>
+  {% endif %}
+  {% if theme_settings.contact.instagram != blank %}
+  <a href="{{ theme_settings.contact.instagram }}" target="_blank" rel="noopener" class="{{ _social_cls }}" aria-label="Instagram"><i class="ph ph-instagram-logo"></i></a>
+  {% endif %}
+  {% if theme_settings.contact.linkedin != blank %}
+  <a href="{{ theme_settings.contact.linkedin }}" target="_blank" rel="noopener" class="{{ _social_cls }}" aria-label="LinkedIn"><i class="ph-fill ph-linkedin-logo"></i></a>
+  {% endif %}
+  {% if theme_settings.contact.youtube != blank and show_whatsapp_social != true %}
+  <a href="{{ theme_settings.contact.youtube }}" target="_blank" rel="noopener" class="{{ _social_cls }}" aria-label="YouTube"><i class="ph-fill ph-youtube-logo"></i></a>
+  {% endif %}
+  {% if show_whatsapp_social and theme_settings.contact.whatsapp != blank %}
+  <a href="{{ _wa_url }}" target="_blank" rel="noopener" class="{{ _social_cls }}" aria-label="WhatsApp"><i class="ph ph-whatsapp-logo"></i></a>
+  {% endif %}
+</div>

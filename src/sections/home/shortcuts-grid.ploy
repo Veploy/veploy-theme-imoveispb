@@ -1,0 +1,50 @@
+<!-- Atalhos (Elegance): "/Coleção" + 4 cards com imagem e rótulo preto sobreposto -->
+{%- assign sg = sections['home/shortcuts-grid'] -%}
+{%- assign shortcuts = sg.shortcuts.items -%}
+{%- assign sg_eyebrow = sg.eyebrow | default: '/Coleção' -%}
+{%- assign sg_title = sg.title | default: 'Conheça nossa seleção com os imóveis mais buscados.' -%}
+{%- assign sg_cta_text = sg.cta_text | default: 'Ver todos os imóveis' -%}
+{%- assign sg_cta_url = sg.cta_url | default: routes.properties -%}
+
+{% if shortcuts and shortcuts.size > 0 %}
+<section {{ section_attrs }} class="vp-section vp-home-shortcuts w-full bg-white px-[5%]{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="max-w-[1300px] mx-auto pt-[60px] pb-[80px]">
+    {% include 'components/home-section-header', eyebrow: sg_eyebrow, title: sg_title, cta_text: sg_cta_text, cta_url: sg_cta_url %}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 sm:gap-x-0 mt-5">
+      {% for item in shortcuts %}
+        <a href="{{ item.url }}" class="vp-home-shortcut group relative block m-[5px] min-h-[400px] bg-cover bg-center" style="background-image: url('{{ item.image }}');">
+          <span class="sr-only">{{ item.title }}</span>
+          <div class="absolute left-0 right-0 -bottom-[20px] mx-[6%] bg-black px-[15px] py-[20px] text-center transition-colors group-hover:bg-[#181A20]">
+            <h4 class="font-serif text-white text-[18px] font-semibold leading-[1.2em]">{{ item.title }}</h4>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Atalhos de busca",
+  "location": "home",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/Coleção" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Conheça nossa seleção com os imóveis mais buscados." },
+    { "type": "text", "id": "cta_text", "label": "Texto do botão", "default": "Ver todos os imóveis" },
+    { "type": "url", "id": "cta_url", "label": "Link do botão", "default": "/imoveis" },
+    {
+      "type": "repeater",
+      "id": "shortcuts",
+      "label": "Atalhos",
+      "max_items": 4,
+      "settings": [
+        { "type": "text", "id": "title", "label": "Título" },
+        { "type": "image_picker", "id": "image", "label": "Imagem" },
+        { "type": "url", "id": "url", "label": "URL" }
+      ]
+    }
+  ]
+}
+{% endschema %}

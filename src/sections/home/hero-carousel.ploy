@@ -1,0 +1,163 @@
+<!-- Hero (Elegance): banner em tela cheia, título serifado + script, busca na base.
+     A barra de anúncio (announcement_*) é desenhada pelo header em modo overlay. -->
+{%- assign hero = sections['home/hero-carousel'] -%}
+{%- assign hero_slide = hero.slides.items[0] -%}
+{%- assign hero_image = hero_slide.image_desktop | default: 'https://www.lopeselegance.com.br/wp-content/uploads/2025/08/Banner-home-Lopes-Elegance-comprimido.webp' -%}
+{%- assign hero_image_mobile = hero_slide.image_mobile | default: hero_image -%}
+{%- assign hero_title = hero.title | default: 'Explore um universo de sofisticação em' -%}
+{%- assign hero_title_script = hero.title_script | default: 'cada detalhe' -%}
+{%- assign hero_script_color = hero.title_script_color | default: '#CC0E3B' -%}
+{%- assign hero_overlay = hero.overlay_opacity | default: 65 | divided_by: 100.0 -%}
+{%- assign hero_title_backdrop = hero.title_backdrop_opacity | default: 65 | divided_by: 100.0 -%}
+
+<style>
+  .vp-home-hero__title {
+    font-family: var(--font-heading);
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px #3f444b69;
+  }
+  .vp-home-hero__script {
+    font-family: 'White Angelica', 'Allura', cursive;
+    font-weight: 400;
+    letter-spacing: 1px;
+    text-shadow: 2px 1px #00000069;
+  }
+  /* Fundo escuro "fosco" atrás do título: mancha radial desfocada que some nas bordas */
+  .vp-home-hero__title-wrap { position: relative; isolation: isolate; }
+  .vp-home-hero__title-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -22% -18%;
+    z-index: -1;
+    background: radial-gradient(ellipse at center, rgb(17 17 17 / var(--hero-title-backdrop, .65)) 0%, rgb(17 17 17 / calc(var(--hero-title-backdrop, .65) * .85)) 45%, transparent 75%);
+    filter: blur(18px);
+    pointer-events: none;
+  }
+  .vp-home-hero__label {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    font-weight: 600;
+    color: #FFFFFF;
+  }
+  .vp-home-hero__field {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid #FFFFFF;
+    color: #FFFFFF;
+    font-size: 15px;
+    padding: 10px 4px;
+    outline: none;
+  }
+  .vp-home-hero__field::placeholder { color: #FFFFFF; opacity: 1; }
+  .vp-home-hero__field option { color: #161616; }
+</style>
+
+<section {{ section_attrs }} class="vp-section vp-home-hero relative w-full overflow-hidden bg-black{% if section_class %} {{ section_class }}{% endif %}">
+  <!-- Background -->
+  <div class="absolute inset-0 z-0">
+    {%- if hero_slide.video_desktop != blank -%}
+      <video class="h-full w-full object-cover" autoplay muted loop playsinline poster="{{ hero_image }}">
+        <source src="{{ hero_slide.video_desktop }}" type="video/mp4">
+      </video>
+    {%- else -%}
+      <picture>
+        <source media="(max-width: 767px)" srcset="{{ hero_image_mobile }}">
+        <img src="{{ hero_image }}" alt="{{ workspace.name }}" class="h-full w-full object-cover" fetchpriority="high">
+      </picture>
+    {%- endif -%}
+    <!-- Véu escuro "fosco" sobre a foto (grafite, não preto puro) -->
+    <div class="absolute inset-0" style="background-color: rgb(17 17 17 / {{ hero_overlay }});"></div>
+    <div class="absolute inset-0" style="background: linear-gradient(180deg, rgb(0 0 0 / 30%) 1%, #ffffff00 60%);"></div>
+  </div>
+
+  <div class="relative z-10 flex min-h-[640px] h-[100svh] md:min-h-[750px] flex-col px-[5%] pt-[120px] pb-8">
+    <!-- Título -->
+    <div class="flex flex-1 items-center justify-center pb-[45px]">
+      <div class="vp-home-hero__title-wrap text-center max-w-[676px]" style="--hero-title-backdrop: {{ hero_title_backdrop }};">
+        <h1 class="vp-home-hero__title text-white text-[38px] leading-[46px] md:text-[65px] md:leading-[75px]">{{ hero_title }}</h1>
+        {%- if hero_title_script != blank -%}
+        <span class="vp-home-hero__script block -mt-[26px] md:-mt-[40px] text-[48px] md:text-[77px] leading-[1.2]" style="color: {{ hero_script_color }};">{{ hero_title_script }}</span>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <!-- Busca -->
+    <form
+      method="GET"
+      action="{{ locale_prefix }}{{ routes.properties }}"
+      class="vp-home-hero__search w-full max-w-[1100px] mx-auto"
+      x-data="{ byCode: false }"
+    >
+      <div class="grid grid-cols-1 md:grid-cols-[1fr_1fr_1.7fr_150px] gap-4 items-end bg-[#161616]/60 backdrop-blur-[2px] px-5 py-6 md:px-6 md:py-8">
+        <div x-show="!byCode">
+          <span class="vp-home-hero__label block mb-3">Operação</span>
+          <select name="operation" class="vp-home-hero__field cursor-pointer" aria-label="Operação">
+            <option value="sale">Comprar</option>
+            <option value="rent">Alugar</option>
+          </select>
+        </div>
+
+        <div x-show="!byCode">
+          <span class="vp-home-hero__label block mb-3">Tipo do imóvel</span>
+          <select name="type" class="vp-home-hero__field cursor-pointer" aria-label="Tipo do imóvel">
+            <option value="">Mostrar todos</option>
+            {% for type in property_types %}
+              <option value="{{ type.slug }}">{{ type.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div x-show="!byCode">
+          <span class="vp-home-hero__label block mb-3">Localização ou empreendimento</span>
+          <input type="text" name="location" placeholder="Faça a sua busca..." class="vp-home-hero__field" aria-label="Localização ou empreendimento">
+        </div>
+
+        <div class="md:col-span-3" x-show="byCode" x-cloak>
+          <span class="vp-home-hero__label block mb-3">Código do imóvel</span>
+          <input type="text" name="code" placeholder="Ex: 418382, 928492" class="vp-home-hero__field" aria-label="Código do imóvel">
+        </div>
+
+        <button type="submit" class="h-[52px] w-full font-serif text-[15px] uppercase tracking-[0.5px] transition-colors" style="background-color: var(--btn-secondary-bg); color: var(--btn-secondary-text);" onmouseover="this.style.backgroundColor='var(--btn-secondary-hover)'" onmouseout="this.style.backgroundColor='var(--btn-secondary-bg)'">
+          Buscar
+        </button>
+      </div>
+
+      <label class="mt-4 flex items-center gap-2 text-[15px] text-white cursor-pointer w-fit">
+        <input type="checkbox" x-model="byCode" class="h-[18px] w-[18px] rounded-[3px] border border-white/60 bg-transparent accent-black">
+        <span>Buscar pelo código do imóvel</span>
+      </label>
+    </form>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Banner principal",
+  "location": "home",
+  "settings": [
+    { "type": "text", "id": "announcement_text", "label": "Barra de anúncio — texto", "default": "Compre seu imóvel em até 18 anos sem juros. Fale conosco e saiba mais." },
+    { "type": "url", "id": "announcement_url", "label": "Barra de anúncio — link" },
+    { "type": "color", "id": "announcement_bg_color", "label": "Barra de anúncio — fundo", "default": "#FFEBCD" },
+    { "type": "color", "id": "announcement_text_color", "label": "Barra de anúncio — texto", "default": "#000000" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Explore um universo de sofisticação em" },
+    { "type": "text", "id": "title_script", "label": "Destaque manuscrito", "default": "cada detalhe" },
+    { "type": "color", "id": "title_script_color", "label": "Cor do destaque manuscrito", "default": "#CC0E3B" },
+    { "type": "text", "id": "overlay_opacity", "label": "Intensidade do véu escuro sobre a foto (0 a 100)", "default": "65" },
+    { "type": "text", "id": "title_backdrop_opacity", "label": "Intensidade do fundo escuro atrás do título (0 a 100)", "default": "65", "info": "0 desliga. Quanto maior, mais escuro." },
+    {
+      "type": "repeater",
+      "id": "slides",
+      "label": "Banner",
+      "max_items": 1,
+      "settings": [
+        { "type": "image_picker", "id": "image_desktop", "label": "Imagem desktop" },
+        { "type": "image_picker", "id": "image_mobile", "label": "Imagem mobile" },
+        { "type": "url", "id": "video_desktop", "label": "Vídeo (MP4, opcional)" },
+        { "type": "url", "id": "redirect_url", "label": "Link" }
+      ]
+    }
+  ]
+}
+{% endschema %}

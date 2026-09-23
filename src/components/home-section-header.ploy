@@ -1,0 +1,19 @@
+{%- comment -%}
+  Cabeçalho das seções "/Coleção" do Elegance: sobretítulo, título à esquerda,
+  botão preto à direita e linha divisória embaixo.
+  Params: eyebrow, title, cta_text, cta_url
+{%- endcomment -%}
+<div class="vp-home-section-header flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b border-[#181A20] pb-[45px]">
+  <div class="md:max-w-[520px]">
+    {%- if eyebrow != blank -%}
+    <span class="vp-eyebrow text-[#717171] mb-[40px]">{{ eyebrow }}</span>
+    {%- endif -%}
+    <h2 class="font-serif text-[28px] md:text-[34px] font-normal leading-[1.1] tracking-[1px] text-black">{{ title }}</h2>
+  </div>
+  {%- if cta_text != blank -%}
+  <a href="{{ cta_url }}" class="vp-btn self-start md:self-auto bg-black text-white border-black hover:bg-[#181A20]">
+    <i class="ph ph-eye text-[16px]"></i>
+    {{ cta_text }}
+  </a>
+  {%- endif -%}
+</div>

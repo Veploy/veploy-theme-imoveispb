@@ -1,0 +1,59 @@
+<!-- Destaque (Elegance): imagem 60% à esquerda + painel preto 40% com texto e CTA -->
+{%- assign hl = sections['home/highlights'] -%}
+{%- assign hl_eyebrow = hl.eyebrow | default: '/ Destaque' -%}
+{%- assign hl_items = hl.slides.items -%}
+
+{% if hl_items and hl_items.size > 0 %}
+<section {{ section_attrs }} class="vp-section vp-home-highlights w-full bg-white{% if section_class %} {{ section_class }}{% endif %}">
+  {% for slide in hl_items %}
+    {% if slide.title != blank or slide.image != blank %}
+    <div class="flex flex-col md:flex-row gap-5 md:gap-5">
+      <a href="{{ slide.cta_url | default: '#' }}" class="block w-full md:w-[60%] min-h-[320px] md:min-h-[520px] bg-cover bg-center" style="background-image: url('{{ slide.image }}');" aria-label="{{ slide.title }}"></a>
+
+      <div class="w-full md:w-[40%] bg-black p-[50px] flex flex-col justify-center text-white">
+        {%- if hl_eyebrow != blank -%}
+        <span class="vp-eyebrow text-white pb-[10px]">{{ hl_eyebrow }}</span>
+        {%- endif -%}
+        <h2 class="font-serif text-[32px] md:text-[42px] font-semibold leading-[1.1] tracking-[1px] text-white mb-5">{{ slide.title }}</h2>
+        {%- if slide.subtitle != blank -%}
+        <p class="text-[15px] text-white/80 mb-3">{{ slide.subtitle }}</p>
+        {%- endif -%}
+        <div class="text-[15px] leading-[22px] text-white space-y-5 mb-10">{{ slide.description }}</div>
+        {%- if slide.cta_text != blank -%}
+        <div>
+          <a href="{{ slide.cta_url }}" class="vp-btn border-white text-white bg-transparent hover:bg-white hover:text-black">
+            <i class="ph ph-eye text-[16px]"></i>
+            {{ slide.cta_text }}
+          </a>
+        </div>
+        {%- endif -%}
+      </div>
+    </div>
+    {% endif %}
+  {% endfor %}
+</section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Destaque",
+  "location": "home",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/ Destaque" },
+    {
+      "type": "repeater",
+      "id": "slides",
+      "label": "Destaques",
+      "max_items": 3,
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Imagem" },
+        { "type": "text", "id": "title", "label": "Título" },
+        { "type": "text", "id": "subtitle", "label": "Subtítulo" },
+        { "type": "richtext", "id": "description", "label": "Descrição" },
+        { "type": "text", "id": "cta_text", "label": "Texto do botão", "default": "Ver imóvel" },
+        { "type": "url", "id": "cta_url", "label": "Link do botão" }
+      ]
+    }
+  ]
+}
+{% endschema %}

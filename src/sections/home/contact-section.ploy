@@ -1,0 +1,89 @@
+<!-- Fale conosco (Elegance): faixa preta com texto branco + card de formulário
+     sobreposto à direita + lista de contatos embaixo -->
+{%- assign cs = sections['home/contact-section'] -%}
+{%- assign cs_eyebrow = cs.eyebrow | default: '/Fale conosco' -%}
+{%- assign cs_title = cs.title | default: 'Assistência completa para venda, compra, locação e financiamento de imóveis.' -%}
+{%- assign cs_description = cs.description | default: 'Envie-nos uma mensagem e um dos nossos consultores entrará em contato com você. Será um prazer lhe atender!' -%}
+{%- assign cs_wa_text = cs.cta_whatsapp_text | default: 'Chamar no WhatsApp' -%}
+{%- assign cs_info_title = cs.info_title | default: 'Fale conosco' -%}
+{%- assign _wa = theme_settings.contact.whatsapp | remove: '-' | remove: '(' | remove: ')' | remove: ' ' -%}
+{%- assign whatsapp_url = theme_settings.contact.whatsapp_link | default: '' -%}
+{%- if whatsapp_url == '' -%}{%- assign whatsapp_url = 'https://wa.me/55' | append: _wa -%}{%- endif -%}
+
+<section {{ section_attrs }} class="vp-section vp-home-contact w-full bg-white px-[5%] overflow-hidden{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="max-w-[1300px] mx-auto grid grid-cols-1 lg:grid-cols-2">
+    <!-- Faixa preta: texto + WhatsApp -->
+    <div class="vp-band py-[80px] lg:pr-[60px] text-white">
+      <span class="vp-eyebrow text-[#FBFBFB] pb-[10px]">{{ cs_eyebrow }}</span>
+      <h2 class="font-serif text-[30px] leading-[40px] md:text-[39px] md:leading-[52px] font-normal text-white mb-5">{{ cs_title }}</h2>
+      <p class="text-[15px] leading-[22px] text-white mb-5">{{ cs_description }}</p>
+      {%- if theme_settings.contact.whatsapp != blank -%}
+      <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="vp-btn border-white text-white bg-transparent hover:bg-white hover:text-black">
+        <i class="ph ph-whatsapp-logo text-[16px]"></i>
+        {{ cs_wa_text }}
+      </a>
+      {%- endif -%}
+    </div>
+
+    <!-- Card do formulário (sobrepõe a faixa preta) -->
+    <div class="relative z-[3] lg:row-span-2 lg:mt-[108px] mb-[60px] lg:mb-[120px]">
+      <div class="vp-form bg-white p-10 md:p-[70px] shadow-[0_0_10px_0_rgb(0_0_0/0.5)]">
+        {% form 'contact' %}
+          <div class="space-y-[30px]">
+            <div>
+              <label for="hc-name">Nome</label>
+              <input id="hc-name" type="text" name="contact[name]" required placeholder="Nome completo" class="vp-form__input">
+            </div>
+            <div>
+              <label for="hc-email">E-mail</label>
+              <input id="hc-email" type="email" name="contact[email]" required placeholder="Seu melhor e-mail" class="vp-form__input">
+            </div>
+            <div>
+              <label>Telefone com DDD</label>
+              {% include 'components/global/form/phone-input', name: 'contact[phone]', placeholder: '(99) 99999-9999', input_class: 'vp-form__input' %}
+            </div>
+            <div>
+              <label for="hc-method">Selecione a forma de contato desejada</label>
+              <select id="hc-method" name="contact[contact_method]" class="vp-form__input cursor-pointer">
+                <option value="phone">Telefone</option>
+                <option value="whatsapp">Whatsapp</option>
+              </select>
+            </div>
+            <div>
+              <label for="hc-message">Possui alguma informação adicional?</label>
+              <textarea id="hc-message" name="contact[message]" rows="4" placeholder="Escreva aqui sua mensagem" class="vp-form__input"></textarea>
+            </div>
+
+            {% if workspace.settings.turnstile.enabled %}
+              <div class="cf-turnstile" data-sitekey="{{ workspace.settings.turnstile.site_key }}"></div>
+            {% endif %}
+
+            <button type="submit" class="vp-form__submit">
+              Enviar
+            </button>
+          </div>
+        {% endform %}
+      </div>
+    </div>
+
+    <!-- Contatos -->
+    <div class="pt-[60px] pb-[60px] lg:pb-[80px] lg:pr-[60px] lg:pl-[10px]">
+      <h2 class="font-serif text-[32px] font-bold leading-[37px] text-black pb-[10px] mb-4">{{ cs_info_title }}</h2>
+      {% include 'components/contact-channels' %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Fale conosco",
+  "location": "home",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/Fale conosco" },
+    { "type": "textarea", "id": "title", "label": "Título" },
+    { "type": "textarea", "id": "description", "label": "Descrição" },
+    { "type": "text", "id": "cta_whatsapp_text", "label": "Texto do botão WhatsApp", "default": "Chamar no WhatsApp" },
+    { "type": "text", "id": "info_title", "label": "Título da lista de contatos", "default": "Fale conosco" }
+  ]
+}
+{% endschema %}
