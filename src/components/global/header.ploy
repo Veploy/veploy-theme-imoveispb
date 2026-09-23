@@ -1,59 +1,122 @@
-{% assign header_bg = workspace.theme_settings.header.bg_color | default: '#ffffff' %}
-{% assign header_text = workspace.theme_settings.header.text_color | default: '#374151' %}
-{% assign header_btn_bg = workspace.theme_settings.header.button_bg_color | default: nil %}
-{% assign header_btn_text = workspace.theme_settings.header.button_text_color | default: '#ffffff' %}
-{% assign header_btn_hover = workspace.theme_settings.header.button_hover_bg_color | default: nil %}
+{%- comment -%}
+  Header do Elegance.
+  `overlay: true` (home, via base.ploy): fica absoluto sobre o hero, com fundo em
+  degradê preto → transparente e a barra de anúncio no topo — igual ao site original.
+  Sem overlay (páginas internas): fundo sólido em header.bg_color.
+{%- endcomment -%}
+{% assign header_overlay = overlay | default: false %}
+{% assign header_bg = workspace.theme_settings.header.bg_color | default: '#000000' %}
+{% assign header_text = workspace.theme_settings.header.text_color | default: '#FFFFFF' %}
+{% assign header_btn_bg = workspace.theme_settings.header.button_bg_color | default: '#FFEBCD' %}
+{% assign header_btn_text = workspace.theme_settings.header.button_text_color | default: '#161616' %}
+{% assign header_btn_hover = workspace.theme_settings.header.button_hover_bg_color | default: '#E7C48F' %}
 {% assign header_sticky = false %}{%- comment -%}{% assign header_sticky = workspace.theme_settings.features.header_sticky %}{%- endcomment -%}
 
+{%- assign _hero = workspace.theme_settings.sections['home/hero-carousel'] -%}
+{%- assign announcement_text = _hero.announcement_text -%}
+{%- assign announcement_url = _hero.announcement_url -%}
+{%- assign announcement_bg = _hero.announcement_bg_color | default: header_btn_bg -%}
+{%- assign announcement_color = _hero.announcement_text_color | default: '#000000' -%}
+
 <style>
+  .vp-header__menu-link {
+    position: relative;
+    font-family: var(--font-header, var(--font-body));
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 13px 0;
+  }
+  .vp-header__menu-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 6px;
+    height: 1px;
+    background-color: {{ header_btn_bg }};
+    transform: scaleX(0);
+    transition: transform .3s;
+  }
+  .vp-header__menu-link:hover::after { transform: scaleX(1); }
+  .header-cta,
+  .header-cta-outline {
+    font-family: var(--font-buttons, var(--font-body));
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 18px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 15px;
+    border: 1px solid {{ header_btn_bg }};
+    border-radius: 0;
+    transition: background-color .2s, color .2s;
+  }
   .header-cta {
-    background-color: {{ header_btn_bg | default: 'rgb(var(--color-primary))' }};
+    background-color: {{ header_btn_bg }};
     color: {{ header_btn_text }};
   }
-  .header-cta:hover {
-    background-color: {{ header_btn_hover | default: header_btn_bg | default: 'rgb(var(--color-primary))' }};
-    opacity: {{ header_btn_hover | default: nil | default: '0.9' }};{% if header_btn_hover %} opacity: 1;{% endif %}
-  }
+  .header-cta:hover { background-color: {{ header_btn_hover }}; }
   .header-cta-outline {
-    color: {{ header_text }};
-    border: 1px solid {{ header_text }}80;
     background-color: transparent;
+    color: {{ header_text }};
   }
-  .header-cta-outline:hover {
-    background-color: {{ header_text }};
-    color: {{ header_bg }};
+  .header-cta-outline:hover { background-color: #000000; }
+  .vp-announcement {
+    font-family: var(--font-heading);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 1px;
   }
-  .vp-header,
-  .vp-header__content,
-  .vp-header__logo {
-    transition-property: all;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  @media (max-width: 1366px) {
+    .vp-header__menu-link { font-size: 12px; }
+    .header-cta, .header-cta-outline { font-size: 11px; padding: 10px; }
   }
 </style>
 
-<header class="vp-header shadow-sm z-50{% if header_sticky %} sticky top-0{% endif %}" style="background-color: {{ header_bg }};"{% if header_sticky %} :style="{ transitionDuration: scrolled ? '650ms' : '250ms' }"{% endif %}>
-  <nav class="vp-header__nav mx-auto px-[3%]" x-data="{ mobileOpen: false{% if header_sticky %}, scrolled: false{% endif %} }"{% if header_sticky %} @scroll.window="scrolled = window.scrollY > 10"{% endif %}>
-    <div class="vp-header__content flex items-center justify-between py-2" :class="{% if header_sticky %}scrolled ? 'min-h-14' : 'min-h-20'{% else %}'min-h-20'{% endif %}"{% if header_sticky %} :style="{ transitionDuration: scrolled ? '650ms' : '250ms' }"{% endif %}>
-      <div class="vp-header__left flex items-center gap-24">
+<header
+  class="vp-header z-50{% if header_overlay %} vp-header--overlay absolute top-0 left-0 right-0{% endif %}{% if header_sticky %} sticky top-0{% endif %}"
+  style="{% if header_overlay %}background-image: linear-gradient(180deg, #000000 0%, #00000000 100%);{% else %}background-color: {{ header_bg }};{% endif %}"
+>
+  {%- if header_overlay and announcement_text != blank -%}
+  <!-- Barra de anúncio -->
+  <div class="vp-announcement w-full px-[5%] py-[5px] text-center" style="background-color: {{ announcement_bg }}; color: {{ announcement_color }};">
+    {%- if announcement_url != blank -%}
+      <a href="{{ announcement_url }}" class="hover:underline">{{ announcement_text }}</a>
+    {%- else -%}
+      {{ announcement_text }}
+    {%- endif -%}
+  </div>
+  {%- endif -%}
+
+  <nav class="vp-header__nav mx-auto px-[5%]" x-data="{ mobileOpen: false }">
+    <div class="vp-header__content mx-auto max-w-[1300px] flex items-center justify-between min-h-[72px] py-2">
+      <div class="vp-header__left flex items-center gap-10">
         <!-- Logo -->
-        <a href="{{ locale_prefix }}/" class="vp-header__logo flex-shrink-0 block" :class="{% if header_sticky %}scrolled ? 'h-8 lg:h-10' : 'h-12 lg:h-16'{% else %}'h-12 lg:h-16'{% endif %}"{% if header_sticky %} :style="{ transitionDuration: scrolled ? '650ms' : '250ms' }"{% endif %}>
-          {% if workspace.theme_settings.brand_identity.logo %}
+        <a href="{{ locale_prefix }}/" class="vp-header__logo flex-shrink-0 block">
+          {%- assign _logo = workspace.theme_settings.brand_identity.logo -%}
+          {%- if header_overlay and workspace.theme_settings.brand_identity.logo_negative != blank -%}
+            {%- assign _logo = workspace.theme_settings.brand_identity.logo_negative -%}
+          {%- endif -%}
+          {% if _logo %}
             <img
-              src="{{ workspace.theme_settings.brand_identity.logo }}"
+              src="{{ _logo }}"
               alt="{{ workspace.name }}"
-              class="h-full max-w-[150px] w-auto object-contain"
-              width="150"
-              height="40"
+              class="h-auto w-[125px] max-w-[125px] object-contain"
+              width="125"
+              height="43"
             >
           {% else %}
-            <span class="text-2xl font-bold leading-[2.5rem] lg:leading-[4rem]" style="color: {{ header_text }};">{{ workspace.name }}</span>
+            <span class="text-2xl font-bold" style="color: {{ header_text }};">{{ workspace.name }}</span>
           {% endif %}
         </a>
 
-        <!-- Desktop Navigation (dynamic from theme_settings.navigation.main_menu) -->
+        <!-- Desktop Navigation (theme_settings.navigation.main_menu — URLs já chegam resolvidas pelo engine) -->
         {% assign nav_items = workspace.theme_settings.navigation.main_menu %}
         {% if nav_items and nav_items.size > 0 %}
-        <ul class="vp-header__menu hidden lg:flex items-center gap-8">
+        <ul class="vp-header__menu hidden lg:flex items-center gap-10">
           {% for item in nav_items %}
           <li>
             {% assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about}}', routes.about | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites %}
@@ -63,8 +126,8 @@
             {% endif %}
             <a
               href="{% if is_absolute %}{{ resolved_url }}{% else %}{{ locale_prefix }}{{ resolved_url }}{% endif %}"
-              class="hover:text-primary font-medium transition-colors" style="color: {{ header_text }};"
-              {% if item.target == '_blank' or is_absolute %}target="_blank" rel="noopener noreferrer"{% endif %}
+              class="vp-header__menu-link" style="color: {{ header_text }};"
+              {% if item.target == '_blank' %}target="_blank" rel="noopener noreferrer"{% endif %}
             >
               {{ item.label }}
             </a>
@@ -75,83 +138,16 @@
       </div>
 
       <!-- Desktop Actions -->
-      <div class="vp-header__actions hidden lg:flex items-center gap-8">
-        <!-- Language Selector -->
-       {% comment %}  {% if t and alternate_urls %}
-          <div class="flex items-center gap-1 p-0.5 bg-gray-100 rounded-md">
-            <a
-              href="{{ alternate_urls.pt_BR }}"
-              class="flex items-center gap-1 px-2 py-1 rounded transition-all {% if locale == 'pt_BR' %}bg-white shadow-sm{% else %}hover:bg-gray-50{% endif %}"
-              title="Português"
-            >
-              <span class="text-lg leading-none">🇧🇷</span>
-              <span class="text-xs font-medium {% if locale == 'pt_BR' %}text-primary{% else %}text-gray-600{% endif %}"
-                >PT</span
-              >
-            </a>
-            <a
-              href="{{ alternate_urls.en_US }}"
-              class="flex items-center gap-1 px-2 py-1 rounded transition-all {% if locale == 'en_US' %}bg-white shadow-sm{% else %}hover:bg-gray-50{% endif %}"
-              title="English"
-            >
-              <span class="text-lg leading-none">🇺🇸</span>
-              <span class="text-xs font-medium {% if locale == 'en_US' %}text-primary{% else %}text-gray-600{% endif %}"
-                >EN</span
-              >
-            </a>
-            <a
-              href="{{ alternate_urls.es_ES }}"
-              class="flex items-center gap-1 px-2 py-1 rounded transition-all {% if locale == 'es_ES' %}bg-white shadow-sm{% else %}hover:bg-gray-50{% endif %}"
-              title="Español"
-            >
-              <span class="text-lg leading-none">🇪🇸</span>
-              <span class="text-xs font-medium {% if locale == 'es_ES' %}text-primary{% else %}text-gray-600{% endif %}"
-                >ES</span
-              >
-            </a>
-          </div>
-        {% endif %} {% endcomment %}
-
-        <!-- Favoritos -->
-        <a
-          href="{{ locale_prefix }}{{ routes.favorites }}"
-          class="flex items-center gap-2 hover:text-primary transition-colors" style="color: {{ header_text }};"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none" :fill="$store.favorites.count > 0 ? '#ef4444' : 'none'"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor" :stroke="$store.favorites.count > 0 ? '#ef4444' : 'currentColor'"
-            class="w-5 h-5 transition-colors"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-          </svg>
-          <span class="font-medium">{{ t.nav.favorites }}</span>
-        </a>
-
-        <!-- Fale Conosco (outline) -->
-        <a
-          href="{{ locale_prefix }}{{ routes.contact }}"
-          class="header-cta-outline px-5 py-2.5 rounded-[4px] text-[12px] font-semibold uppercase tracking-[0.1em] transition-colors"
-        >
-          Fale Conosco
-        </a>
-
-        <!-- Anuncie seu imóvel CTA -->
-        <a
-          href="{{ locale_prefix }}{{ routes.advertise }}"
-          class="header-cta px-5 py-2.5 rounded-[4px] text-[12px] font-semibold uppercase tracking-[0.1em] transition-colors"
-        >
-          {{ t.nav.advertise }}
-        </a>
+      <div class="vp-header__actions hidden lg:flex items-center gap-5">
+        <a href="{{ locale_prefix }}{{ routes.contact }}" class="header-cta-outline">Fale Conosco</a>
+        <a href="{{ locale_prefix }}{{ routes.advertise }}" class="header-cta">{{ t.nav.advertise }}</a>
       </div>
 
       <!-- Mobile Actions: Heart + Hamburger -->
       <div class="lg:hidden flex items-center gap-1">
         <a
           href="{{ locale_prefix }}{{ routes.favorites }}"
-          class="p-2 hover:text-primary transition-colors relative" style="color: {{ header_text }};"
+          class="p-2 transition-colors relative" style="color: {{ header_text }};"
           aria-label="{{ t.nav.favorites }}"
         >
           <svg
@@ -173,23 +169,17 @@
         </a>
         <button
           type="button"
-          class="vp-header__mobile-toggle p-2 hover:text-primary" style="color: {{ header_text }};"
+          class="vp-header__mobile-toggle p-2" style="color: {{ header_text }};"
           aria-label="Menu"
           @click="mobileOpen = !mobileOpen"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="w-6 h-6"
-          >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
           </svg>
         </button>
       </div>
     </div>
+
 
     <!-- Mobile Drawer Backdrop -->
     <div
