@@ -1,9 +1,4 @@
 {% layout 'base' %}
-{% block head_assets %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
-{% endblock %}
 {% block content %}
 <article class="vp-page vp-property-single bg-white">
   <div class="vp-page__container max-w-screen-2xl mx-auto px-[3%] py-6">
@@ -457,7 +452,7 @@
           >
             <!-- Placeholder (replaced by map on click) -->
             <div id="mapPlaceholder" class="w-full h-full relative cursor-pointer" onclick="window.initPropertyMap()">
-              <img src="/assets/images/map-placeholder.jpg" alt="Mapa" class="w-full h-full object-cover">
+              <img src="{{ theme.assets_url }}/assets/images/map-placeholder.jpg" alt="Mapa" class="w-full h-full object-cover">
               <div class="absolute inset-0 bg-white/70 flex items-center justify-center">
                 <button
                   class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition-colors"
@@ -970,6 +965,9 @@
 {% endblock %}
 
 {% block head_assets %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
 {%- comment -%} ======= JSON-LD: RealEstateListing + BreadcrumbList ======= {%- endcomment -%}
 {%- assign _url_parts = canonical_url | split: '/' -%}
