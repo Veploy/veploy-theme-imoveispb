@@ -1,3 +1,10 @@
+/* Fontes da marca, servidas pelo próprio tema (as do WordPress morrem com ele).
+   Lopes Sans: mesmos 3 pesos que o site original carrega (500/600 caem no mais próximo). */
+@font-face { font-family: 'Lopes Sans'; src: url('../../fonts/LopesSans-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lopes Sans'; src: url('../../fonts/LopesSans-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Lopes Sans'; src: url('../../fonts/LopesSans-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'White Angelica'; src: url('../../fonts/WhiteAngelica.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,6 +15,10 @@
 @layer base {
   body {
     @apply font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading, var(--font-body));
   }
 
   html {
@@ -24,18 +35,91 @@
    ELEGANCE THEME — TYPOGRAPHY
    ============================================ */
 .font-serif {
-  font-family: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-  font-weight: 400;
+  font-family: var(--font-heading, 'Playfair Display'), Georgia, serif;
 }
 
-.vp-home-hero__title-script {
-  font-family: 'Allura', 'Great Vibes', cursive;
+/* Script do hero ("cada detalhe") — White Angelica vem de fonts.custom_files */
+.font-script {
+  font-family: 'White Angelica', 'Allura', cursive;
+  font-weight: 400;
 }
 
 /* ============================================
    COMPONENTS
    ============================================ */
 @layer components {
+
+  /* Faixa com fundo que vaza até as bordas da tela (sem wrapper extra) — padrão das seções de formulário */
+  .vp-band {
+    background: var(--band-bg, #000);
+    box-shadow: 0 0 0 100vmax var(--band-bg, #000);
+    clip-path: inset(-1px -100vmax 0);
+  }
+
+  /* Formulários do Elegance (home, contato, anuncie) */
+  .vp-form label,
+  .vp-form .vp-form__label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #000;
+    margin-bottom: 8px;
+  }
+  .vp-form__input {
+    width: 100%;
+    height: 42px;
+    background: #fff;
+    border: 1px solid #E8E8E8;
+    border-radius: 4px;
+    padding: 0 15px;
+    font-size: 15px;
+    color: #181A20;
+    outline: none;
+    box-shadow: 0 1px 2px rgb(0 0 0 / .04);
+  }
+  .vp-form__input::placeholder { color: #9A9A9A; }
+  .vp-form__input:focus { border-color: #181A20; }
+  textarea.vp-form__input { height: 136px; padding: 12px 15px; resize: vertical; }
+  .vp-form__submit {
+    width: 100%;
+    background: #000;
+    padding: 20px;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    color: #fff;
+    transition: background-color .2s;
+  }
+  .vp-form__submit:hover { background: #181A20; }
+  @media (min-width: 880px) { .vp-form__submit { width: 70%; } }
+
+  /* Sobretítulo "/Coleção", "/ Destaque"... — padrão das seções do site original */
+  .vp-eyebrow {
+    display: block;
+    font-size: 12px;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* Botão quadrado, caixa-alta — padrão de todos os CTAs do site original */
+  .vp-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 11px 24px;
+    font-family: var(--font-buttons, var(--font-body));
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 18px;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    border-radius: 0;
+    transition: background-color .2s, color .2s, border-color .2s;
+  }
+
   /* Hero Swiper */
   .hero-swiper .swiper-button-prev,
   .hero-swiper .swiper-button-next {

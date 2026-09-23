@@ -49,9 +49,9 @@ module.exports = {
         foreground: 'var(--color-text, #181A20)',
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        heading: ['Inter', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        sans: ['var(--font-body)', 'sans-serif'],
+        heading: ['var(--font-heading)', 'serif'],
+        body: ['var(--font-body)', 'sans-serif'],
       },
       fontSize: {
         base: '15px',

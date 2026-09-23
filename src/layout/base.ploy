@@ -109,7 +109,7 @@
 
     {%- comment -%} LCP: preload home hero background image so browser fetches it in parallel with HTML parse {%- endcomment -%}
     {%- if current_path == '' or current_path == '/' -%}
-      {%- assign _hero_img = theme_settings.sections.home_hero.image -%}
+      {%- assign _hero_img = theme_settings.sections['home/hero-carousel'].slides.items[0].image_desktop -%}
       {%- if _hero_img != blank -%}
     <link rel="preload" as="image" fetchpriority="high" href="{{ _hero_img }}">
       {%- endif -%}
@@ -162,6 +162,13 @@
         {%- endif -%}
       {%- endif -%}
     {%- endfor -%}
+
+    {%- comment -%} Nunito: links do rodapé (igual ao site original) {%- endcomment -%}
+    {%- if fonts_url == '' -%}
+      {%- assign fonts_url = 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600' -%}
+    {%- else -%}
+      {%- assign fonts_url = fonts_url | append: '&family=Nunito:wght@400;600' -%}
+    {%- endif -%}
 
     {%- if fonts_url != '' -%}
     {%- assign fonts_url = fonts_url | append: '&display=swap' -%}
@@ -367,7 +374,17 @@
       {%- assign is_dark_header = true -%}
     {%- endif -%}
     <div class="page-loading-bar" id="pageLoadingBar" style="background: {% if is_dark_header %}#fff{% else %}rgb(var(--color-primary)){% endif %};"></div>
-    {% include 'components/global/header' %}
+    {%- comment -%}
+      Home: header transparente sobre o hero, com a barra de anúncio no topo
+      (igual ao site original). Demais páginas: header sólido.
+    {%- endcomment -%}
+    {%- assign _is_home = false -%}
+    {%- if current_path == '' or current_path == '/' -%}{%- assign _is_home = true -%}{%- endif -%}
+    {% if _is_home %}
+      {% include 'components/global/header', overlay: true %}
+    {% else %}
+      {% include 'components/global/header' %}
+    {% endif %}
 
     <main class="vp-main flex-1">
       {% block content -%}
