@@ -14,18 +14,10 @@
   "mainEntity": { "@id": "{{ _site_url }}/#organization" }
 }
 </script>
-{% include 'sections/about/hero' %}
-
-{% include 'sections/about/nossa-missao' %}
-
-{% include 'sections/about/nossos-lideres' %}
-
-{% include 'sections/about/diferenciais' %}
-
-{% include 'sections/about/servicos' %}
-
-{% include 'sections/about/anuncie-conosco' %}
-
-{% include 'sections/about/entre-em-contato' %}
+{% section 'about-us/hero' %}
+{% section 'about-us/story' %}
+{% section 'about-us/values' %}
+{% section 'home/contact-section' %}
+{% section 'home/promotion' %}
 
 {% endblock %}

@@ -1,0 +1,62 @@
+<!-- Sobre nós — nossa história (Elegance): cabeçalho com CTA à direita e divisor,
+     texto com assinatura manuscrita à esquerda e foto institucional à direita -->
+{%- assign st = sections['about-us/story'] -%}
+{%- assign st_eyebrow = st.eyebrow | default: '/ Nossa história' -%}
+{%- assign st_title = st.title | default: 'Conheça a trajetória que nos trouxe até aqui. Onde o requinte encontra a expertise.' -%}
+{%- assign st_cta_text = st.cta_text | default: 'Fale conosco' -%}
+{%- assign st_signature = st.signature | default: 'Lopes Elegance' -%}
+{%- assign st_image = st.image | default: 'https://www.lopeselegance.com.br/wp-content/uploads/2025/08/image.webp' -%}
+{%- assign _wa = theme_settings.contact.whatsapp | remove: '-' | remove: '(' | remove: ')' | remove: ' ' -%}
+{%- assign st_cta_url = st.cta_url | default: theme_settings.contact.whatsapp_link | default: '' -%}
+{%- if st_cta_url == '' -%}{%- assign st_cta_url = 'https://wa.me/55' | append: _wa -%}{%- endif -%}
+
+<section {{ section_attrs }} class="vp-section vp-about-story w-full bg-white px-[5%]{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="max-w-[1300px] mx-auto pt-[130px] pb-[60px]">
+    <!-- Cabeçalho -->
+    <div class="flex flex-col gap-6 md:flex-row md:items-end md:justify-between border-b border-black pb-[45px]">
+      <div class="md:max-w-[640px]">
+        <span class="vp-eyebrow text-[#717171] pb-[10px] mb-[30px]">{{ st_eyebrow }}</span>
+        <h2 class="font-serif text-[28px] md:text-[34px] font-normal leading-[1.1] tracking-[1px] text-black">{{ st_title }}</h2>
+      </div>
+      {%- if st_cta_text != blank -%}
+      <a href="{{ st_cta_url }}" target="_blank" rel="noopener" class="vp-btn self-start md:self-auto bg-[#181A20] text-white border-[#181A20] hover:bg-white hover:text-black hover:border-black">
+        <i class="ph ph-whatsapp-logo text-[16px]"></i>
+        {{ st_cta_text }}
+      </a>
+      {%- endif -%}
+    </div>
+
+    <!-- Conteúdo -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-0 border-b border-black pt-[40px] pb-[80px]">
+      <div class="lg:pr-[60px] pt-[40px]">
+        {%- if st.description != blank -%}
+        <div class="text-[15px] leading-[22px] text-black space-y-5 [&_strong]:font-bold [&_b]:font-bold">{{ st.description }}</div>
+        {%- endif -%}
+        {%- if st_signature != blank -%}
+        <p class="font-script mt-10 text-[30px] leading-[1.1] tracking-[1px] text-black">{{ st_signature }}</p>
+        {%- endif -%}
+      </div>
+      {%- if st_image != blank -%}
+      <div>
+        <img src="{{ st_image }}" alt="{{ workspace.name }}" class="w-full h-auto object-cover" loading="lazy">
+      </div>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Sobre nós — nossa história",
+  "location": "about-us",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/ Nossa história" },
+    { "type": "textarea", "id": "title", "label": "Título" },
+    { "type": "text", "id": "cta_text", "label": "Texto do botão", "default": "Fale conosco" },
+    { "type": "url", "id": "cta_url", "label": "Link do botão", "info": "Vazio = WhatsApp da imobiliária" },
+    { "type": "richtext", "id": "description", "label": "Texto" },
+    { "type": "text", "id": "signature", "label": "Assinatura manuscrita", "default": "Lopes Elegance" },
+    { "type": "image_picker", "id": "image", "label": "Foto institucional" }
+  ]
+}
+{% endschema %}
