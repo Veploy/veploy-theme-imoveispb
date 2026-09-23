@@ -1,0 +1,105 @@
+<!-- Contato (Elegance): cabeçalho com linha divisória + 2 colunas
+     (canais de atendimento à esquerda, formulário à direita) -->
+{%- assign cm = sections['contact/main'] -%}
+{%- assign cm_eyebrow = cm.eyebrow | default: '/ Fale conosco' -%}
+{%- assign cm_title = cm.title | default: 'Conte com nossa equipe especializada para descobrir a propriedade dos seus sonhos e potencializar o anúncio do seu imóvel.' -%}
+
+<section {{ section_attrs }} class="vp-section vp-contact-main w-full bg-white px-[5%]{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="max-w-[1300px] mx-auto pt-[90px] pb-[100px]">
+    <!-- Cabeçalho -->
+    <div class="border-b border-[#181A20] pb-[45px]">
+      <span class="vp-eyebrow text-[#717171] mb-[40px]">{{ cm_eyebrow }}</span>
+      <h1 class="font-serif max-w-[780px] text-[28px] md:text-[36px] font-normal leading-[1.1] tracking-[1px] text-black">{{ cm_title }}</h1>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-[50px] pt-[70px]">
+      <!-- Canais de atendimento -->
+      <div class="space-y-[50px] text-[15px] leading-[1.8] tracking-[1px] text-black">
+        {%- if theme_settings.contact.phone != blank or theme_settings.contact.email != blank -%}
+        <div>
+          <h2 class="font-serif text-[24px] font-normal leading-[1.2] tracking-[.5px] text-black mb-5">{{ cm.service_title | default: 'Atendimento' }}</h2>
+          {%- if theme_settings.contact.phone != blank -%}
+          <p><a href="tel:{{ theme_settings.contact.phone | remove: '-' | remove: '(' | remove: ')' | remove: ' ' }}" class="hover:underline">{{ theme_settings.contact.phone }}</a></p>
+          {%- endif -%}
+          {%- if theme_settings.contact.email != blank -%}
+          <p><a href="mailto:{{ theme_settings.contact.email }}" class="hover:underline">{{ theme_settings.contact.email }}</a></p>
+          {%- endif -%}
+        </div>
+        {%- endif -%}
+
+        {%- if theme_settings.contact.address != blank -%}
+        <div>
+          <h2 class="font-serif text-[24px] font-normal leading-[1.2] tracking-[.5px] text-black mb-5">{{ cm.location_title | default: 'Localização' }}</h2>
+          <p>{{ theme_settings.contact.address }}</p>
+        </div>
+        {%- endif -%}
+
+        {%- if theme_settings.contact.hours != blank -%}
+        <div>
+          <h2 class="font-serif text-[24px] font-normal leading-[1.2] tracking-[.5px] text-black mb-5">{{ cm.hours_title | default: 'Horário de atendimento' }}</h2>
+          <p>{{ theme_settings.contact.hours }}</p>
+        </div>
+        {%- endif -%}
+      </div>
+
+      <!-- Formulário -->
+      <div class="vp-form">
+        {% form 'contact', name: 'Contato' %}
+          {% if form.posted_successfully %}
+            <p class="mb-6 border border-green-200 bg-green-50 p-4 text-green-800 font-medium">{{ form.success }}</p>
+          {% endif %}
+          {% if form.errors %}
+            <p class="mb-6 border border-red-200 bg-red-50 p-4 text-red-800 font-medium">{{ form.errors | first }}</p>
+          {% endif %}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-[10px] gap-y-[30px]">
+            <div>
+              <label for="cm-name">Nome</label>
+              <input id="cm-name" type="text" name="contact[name]" required placeholder="Nome completo" class="vp-form__input">
+            </div>
+            <div>
+              <label for="cm-email">E-mail</label>
+              <input id="cm-email" type="email" name="contact[email]" required placeholder="Seu melhor e-mail" class="vp-form__input">
+            </div>
+            <div>
+              <label>Telefone com DDD</label>
+              {% include 'components/global/form/phone-input', name: 'contact[phone]', placeholder: '(99) 99999-9999', input_class: 'vp-form__input', id: 'cm-phone' %}
+            </div>
+            <div>
+              <label for="cm-method">Selecione a forma de contato desejada</label>
+              <select id="cm-method" name="contact[contact_method]" class="vp-form__input cursor-pointer">
+                <option value="phone">Telefone</option>
+                <option value="whatsapp">Whatsapp</option>
+              </select>
+            </div>
+            <div class="md:col-span-2">
+              <label for="cm-message">Possui alguma informação adicional?</label>
+              <textarea id="cm-message" name="contact[message]" rows="4" placeholder="Escreva aqui sua mensagem" class="vp-form__input"></textarea>
+            </div>
+
+            {% if workspace.settings.turnstile.enabled %}
+              <div class="md:col-span-2 cf-turnstile" data-sitekey="{{ workspace.settings.turnstile.site_key }}"></div>
+            {% endif %}
+
+            <div class="md:col-span-2 pt-[10px]">
+              <button type="submit" class="vp-form__submit md:!w-[418px] max-w-full">Enviar</button>
+            </div>
+          </div>
+        {% endform %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Contato",
+  "location": "contact",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/ Fale conosco" },
+    { "type": "textarea", "id": "title", "label": "Título" },
+    { "type": "text", "id": "service_title", "label": "Título — atendimento", "default": "Atendimento" },
+    { "type": "text", "id": "location_title", "label": "Título — localização", "default": "Localização" },
+    { "type": "text", "id": "hours_title", "label": "Título — horário", "default": "Horário de atendimento" }
+  ]
+}
+{% endschema %}
