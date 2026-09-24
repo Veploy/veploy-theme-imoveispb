@@ -138,14 +138,14 @@
       <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[14px] leading-[20px]" style="color: {{ footer_text }};">
         {% if _cnpj != blank %}
         <span>{{ _cnpj }}</span>
-        <span class="h-[20px] border-l" style="border-color: #DDDDDD;"></span>
+        <span class="hidden md:inline h-[20px] border-l" style="border-color: #DDDDDD;"></span>
         {% endif %}
         {% if _creci != blank %}
         <span>CRECI: {{ _creci }}</span>
-        <span>|</span>
+        <span class="hidden md:inline">|</span>
         {% endif %}
         <span>Copyright {{ 'now' | date: '%Y' }} – Todos os Direitos Reservados</span>
-        <span>|</span>
+        <span class="hidden md:inline">|</span>
         {%- assign _footer_host = canonical_url | split: '/' -%}
         <span class="inline-flex items-center gap-1.5">
           Desenvolvido por

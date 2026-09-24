@@ -13,7 +13,7 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 sm:gap-x-0 mt-5">
       {% for item in shortcuts %}
-        <a href="{{ item.url }}" class="vp-home-shortcut group relative block m-[5px] min-h-[400px] bg-cover bg-center" style="background-image: url('{{ item.image }}');">
+        <a href="{{ item.url }}" class="vp-home-shortcut group relative block m-[5px] min-h-[300px] sm:min-h-[400px] bg-cover bg-center" style="background-image: url('{{ item.image }}');">
           <span class="sr-only">{{ item.title }}</span>
           <div class="absolute left-0 right-0 -bottom-[20px] mx-[6%] bg-black px-[15px] py-[20px] text-center transition-colors group-hover:bg-[#181A20]">
             <h4 class="font-serif text-white text-[18px] font-semibold leading-[1.2em]">{{ item.title }}</h4>

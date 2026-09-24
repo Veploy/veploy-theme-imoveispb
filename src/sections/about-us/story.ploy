@@ -28,7 +28,7 @@
 
     <!-- Conteúdo -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-0 border-b border-black pt-[40px] pb-[80px]">
-      <div class="lg:pr-[60px] pt-[40px]">
+      <div class="lg:pr-[60px] lg:pt-[40px]">
         {%- if st.description != blank -%}
         <div class="text-[15px] leading-[22px] text-black space-y-5 [&_strong]:font-bold [&_b]:font-bold">{{ st.description }}</div>
         {%- endif -%}

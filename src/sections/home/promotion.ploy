@@ -10,7 +10,7 @@
 {%- if whatsapp_url == '' -%}{%- assign whatsapp_url = 'https://wa.me/55' | append: _wa -%}{%- endif -%}
 
 <section {{ section_attrs }} class="vp-section vp-home-promotion w-full flex flex-col md:flex-row{% if section_class %} {{ section_class }}{% endif %}" style="background-color: {{ promo_bg }};">
-  <div class="w-full md:w-[40%] px-[30px] py-[80px] md:py-[130px] flex flex-col justify-center">
+  <div class="w-full md:w-[40%] px-[5%] md:px-[30px] py-[80px] md:py-[130px] flex flex-col justify-center">
     <span class="vp-eyebrow text-[#181A20] pb-[10px]">{{ promo_eyebrow }}</span>
     <h2 class="font-serif text-[32px] md:text-[42px] font-semibold leading-[1.1] tracking-[1px] text-[#181A20] mb-5">{{ promo_title }}</h2>
     {%- if promo.description != blank -%}

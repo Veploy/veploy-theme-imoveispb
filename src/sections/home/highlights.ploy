@@ -10,7 +10,7 @@
     <div class="flex flex-col md:flex-row gap-5 md:gap-5">
       <a href="{{ slide.cta_url | default: '#' }}" class="block w-full md:w-[60%] min-h-[320px] md:min-h-[520px] bg-cover bg-center" style="background-image: url('{{ slide.image }}');" aria-label="{{ slide.title }}"></a>
 
-      <div class="w-full md:w-[40%] bg-black p-[50px] flex flex-col justify-center text-white">
+      <div class="w-full md:w-[40%] bg-black px-[5%] py-[50px] md:p-[50px] flex flex-col justify-center text-white">
         {%- if hl_eyebrow != blank -%}
         <span class="vp-eyebrow text-white pb-[10px]">{{ hl_eyebrow }}</span>
         {%- endif -%}
