@@ -84,7 +84,7 @@
         <h4 class="vp-footer__title mb-5" style="color: {{ footer_text }};">Institucional</h4>
         <ul class="vp-footer__list space-y-2">
           <li><a href="{{ locale_prefix }}/">Home</a></li>
-          <li><a href="{{ locale_prefix }}{{ routes.about }}">Sobre nós</a></li>
+          <li><a href="{{ locale_prefix }}{{ routes['about-us'] }}">Sobre nós</a></li>
           <li><a href="{{ locale_prefix }}{{ routes.privacy-policy }}">Política de Privacidade</a></li>
           <li><a href="{{ locale_prefix }}{{ routes.careers }}">Trabalhe conosco</a></li>
           <li><a href="{{ locale_prefix }}{{ routes.advertise }}">Anuncie seu imóvel</a></li>

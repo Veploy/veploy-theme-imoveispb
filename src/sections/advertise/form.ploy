@@ -28,7 +28,7 @@
 
     <!-- Card do formulário de captação (sobrepõe a divisão preto/claro) -->
     <div class="relative z-[3] lg:row-span-2 lg:mt-[110px] mb-[60px] lg:mb-[80px]">
-      <div class="vp-form bg-white p-10 md:p-[70px] shadow-[0_0_10px_0_rgb(0_0_0/0.5)]">
+      <div class="vp-form bg-white p-10 md:p-[70px] shadow-[0_10px_40px_0_rgb(0_0_0/0.10)]">
         {% form 'property_submission' %}
           {% if form.posted_successfully %}
             <p class="mb-6 border border-green-200 bg-green-50 p-4 text-green-800 font-medium">{{ form.success }}</p>

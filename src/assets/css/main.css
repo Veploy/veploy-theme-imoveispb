@@ -84,6 +84,7 @@
     width: 100%;
     background: #000;
     padding: 20px;
+    font-family: var(--font-buttons, var(--font-body));
     font-size: 15px;
     font-weight: 600;
     letter-spacing: .5px;

@@ -27,7 +27,7 @@
 
     <!-- Card do formulário (sobrepõe a faixa preta) -->
     <div class="relative z-[3] lg:row-span-2 lg:mt-[108px] mb-[60px] lg:mb-[120px]">
-      <div class="vp-form bg-white p-10 md:p-[70px] shadow-[0_0_10px_0_rgb(0_0_0/0.5)]">
+      <div class="vp-form bg-white p-10 md:p-[70px] shadow-[0_10px_40px_0_rgb(0_0_0/0.10)]">
         {% form 'contact' %}
           <div class="space-y-[30px]">
             <div>

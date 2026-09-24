@@ -42,7 +42,7 @@
   .vp-header__menu-link:hover::after { transform: scaleX(1); }
   .header-cta,
   .header-cta-outline {
-    font-family: var(--font-buttons, var(--font-body));
+    font-family: var(--font-header, var(--font-body));
     font-size: 13px;
     font-weight: 500;
     line-height: 18px;
@@ -62,7 +62,7 @@
     background-color: transparent;
     color: {{ header_text }};
   }
-  .header-cta-outline:hover { background-color: #000000; }
+  .header-cta-outline:hover { background-color: {{ header_btn_bg }}; color: {{ header_btn_text }}; }
   .vp-announcement {
     font-family: var(--font-heading);
     font-size: 15px;
@@ -119,7 +119,7 @@
         <ul class="vp-header__menu hidden lg:flex items-center gap-10">
           {% for item in nav_items %}
           <li>
-            {% assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about}}', routes.about | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites %}
+            {% assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about}}', routes['about-us'] | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites %}
             {% assign is_absolute = false %}
             {% if resolved_url contains 'http://' or resolved_url contains 'https://' %}
               {% assign is_absolute = true %}
@@ -232,7 +232,7 @@
         <nav class="py-2">
           {% assign mobile_items = workspace.theme_settings.navigation.mobile_menu | default: nav_items %}
           {% for item in mobile_items %}
-            {% assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about}}', routes.about | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites %}
+            {% assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about}}', routes['about-us'] | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites %}
             {% assign is_absolute = false %}
             {% if resolved_url contains 'http://' or resolved_url contains 'https://' %}
               {% assign is_absolute = true %}

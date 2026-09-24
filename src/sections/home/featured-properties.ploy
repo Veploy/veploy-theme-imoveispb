@@ -34,7 +34,7 @@
             </span>
           </a>
 
-          <div class="flex flex-col gap-[10px] p-5">
+          <div class="flex flex-1 flex-col gap-[10px] p-5">
             <h4 class="font-serif text-[16px] font-normal leading-[1.4] text-black">
               <a href="{{ _url }}">{{ property.formatted_title | default: property.title }}</a>
             </h4>
@@ -61,7 +61,7 @@
               {% endif %}
             </div>
 
-            <div>
+            <div class="mt-auto pt-[10px]">
               <a href="{{ _url }}" class="vp-btn text-white bg-[#181A20] border-black hover:bg-black tracking-[.5px]">Mais detalhes</a>
             </div>
           </div>
