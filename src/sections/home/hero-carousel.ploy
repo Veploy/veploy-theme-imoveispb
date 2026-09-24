@@ -119,7 +119,7 @@
           <input type="text" name="code" placeholder="Ex: 418382, 928492" class="vp-home-hero__field" aria-label="Código do imóvel">
         </div>
 
-        <button type="submit" class="h-[52px] w-full font-serif text-[15px] uppercase tracking-[0.5px] transition-colors" style="background-color: var(--btn-secondary-bg); color: var(--btn-secondary-text);" onmouseover="this.style.backgroundColor='var(--btn-secondary-hover)'" onmouseout="this.style.backgroundColor='var(--btn-secondary-bg)'">
+        <button type="submit" class="h-[52px] w-full font-serif text-[15px] font-medium uppercase tracking-[0.5px] transition-colors" style="background-color: var(--btn-secondary-bg); color: var(--btn-secondary-text);" onmouseover="this.style.backgroundColor='var(--btn-secondary-hover)'" onmouseout="this.style.backgroundColor='var(--btn-secondary-bg)'">
           Buscar
         </button>
       </div>
