@@ -15,57 +15,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[30px] mt-[30px] mb-[40px]">
       {% for property in fp_props limit: 6 %}
-        {%- assign _img = '' -%}
-        {%- if property.images and property.images.size > 0 -%}
-          {%- assign _img = property.images[0].url | default: property.images[0] -%}
-        {%- endif -%}
-        {%- assign _is_rent_only = false -%}
-        {%- if property.for_rent and property.for_sale != true -%}{%- assign _is_rent_only = true -%}{%- endif -%}
-        {%- assign _area = property.usable_area | default: property.total_area -%}
-        {%- assign _url = property | property_url -%}
-
-        <article class="vp-home-property-card flex flex-col bg-white shadow-[0_2px_20px_0_rgb(0_0_0/0.06)]">
-          <a href="{{ _url }}" class="relative block aspect-[412/270] overflow-hidden bg-gray-100">
-            {% if _img != blank %}
-              <img src="{{ _img | img_resize: 640, 0, false, 'webp' }}" alt="{{ property.title | escape }}" class="absolute inset-0 h-full w-full object-cover transition duration-500 hover:scale-[1.03]" loading="lazy" width="412" height="270">
-            {% endif %}
-            <span class="absolute top-[10px] left-5 z-[2] bg-white px-[10px] py-[2px] text-[12px] font-semibold uppercase text-[#0A0A0A]">
-              {% if _is_rent_only %}Locação{% else %}Venda{% endif %}
-            </span>
-          </a>
-
-          <div class="flex flex-1 flex-col gap-[10px] p-5">
-            <h4 class="font-serif text-[16px] font-normal leading-[1.4] text-black">
-              <a href="{{ _url }}">{{ property.formatted_title | default: property.title }}</a>
-            </h4>
-
-            <p class="text-[15px] font-semibold leading-[22px] text-black">
-              {%- if _is_rent_only -%}
-                Locação:
-                {% if property.rental_price and property.rental_price != 'on_request' and property.rental_price != 'negotiable' %}{{ property.rental_price | money_format }}{% else %}valor sob consulta{% endif %}
-              {%- else -%}
-                Venda:
-                {% if property.sale_price and property.sale_price != 'on_request' and property.sale_price != 'negotiable' %}{{ property.sale_price | money_format }}{% else %}valor sob consulta{% endif %}
-              {%- endif -%}
-            </p>
-
-            <div class="flex items-center gap-8 pt-[10px] pb-[5px] text-[14px] text-[#181A20]">
-              {% if _area and _area > 0 %}
-              <span class="inline-flex items-center gap-2"><i class="ph ph-corners-out text-[24px]"></i>{{ _area }} m²</span>
-              {% endif %}
-              {% if property.beds and property.beds > 0 %}
-              <span class="inline-flex items-center gap-2"><i class="ph ph-bed text-[24px]"></i>{{ property.beds }}</span>
-              {% endif %}
-              {% if property.bathrooms and property.bathrooms > 0 %}
-              <span class="inline-flex items-center gap-2"><i class="ph ph-shower text-[24px]"></i>{{ property.bathrooms }}</span>
-              {% endif %}
-            </div>
-
-            <div class="mt-auto pt-[10px]">
-              <a href="{{ _url }}" class="vp-btn text-white bg-[#181A20] border-black hover:bg-black tracking-[.5px]">Mais detalhes</a>
-            </div>
-          </div>
-        </article>
+        {% include 'components/elegance-property-card' %}
       {% endfor %}
     </div>
   </div>
