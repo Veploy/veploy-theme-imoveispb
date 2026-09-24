@@ -1,877 +1,292 @@
 {% layout 'base' %}
 {% block content %}
-<article class="vp-page vp-property-single bg-white">
-  <div class="vp-page__container max-w-screen-2xl mx-auto px-[3%] py-6">
+{%- comment -%}
+  Detalhe do imóvel (Elegance) — igual ao site original:
+  galeria horizontal (3 fotos por vez) → ações (Fotos / Mapa / Plantas / Favoritos) →
+  informações + "Sobre o imóvel" + Plantas + Localização + Imóveis similares à esquerda,
+  card "Gostou deste imóvel?" sticky à direita → Condição Especial.
+{%- endcomment -%}
+{%- assign _has_images = false -%}
+{%- if property.images and property.images.size > 0 -%}{%- assign _has_images = true -%}{%- endif -%}
+{%- assign _has_plans = false -%}
+{%- if property.floor_plans and property.floor_plans.size > 0 -%}{%- assign _has_plans = true -%}{%- endif -%}
+{%- assign map_display = property.map_display | default: 'exact' -%}
+{%- assign _has_map = false -%}
+{%- if map_display != 'hidden' and property.latitude and property.longitude -%}{%- assign _has_map = true -%}{%- endif -%}
+{%- assign _title = property.formatted_title | default: property.title -%}
 
-    <!-- Image Gallery Grid -->
-    <div class="vp-property__gallery mb-2">
-      {% if property.images and property.images.size > 0 %}
-      <div class="relative rounded-xl overflow-hidden md:h-[480px]">
-        <!-- Mobile: single image -->
-        <div class="vp-img-wrap md:hidden aspect-[4/3] cursor-pointer" onclick="openGalleryModal(0)">
+<article class="vp-page vp-property-single bg-white">
+
+  <!-- Galeria principal -->
+  {% if _has_images %}
+  <div class="vp-prop-gallery relative">
+    <div class="swiper vp-prop-gallery__swiper h-[280px] sm:h-[360px] md:h-[450px]">
+      <div class="swiper-wrapper">
+        {% for image in property.images %}
+        <div class="swiper-slide vp-img-wrap cursor-pointer overflow-hidden bg-gray-100" onclick="openGalleryModal({{ forloop.index0 }})">
           <img
-            src="{{ property.images[0].url | default: property.images[0] | img_resize: 1200, 0 }}"
-            alt="{{ property.title }}"
-            class="w-full h-full object-cover"
-            loading="eager"
+            src="{{ image.url | default: image | img_resize: 960, 0, false, 'webp' }}"
+            alt="{{ _title | escape }} — foto {{ forloop.index }}"
+            class="h-full w-full object-cover"
+            {% if forloop.index <= 3 %}loading="eager"{% else %}loading="lazy"{% endif %}
             onload="this.closest('.vp-img-wrap').classList.add('vp-loaded')"
           >
         </div>
-
-        <!-- Desktop: responsive grid based on image count -->
-        {% assign img_count = property.images.size %}
-        <div class="hidden md:grid gap-2 h-full {% if img_count == 1 %}grid-cols-1{% elsif img_count == 2 %}grid-cols-3{% elsif img_count == 3 %}grid-cols-3 grid-rows-2{% elsif img_count == 4 %}grid-cols-4 grid-rows-2{% else %}grid-cols-4 grid-rows-2{% endif %}">
-          <!-- Main Image -->
-          <div class="vp-img-wrap relative cursor-pointer overflow-hidden {% if img_count == 1 %}col-span-1{% elsif img_count == 2 %}col-span-2{% elsif img_count == 3 %}col-span-2 row-span-2{% elsif img_count == 4 %}col-span-2 row-span-2{% else %}col-span-2 row-span-2{% endif %}" onclick="openGalleryModal(0)">
-            <img
-              src="{{ property.images[0].url | default: property.images[0] | img_resize: 1200, 1200, true }}"
-              alt="{{ property.title }}"
-              class="w-full h-full object-cover"
-              loading="eager"
-              onload="this.closest('.vp-img-wrap').classList.add('vp-loaded')"
-            >
-            <!-- Expand Icon -->
-            <button class="absolute bottom-4 left-4 w-10 h-10 bg-black/50 hover:bg-black/70 rounded-lg flex items-center justify-center text-white transition-colors">
-              <i class="ph ph-arrows-out text-xl"></i>
-            </button>
-          </div>
-
-          <!-- Thumbnails - adapt based on count -->
-          {% if img_count == 2 %}
-            <!-- 2 images: 1 thumbnail on right -->
-            <div class="vp-img-wrap relative cursor-pointer overflow-hidden" onclick="openGalleryModal(1)">
-              <img
-                src="{{ property.images[1].url | default: property.images[1] | img_resize: 450, 450, true  }}"
-                alt="{{ property.title }}"
-                class="w-full h-full object-cover"
-                loading="lazy"
-                onload="this.closest('.vp-img-wrap').classList.add('vp-loaded')"
-              >
-            </div>
-          {% elsif img_count == 3 %}
-            <!-- 3 images: 2 thumbnails stacked on right -->
-            {% for image in property.images offset:1 limit:2 %}
-            <div class="vp-img-wrap relative cursor-pointer overflow-hidden" onclick="openGalleryModal({{ forloop.index }})">
-              <img
-                src="{{ image.url | default: image | img_resize: 450, 450, true }}"
-                alt="{{ property.title }}"
-                class="w-full h-full object-cover"
-                loading="lazy"
-                onload="this.closest('.vp-img-wrap').classList.add('vp-loaded')"
-              >
-            </div>
-            {% endfor %}
-          {% elsif img_count == 4 %}
-            <!-- 4 images: 3 thumbnails (2 on top row, 1 spanning bottom) -->
-            {% for image in property.images offset:1 limit:2 %}
-            <div class="vp-img-wrap relative cursor-pointer overflow-hidden" onclick="openGalleryModal({{ forloop.index }})">
-              <img
-                src="{{ image.url | default: image | img_resize: 450, 450, true }}"
-                alt="{{ property.title }}"
-                class="w-full h-full object-cover"
-                loading="lazy"
-                onload="this.closest('.vp-img-wrap').classList.add('vp-loaded')"
-              >
-            </div>
-            {% endfor %}
-            <div class="vp-img-wrap relative cursor-pointer overflow-hidden col-span-2" onclick="openGalleryModal(3)">
-              <img
-                src="{{ property.images[3].url | default: property.images[3] | img_resize: 450, 450, true }}"
-                alt="{{ property.title }}"
-                class="w-full h-full object-cover"
-                loading="lazy"
-                onload="this.closest('.vp-img-wrap').classList.add('vp-loaded')"
-              >
-            </div>
-          {% else %}
-            <!-- 5+ images: standard 4 thumbnails with overlay on last -->
-            {% for image in property.images offset:1 limit:4 %}
-            <div class="vp-img-wrap relative cursor-pointer overflow-hidden" onclick="openGalleryModal({{ forloop.index }})">
-              <img
-                src="{{ image.url | default: image | img_resize: 450, 450, true }}"
-                alt="{{ property.title }}"
-                class="w-full h-full object-cover"
-                loading="lazy"
-                onload="this.closest('.vp-img-wrap').classList.add('vp-loaded')"
-              >
-              {% if forloop.index == 4 and property.images.size > 5 %}
-              <!-- Show More Overlay -->
-              <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
-                <span class="text-white text-xl font-semibold">+{{ property.images.size | minus: 5 }}</span>
-              </div>
-              {% endif %}
-            </div>
-            {% endfor %}
-          {% endif %}
-        </div>
-
-        <!-- Show All Photos Button -->
-        {% if property.images.size > 1 %}
-        <button
-          onclick="openGalleryModal(0)"
-          class="absolute bottom-4 right-4 z-10 bg-white hover:bg-gray-100 text-gray-900 px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 shadow-lg transition-colors"
-        >
-          <i class="ph ph-arrows-out"></i>
-          Mostrar todas as fotos
-        </button>
-        {% endif %}
-      </div>
-      {% else %}
-      <!-- No Images Placeholder -->
-      <div class="w-full h-[300px] md:h-[400px] bg-gray-200 rounded-xl flex items-center justify-center">
-        <i class="ph ph-image text-7xl text-gray-400"></i>
-      </div>
-      {% endif %}
-    </div>
-
-    <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
-
-      <!-- Left Content (2 columns) -->
-      <div class="lg:col-span-2">
-
-    <!-- Action Buttons Row -->
-    <div class="flex items-center justify-between mb-6 pb-2 border-b">
-      <div class="flex items-center gap-2">
-        <!-- Reference Code -->
-        <span class="inline-flex items-center gap-1 text-sm text-gray-500">
-          <i class="ph ph-tag"></i>
-          REF: {{ property.sku }}
-        </span>
-
-        <!-- Video Button (if video exists) -->
-        {% if property.video_url %}
-        <button onclick="openVideoModal()" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors">
-          <i class="ph ph-play"></i>
-          Video
-        </button>
-        {% endif %}
-      </div>
-
-      <div class="flex items-center gap-2">
-        <!-- Favorite Button -->
-        <button
-          x-data="{ sku: '{{ property.sku }}' }"
-          data-property-sku="{{ property.sku }}"
-          @click="toggleFavorite($el)"
-          :class="$store.favorites.is(sku) ? 'bg-red-50 hover:bg-red-100' : 'text-gray-700 bg-gray-100 hover:bg-gray-200'"
-          class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-        >
-          <i class="text-base" :class="$store.favorites.is(sku) ? 'ph-fill ph-heart' : 'ph ph-heart'" :style="$store.favorites.is(sku) && 'color: #ef4444'"></i>
-        </button>
-
-        <!-- Share Button -->
-        <div class="relative" x-data="{ open: false }" @click.away="open = false">
-          <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium text-gray-700 transition-colors">
-            <i class="ph ph-share-network"></i>
-            Compartilhar
-          </button>
-          <div x-show="open" x-transition x-cloak class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border p-2 z-20">
-            <button @click="navigator.clipboard.writeText(window.location.href); open = false" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-sm text-gray-700 transition-colors">
-              <i class="ph ph-link text-base"></i>
-              Copiar link
-            </button>
-            <a :href="'https://wa.me/?text=' + encodeURIComponent('{{ property.title | escape }} ' + window.location.href)" target="_blank" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-sm transition-colors text-[#25D366]">
-              <i class="ph ph-whatsapp-logo text-base"></i>
-              WhatsApp
-            </a>
-            <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href)" target="_blank" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-sm transition-colors text-[#1877F2]">
-              <i class="ph ph-facebook-logo text-base"></i>
-              Facebook
-            </a>
-            <a :href="'https://twitter.com/intent/tweet?url=' + encodeURIComponent(window.location.href) + '&text=' + encodeURIComponent('{{ property.title | escape }}')" target="_blank" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 text-sm transition-colors text-black">
-              <i class="ph ph-x-logo text-base"></i>
-              X (Twitter)
-            </a>
-          </div>
-        </div>
+        {% endfor %}
       </div>
     </div>
-    
-        <!-- Breadcrumb -->
-        <nav class="mb-3">
-          <ol class="flex items-center flex-wrap gap-1.5 text-sm text-gray-400">
-            <li><a href="/" class="hover:text-primary transition-colors">Inicio</a></li>
-            <li><span>></span></li>
-            {% if property.for_sale %}
-              <li><a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}" class="hover:text-primary transition-colors">Venda</a></li>
-            {% elsif property.for_rent %}
-              <li><a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_rent }}" class="hover:text-primary transition-colors">Aluguel</a></li>
+    {% if property.images.size > 1 %}
+    <button type="button" class="vp-prop-gallery__prev absolute left-5 top-1/2 z-10 flex h-[50px] w-[50px] -translate-y-1/2 items-center justify-center rounded-full bg-white/60 text-[#333] transition-colors hover:bg-white" aria-label="Foto anterior"><i class="ph ph-caret-left text-[18px]"></i></button>
+    <button type="button" class="vp-prop-gallery__next absolute right-5 top-1/2 z-10 flex h-[50px] w-[50px] -translate-y-1/2 items-center justify-center rounded-full bg-white/60 text-[#333] transition-colors hover:bg-white" aria-label="Próxima foto"><i class="ph ph-caret-right text-[18px]"></i></button>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="flex h-[280px] md:h-[450px] w-full items-center justify-center bg-gray-100">
+    <i class="ph ph-image text-7xl text-gray-300"></i>
+  </div>
+  {% endif %}
+
+  <div class="px-[5%]">
+    <div class="mx-auto grid max-w-[1300px] grid-cols-1 gap-x-10 lg:grid-cols-[minmax(0,1fr)_350px] lg:grid-rows-[auto_1fr]">
+
+      <!-- Ações + informações principais -->
+      <div class="lg:col-start-1 lg:row-start-1">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#E5E5E5] pt-[10px] pb-[10px]">
+          <div class="flex flex-wrap gap-[10px]">
+            {% if _has_images %}
+            <button type="button" onclick="openGalleryModal(0)" class="vp-prop-action"><i class="ph ph-images"></i>Fotos</button>
             {% endif %}
-            {% if property.city %}
-            <li><span>></span></li>
-            <li>
-              {% if property.for_sale %}
-                <a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}" class="hover:text-primary transition-colors">{{ property.city }}{% if property.state %}, {{ property.state }}{% endif %}</a>
-              {% elsif property.for_rent %}
-                <a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_rent }}" class="hover:text-primary transition-colors">{{ property.city }}{% if property.state %}, {{ property.state }}{% endif %}</a>
-              {% else %}
-                <span>{{ property.city }}{% if property.state %}, {{ property.state }}{% endif %}</span>
-              {% endif %}
-            </li>
+            {% if _has_map %}
+            <button type="button" onclick="scrollToMap()" class="vp-prop-action"><i class="ph ph-map-trifold"></i>Mapa</button>
             {% endif %}
-          </ol>
-        </nav>
-
-        <!-- Title -->
-        <h1 class="text-xl md:text-2xl font-bold text-gray-900 mb-2">{{ property.title }}</h1>
-
-        <!-- Location -->
-        {% assign address_display = settings.property_detail.address_display | default: 'hide_number' %}
-        <p class="text-gray-600 flex items-center gap-1 mb-6">
-          <i class="ph ph-map-pin text-primary"></i>
-          {% case address_display %}
-            {% when 'full' %}
-              {% if property.address %}{{ property.address }}{% if property.number %}, {{ property.number }}{% endif %} - {% endif %}{{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} - {{ property.state }}{% endif %}
-            {% when 'hide_number' %}
-              {% if property.address %}{{ property.address }} - {% endif %}{{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} - {{ property.state }}{% endif %}
-            {% when 'hide_address' %}
-              {{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} - {{ property.state }}{% endif %}
-            {% when 'hide_neighborhood' %}
-              {{ property.city }}{% if property.state %} - {{ property.state }}{% endif %}
-          {% endcase %}
-        </p>
-
-        <!-- Prices Section -->
-        {% if property.for_sale or property.for_rent %}
-        <div class="flex flex-wrap gap-8 mb-4">
-          {% if property.for_sale %}
-          <div>
-            <span class="text-sm text-gray-500 uppercase tracking-wide">Venda</span>
-            {% if property.sale_price == 'on_request' %}
-            <div class="text-2xl md:text-3xl font-bold text-gray-700">Consulte-nos</div>
-            {% elsif property.sale_price == 'negotiable' %}
-            <div class="text-2xl md:text-3xl font-bold text-gray-700">A combinar</div>
-            {% elsif property.sale_price %}
-            <div class="text-2xl md:text-3xl font-bold">{{ property.sale_price | money_format }}{% if property.sale_price_max and property.sale_price_max > property.sale_price %} – {{ property.sale_price_max | money_format }}{% endif %}</div>
-            {% else %}
-            <div class="text-2xl md:text-3xl font-bold text-gray-700">Consulte-nos</div>
+            {% if _has_plans %}
+            <a href="#plantas" class="vp-prop-action"><i class="ph ph-frame-corners"></i>Plantas</a>
             {% endif %}
-          </div>
-          {% endif %}
-
-          {% if property.for_rent %}
-          <div>
-            <span class="text-sm text-gray-500 uppercase tracking-wide">Aluguel</span>
-            {% if property.rental_price == 'on_request' %}
-            <div class="text-2xl md:text-3xl font-bold text-gray-700">Consulte-nos</div>
-            {% elsif property.rental_price == 'negotiable' %}
-            <div class="text-2xl md:text-3xl font-bold text-gray-700">A combinar</div>
-            {% elsif property.rental_price %}
-            <div class="text-2xl md:text-3xl font-bold">{{ property.rental_price | money_format }}{% if property.rental_price_max and property.rental_price_max > property.rental_price %} – {{ property.rental_price_max | money_format }}{% endif %}<span class="text-base font-normal text-gray-500">/mês</span></div>
-            {% else %}
-            <div class="text-2xl md:text-3xl font-bold text-gray-700">Consulte-nos</div>
-            {% endif %}
-          </div>
-          {% endif %}
-        </div>
-        {% endif %}
-
-        <!-- Condo Fee and IPTU -->
-        {% if property.condo_fee or property.iptu_price %}
-        <div class="flex flex-wrap gap-6 text-sm text-gray-600 mb-8">
-          {% if property.condo_fee %}
-          <span><strong>Condomínio</strong> {{ property.condo_fee | money_format }}</span>
-          {% endif %}
-          {% if property.iptu_price %}
-          <span><strong>IPTU</strong> {{ property.iptu_price | money_format }}</span>
-          {% endif %}
-        </div>
-        {% endif %}
-
-        <!-- Features — mobile: pill row (compact) -->
-        <div class="md:hidden flex flex-wrap gap-2 py-4 border-t border-b mb-6">
-          {% if property.total_area and property.total_area > 0 %}
-          <span class="inline-flex items-center gap-1.5 bg-gray-50 text-gray-800 text-sm px-3 py-1.5 rounded-full">
-            <i class="ph ph-ruler text-primary"></i>
-            <span><strong class="font-semibold">{{ property.total_area }}{% if property.total_area_max and property.total_area_max > property.total_area %}–{{ property.total_area_max }}{% endif %}</strong> m²</span>
-          </span>
-          {% endif %}
-          {% if property.usable_area and property.usable_area > 0 %}
-          <span class="inline-flex items-center gap-1.5 bg-gray-50 text-gray-800 text-sm px-3 py-1.5 rounded-full">
-            <i class="ph ph-house-line text-primary"></i>
-            <span><strong class="font-semibold">{{ property.usable_area }}{% if property.usable_area_max and property.usable_area_max > property.usable_area %}–{{ property.usable_area_max }}{% endif %}</strong> m² útil</span>
-          </span>
-          {% endif %}
-          {% if property.beds and property.beds > 0 %}
-          <span class="inline-flex items-center gap-1.5 bg-gray-50 text-gray-800 text-sm px-3 py-1.5 rounded-full">
-            <i class="ph ph-bed text-primary"></i>
-            <span><strong class="font-semibold">{{ property.beds }}{% if property.beds_max and property.beds_max > property.beds %}–{{ property.beds_max }}{% endif %}</strong> {% if property.beds == 1 and property.beds_max == blank %}quarto{% else %}quartos{% endif %}</span>
-          </span>
-          {% endif %}
-          {% if property.suites and property.suites > 0 %}
-          <span class="inline-flex items-center gap-1.5 bg-gray-50 text-gray-800 text-sm px-3 py-1.5 rounded-full">
-            <i class="ph ph-star text-primary"></i>
-            <span><strong class="font-semibold">{{ property.suites }}{% if property.suites_max and property.suites_max > property.suites %}–{{ property.suites_max }}{% endif %}</strong> {% if property.suites == 1 and property.suites_max == blank %}suíte{% else %}suítes{% endif %}</span>
-          </span>
-          {% endif %}
-          {% if property.bathrooms and property.bathrooms > 0 %}
-          <span class="inline-flex items-center gap-1.5 bg-gray-50 text-gray-800 text-sm px-3 py-1.5 rounded-full">
-            <i class="ph ph-bathtub text-primary"></i>
-            <span><strong class="font-semibold">{{ property.bathrooms }}{% if property.bathrooms_max and property.bathrooms_max > property.bathrooms %}–{{ property.bathrooms_max }}{% endif %}</strong> {% if property.bathrooms == 1 and property.bathrooms_max == blank %}banheiro{% else %}banheiros{% endif %}</span>
-          </span>
-          {% endif %}
-          {% if property.parkings and property.parkings > 0 %}
-          <span class="inline-flex items-center gap-1.5 bg-gray-50 text-gray-800 text-sm px-3 py-1.5 rounded-full">
-            <i class="ph ph-car text-primary"></i>
-            <span><strong class="font-semibold">{{ property.parkings }}{% if property.parkings_max and property.parkings_max > property.parkings %}–{{ property.parkings_max }}{% endif %}</strong> {% if property.parkings == 1 and property.parkings_max == blank %}vaga{% else %}vagas{% endif %}</span>
-          </span>
-          {% endif %}
-        </div>
-
-        <!-- Features — desktop: icon grid -->
-        <div class="hidden md:grid grid-cols-3 md:grid-cols-6 gap-4 py-6 border-t border-b mb-8">
-          {% if property.total_area and property.total_area > 0 %}
-          <div class="flex flex-col items-center text-center">
-            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-              <i class="ph ph-ruler text-xl text-primary"></i>
-            </div>
-            <span class="text-xs text-gray-500 uppercase">Área Total</span>
-            <span class="font-bold text-gray-900">{{ property.total_area }}{% if property.total_area_max and property.total_area_max > property.total_area %} – {{ property.total_area_max }}{% endif %} m²</span>
-          </div>
-          {% endif %}
-
-          {% if property.usable_area and property.usable_area > 0 %}
-          <div class="flex flex-col items-center text-center">
-            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-              <i class="ph ph-house-line text-xl text-primary"></i>
-            </div>
-            <span class="text-xs text-gray-500 uppercase">Área Construida</span>
-            <span class="font-bold text-gray-900">{{ property.usable_area }}{% if property.usable_area_max and property.usable_area_max > property.usable_area %} – {{ property.usable_area_max }}{% endif %} m²</span>
-          </div>
-          {% endif %}
-
-          {% if property.beds and property.beds > 0 %}
-          <div class="flex flex-col items-center text-center">
-            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-              <i class="ph ph-bed text-xl text-primary"></i>
-            </div>
-            <span class="text-xs text-gray-500 uppercase">Dormitórios</span>
-            <span class="font-bold text-gray-900">{{ property.beds }}{% if property.beds_max and property.beds_max > property.beds %} – {{ property.beds_max }}{% endif %}</span>
-          </div>
-          {% endif %}
-
-          {% if property.suites and property.suites > 0 %}
-          <div class="flex flex-col items-center text-center">
-            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-              <i class="ph ph-star text-xl text-primary"></i>
-            </div>
-            <span class="text-xs text-gray-500 uppercase">Suites</span>
-            <span class="font-bold text-gray-900">{{ property.suites }}{% if property.suites_max and property.suites_max > property.suites %} – {{ property.suites_max }}{% endif %}</span>
-          </div>
-          {% endif %}
-
-          {% if property.bathrooms and property.bathrooms > 0 %}
-          <div class="flex flex-col items-center text-center">
-            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-              <i class="ph ph-bathtub text-xl text-primary"></i>
-            </div>
-            <span class="text-xs text-gray-500 uppercase">Banheiros</span>
-            <span class="font-bold text-gray-900">{{ property.bathrooms }}{% if property.bathrooms_max and property.bathrooms_max > property.bathrooms %} – {{ property.bathrooms_max }}{% endif %}</span>
-          </div>
-          {% endif %}
-
-          {% if property.parkings and property.parkings > 0 %}
-          <div class="flex flex-col items-center text-center">
-            <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mb-2">
-              <i class="ph ph-car text-xl text-primary"></i>
-            </div>
-            <span class="text-xs text-gray-500 uppercase">Vagas</span>
-            <span class="font-bold text-gray-900">{{ property.parkings }}{% if property.parkings_max and property.parkings_max > property.parkings %} – {{ property.parkings_max }}{% endif %}</span>
-          </div>
-          {% endif %}
-        </div>
-
-        <!-- About the Property -->
-        {% if property.description %}
-        <div class="mb-8" x-data="{ expanded: false, overflow: false }" x-init="$nextTick(() => { overflow = $refs.desc.scrollHeight > $refs.desc.clientHeight })">
-          <h2 class="text-lg font-bold text-gray-900 mb-4">Sobre o imóvel</h2>
-          <div class="prose prose-gray max-w-none text-gray-600 text-base leading-relaxed [&_p]:text-base [&_span]:text-base">
-            <div :class="expanded ? '' : 'line-clamp-4'" x-ref="desc">{{ property.description | strip }}</div>
           </div>
           <button
-            x-show="overflow || expanded"
-            @click="expanded = !expanded"
-            class="text-primary text-sm font-medium mt-2 underline"
-            x-text="expanded ? 'Ver menos' : 'Ver mais'"
-          ></button>
+            type="button"
+            x-data="{ sku: '{{ property.sku }}' }"
+            data-property-sku="{{ property.sku }}"
+            @click="toggleFavorite($el)"
+            class="inline-flex items-center gap-2 text-[15px] text-black transition-opacity hover:opacity-70"
+          >
+            <i class="text-[17px]" :class="$store.favorites.is(sku) ? 'ph-fill ph-heart' : 'ph ph-heart'"></i>
+            <span x-text="$store.favorites.is(sku) ? 'Adicionado aos favoritos' : 'Adicionar aos favoritos'">Adicionar aos favoritos</span>
+          </button>
         </div>
-        {% endif %}
 
-        <!-- Amenities Section -->
-        {% if property.amenities and property.amenities.size > 0 %}
-        <div class="mb-8">
-          <h2 class="text-lg font-bold text-gray-900 mb-4">Comodidades e Serviços</h2>
-          <ul class="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3">
-            {% for amenity in property.amenities %}
-            <li class="flex items-center gap-2 text-base text-gray-700">
-              <i class="ph ph-check text-primary shrink-0"></i>
-              {{ amenity }}
-            </li>
-            {% endfor %}
+        <div class="border-b border-[#E5E5E5] pt-[45px] pb-[45px]">
+          <span class="block text-[12px] tracking-[.5px] text-[#717171]">{{ property.sku }}</span>
+          <h1 class="font-serif mt-2 text-[26px] md:text-[30px] font-semibold leading-[1.2] text-black">{{ _title }}</h1>
+
+          {% assign address_display = settings.property_detail.address_display | default: 'hide_number' %}
+          <p class="mt-3 text-[14px] leading-[1.5] text-black">
+            {% case address_display %}
+              {% when 'full' %}
+                {% if property.address %}{{ property.address }}{% if property.number %}, {{ property.number }}{% endif %} - {% endif %}{{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} - {{ property.state }}{% endif %}
+              {% when 'hide_address' %}
+                {{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} - {{ property.state }}{% endif %}
+              {% when 'hide_neighborhood' %}
+                {{ property.city }}{% if property.state %} - {{ property.state }}{% endif %}
+              {% else %}
+                {{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} - {{ property.state }}{% endif %}
+            {% endcase %}
+          </p>
+
+          <!-- Preço -->
+          <div class="mt-[35px] space-y-1 font-serif text-[20px] font-medium leading-[1.3] text-black">
+            {% if property.for_sale or property.for_rent != true %}
+            <p>
+              Venda:
+              {% if property.sale_price and property.sale_price != 'on_request' and property.sale_price != 'negotiable' and property.sale_price > 0 %}
+                {{ property.sale_price | money_format }}{% if property.sale_price_max and property.sale_price_max > property.sale_price %} a {{ property.sale_price_max | money_format }}{% endif %}
+              {% elsif property.sale_price == 'negotiable' %}a combinar{% else %}valor sob consulta{% endif %}
+            </p>
+            {% endif %}
+            {% if property.for_rent %}
+            <p>
+              Locação:
+              {% if property.rental_price and property.rental_price != 'on_request' and property.rental_price != 'negotiable' and property.rental_price > 0 %}
+                {{ property.rental_price | money_format }}{% if property.rental_price_max and property.rental_price_max > property.rental_price %} a {{ property.rental_price_max | money_format }}{% endif %}/mês
+              {% elsif property.rental_price == 'negotiable' %}a combinar{% else %}valor sob consulta{% endif %}
+            </p>
+            {% endif %}
+          </div>
+
+          {% if property.condo_fee or property.iptu_price %}
+          <p class="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[14px] text-[#717171]">
+            {% if property.condo_fee %}<span>Condomínio: {{ property.condo_fee | money_format }}</span>{% endif %}
+            {% if property.iptu_price %}<span>IPTU: {{ property.iptu_price | money_format }}</span>{% endif %}
+          </p>
+          {% endif %}
+
+          <!-- Características: "2 a 3 quartos | 3 a 4 banheiros | ..." -->
+          <ul class="vp-prop-features mt-[35px] flex flex-wrap gap-y-3 font-serif text-[17px] leading-[1.2] text-black">
+            {% if property.beds and property.beds > 0 %}
+            <li>{{ property.beds }}{% if property.beds_max and property.beds_max > property.beds %} a {{ property.beds_max }}{% endif %} {% if property.beds == 1 and property.beds_max == blank %}quarto{% else %}quartos{% endif %}</li>
+            {% endif %}
+            {% if property.bathrooms and property.bathrooms > 0 %}
+            <li>{{ property.bathrooms }}{% if property.bathrooms_max and property.bathrooms_max > property.bathrooms %} a {{ property.bathrooms_max }}{% endif %} {% if property.bathrooms == 1 and property.bathrooms_max == blank %}banheiro{% else %}banheiros{% endif %}</li>
+            {% endif %}
+            {% if property.suites and property.suites > 0 %}
+            <li>{{ property.suites }}{% if property.suites_max and property.suites_max > property.suites %} a {{ property.suites_max }}{% endif %} {% if property.suites == 1 and property.suites_max == blank %}suíte{% else %}suítes{% endif %}</li>
+            {% endif %}
+            {% if property.parkings and property.parkings > 0 %}
+            <li>{{ property.parkings }}{% if property.parkings_max and property.parkings_max > property.parkings %} a {{ property.parkings_max }}{% endif %} {% if property.parkings == 1 and property.parkings_max == blank %}vaga{% else %}vagas{% endif %}</li>
+            {% endif %}
+            {% if property.usable_area and property.usable_area > 0 %}
+            <li>{{ property.usable_area }}{% if property.usable_area_max and property.usable_area_max > property.usable_area %} a {{ property.usable_area_max }}{% endif %} m²</li>
+            {% endif %}
+            {% if property.total_area and property.total_area > 0 %}
+            <li>{{ property.total_area }}{% if property.total_area_max and property.total_area_max > property.total_area %} a {{ property.total_area_max }}{% endif %} m²/total</li>
+            {% endif %}
           </ul>
         </div>
-        {% endif %}
+      </div>
 
-        <!-- Floor Plans Section -->
-        {% if property.floor_plans and property.floor_plans.size > 0 %}
-        <div class="mb-8">
-          <h2 class="text-lg font-bold text-gray-900 mb-4">Plantas</h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {% for planta in property.floor_plans %}
-            <div class="cursor-pointer rounded-xl overflow-hidden border border-gray-100 bg-gray-50" onclick="openPlantasModal({{ forloop.index0 }})">
-              <div class="vp-img-wrap aspect-[4/3]">
-                <img
-                  src="{{ planta.url | default: planta | img_resize: 600, 0 }}"
-                  alt="{{ planta.title | default: 'Planta' }} {{ forloop.index }}"
-                  class="w-full h-full object-contain"
-                  loading="lazy"
-                  onload="this.closest('.vp-img-wrap').classList.add('vp-loaded')"
-                >
-              </div>
-              {% if planta.title and planta.title != blank %}
-              <p class="text-xs text-gray-500 text-center px-2 py-1.5 truncate">{{ planta.title }}</p>
+      <!-- Card "Gostou deste imóvel?" — sticky na lateral (desktop), bloco normal no mobile -->
+      <aside class="relative z-10 mt-10 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:-mt-[40px]">
+        <div class="lg:sticky lg:top-5">
+          <div class="vp-prop-lead border border-[#EEEEEE] bg-white p-5 shadow-[0_4px_24px_0_rgb(0_0_0/0.06)]">
+            <h2 class="font-serif text-[22px] font-semibold leading-[1.2] text-black">Gostou deste imóvel?</h2>
+            <p class="font-serif mt-1 text-[15px] leading-[1.3] text-[#717171]">Fale com um de nossos corretores.</p>
+
+            {% form 'property_interest' %}
+              {% if form.posted_successfully %}
+                <p class="mt-4 border border-green-200 bg-green-50 p-3 text-[14px] text-green-800">{{ form.success }}</p>
               {% endif %}
-            </div>
-            {% endfor %}
+              {% if form.errors %}
+                <p class="mt-4 border border-red-200 bg-red-50 p-3 text-[14px] text-red-800">{{ form.errors | first }}</p>
+              {% endif %}
+              <input type="hidden" name="property_interest[property_id]" value="{{ property.id }}">
+              <input type="hidden" name="property_interest[property_sku]" value="{{ property.sku }}">
+              <input type="hidden" name="property_interest[property_type]" value="{{ property.type }}">
+              <input type="hidden" name="property_interest[contact_type]" value="email">
+              <div class="mt-5 space-y-[10px]">
+                <input type="text" name="property_interest[name]" required placeholder="Nome" aria-label="Nome" class="vp-prop-lead__input">
+                <input type="email" name="property_interest[email]" required placeholder="E-mail" aria-label="E-mail" class="vp-prop-lead__input">
+                {% include 'components/global/form/phone-input', name: 'property_interest[phone]', placeholder: 'Telefone', input_class: 'vp-prop-lead__input' %}
+                <select name="property_interest[contact_method]" required aria-label="Forma de contato" class="vp-prop-lead__input cursor-pointer">
+                  <option value="">Selecione uma forma de contato</option>
+                  <option value="Whatsapp">Whatsapp</option>
+                  <option value="E-mail">E-mail</option>
+                  <option value="Telefone">Telefone</option>
+                </select>
+
+                {% if workspace.settings.turnstile.enabled %}
+                  <div class="cf-turnstile" data-sitekey="{{ workspace.settings.turnstile.site_key }}"></div>
+                {% endif %}
+
+                <button type="submit" class="vp-btn w-full bg-black text-white border-black hover:bg-[#181A20]">Entrar em contato</button>
+              </div>
+            {% endform %}
+          </div>
+
+          <!-- Compartilhe -->
+          <div class="mt-5 flex items-center justify-center gap-4 text-[14px]" x-data="{ copied: false }">
+            <span class="font-bold text-black">Compartilhe:</span>
+            <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href)" href="#" target="_blank" rel="noopener" class="text-[20px] text-[#3B5998] transition-opacity hover:opacity-70" aria-label="Compartilhar no Facebook"><i class="ph-fill ph-facebook-logo"></i></a>
+            <a :href="'https://wa.me/?text=' + encodeURIComponent({{ _title | json | escape }} + ' ' + window.location.href)" href="#" target="_blank" rel="noopener" class="text-[20px] text-[#25D366] transition-opacity hover:opacity-70" aria-label="Compartilhar no WhatsApp"><i class="ph ph-whatsapp-logo"></i></a>
+            <a :href="'mailto:?subject=' + encodeURIComponent({{ _title | json | escape }}) + '&body=' + encodeURIComponent(window.location.href)" href="#" class="text-[20px] text-[#EA4335] transition-opacity hover:opacity-70" aria-label="Compartilhar por e-mail"><i class="ph-fill ph-envelope-simple"></i></a>
+            <button type="button" @click="navigator.clipboard.writeText(window.location.href); copied = true; setTimeout(() => copied = false, 2000)" class="relative text-[20px] text-black transition-opacity hover:opacity-70" aria-label="Copiar link">
+              <i class="ph" :class="copied ? 'ph-check' : 'ph-copy'"></i>
+              <span x-show="copied" x-transition x-cloak class="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap text-[11px] text-[#717171]">Link copiado</span>
+            </button>
           </div>
         </div>
+      </aside>
+
+      <!-- Conteúdo -->
+      <div class="lg:col-start-1 lg:row-start-2">
+
+        <!-- Sobre o imóvel -->
+        {% if property.description != blank %}
+        <section class="pt-[45px]">
+          <h2 class="vp-prop-title">Sobre o imóvel</h2>
+          <div class="vp-prop-description text-[15px] leading-[25px] text-black">{{ property.description | strip }}</div>
+        </section>
         {% endif %}
 
-        <!-- Location Section -->
-        {% assign map_display = property.map_display | default: 'exact' %}
-        {% if map_display != 'hidden' and property.latitude and property.longitude %}
-        <div class="mb-8" id="mapSection">
-          <h2 class="text-lg font-bold text-gray-900 mb-4">{% if map_display == 'exact' %}Localização{% else %}Localização aproximada{% endif %}</h2>
+        <!-- Plantas -->
+        {% if _has_plans %}
+        <section id="plantas" class="scroll-mt-5 pt-[60px]">
+          <h2 class="vp-prop-title">Plantas</h2>
+          <div class="relative px-[30px]">
+            <div class="swiper vp-plantas__swiper">
+              <div class="swiper-wrapper">
+                {% for planta in property.floor_plans %}
+                {%- assign _plan_img = planta.url | default: planta -%}
+                {%- comment -%} Sem nome cadastrado o título vem como nome do arquivo → "Planta N" {%- endcomment -%}
+                {%- assign _plan_title = planta.title | default: '' | strip -%}
+                {%- assign _plan_title_dc = _plan_title | downcase -%}
+                {%- if _plan_title == blank or _plan_title_dc contains '.jpg' or _plan_title_dc contains '.jpeg' or _plan_title_dc contains '.png' or _plan_title_dc contains '.webp' -%}
+                  {%- assign _plan_title = 'Planta ' | append: forloop.index -%}
+                {%- endif -%}
+                <div class="swiper-slide">
+                  <button type="button" class="group block w-full text-center" onclick="openPlantasModal({{ forloop.index0 }})">
+                    <span class="flex aspect-[4/3] w-full items-center justify-center overflow-hidden bg-white">
+                      {% if _plan_img != blank %}
+                      <img src="{{ _plan_img | img_resize: 600, 0 }}" alt="{{ _plan_title | escape }}" class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.03]" loading="lazy">
+                      {% else %}
+                      <span class="flex flex-col items-center gap-3 text-[#9A9A9A]"><i class="ph ph-selection text-[64px]"></i><span class="text-[15px]">Modelo Indisponível</span></span>
+                      {% endif %}
+                    </span>
+                    <span class="mt-4 block text-[14px] font-bold text-[#181A20]">{{ _plan_title }}</span>
+                  </button>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+            {% if property.floor_plans.size > 1 %}
+            <button type="button" class="vp-plantas__prev absolute left-0 top-[38%] z-10 -translate-y-1/2 text-[24px] text-black disabled:opacity-30" aria-label="Planta anterior"><i class="ph ph-caret-left"></i></button>
+            <button type="button" class="vp-plantas__next absolute right-0 top-[38%] z-10 -translate-y-1/2 text-[24px] text-black disabled:opacity-30" aria-label="Próxima planta"><i class="ph ph-caret-right"></i></button>
+            {% endif %}
+          </div>
+        </section>
+        {% endif %}
 
-          <div class="rounded-xl overflow-hidden h-[350px] bg-gray-100"
+        <!-- Localização -->
+        {% if _has_map %}
+        <section id="mapSection" class="scroll-mt-5 border-b border-[#E5E5E5] pt-[60px] pb-[15px]">
+          <h2 class="vp-prop-title">{% if map_display == 'exact' %}Localização{% else %}Localização aproximada{% endif %}</h2>
+          <div
             id="mapWrapper"
+            class="relative h-[340px] md:h-[440px] overflow-hidden bg-[#F2F2F2]"
             data-lat="{{ property.latitude }}"
             data-lng="{{ property.longitude }}"
             data-display="{{ map_display }}"
           >
-            <!-- Placeholder (replaced by map on click) -->
-            <div id="mapPlaceholder" class="w-full h-full relative cursor-pointer" onclick="window.initPropertyMap()">
-              <img src="{{ theme.assets_url }}/assets/images/map-placeholder.jpg" alt="Mapa" class="w-full h-full object-cover">
-              <div class="absolute inset-0 bg-white/70 flex items-center justify-center">
-                <button
-                  class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-white px-6 py-3 rounded-lg font-medium transition-colors"
-                >
-                  <i class="ph ph-map-pin text-lg"></i>
-                  Navegar pelo mapa
-                </button>
+            <div id="mapPlaceholder" class="flex h-full w-full items-start justify-center">
+              <img src="{{ theme.assets_url }}/assets/images/map-placeholder.jpg" alt="" class="absolute inset-0 h-full w-full object-cover opacity-60 grayscale" aria-hidden="true">
+              <div class="relative mx-4 mt-5 max-w-[300px] rounded-[8px] bg-white px-6 py-5 text-center shadow-[0_2px_12px_0_rgb(0_0_0/0.06)]">
+                <p class="text-[14px] leading-[22px] text-[#333]">Clique no botão abaixo para navegar pelo mapa de localização</p>
+                <button type="button" onclick="window.initPropertyMap()" class="font-serif mt-4 inline-flex items-center rounded-[4px] bg-black px-5 py-2 text-[14px] font-semibold text-white transition-colors hover:bg-[#181A20]">Navegar pelo mapa</button>
               </div>
             </div>
           </div>
-        </div>
+        </section>
         {% endif %}
-      </div>
 
-      <!-- Sidebar (1 column) — hidden on mobile, CTA bar used instead -->
-      <div class="hidden lg:block lg:col-span-1" x-data="{ modalOpen: null, f: { name: '', email: '', phone: '' } }">
-        <div class="sticky top-10">
-          <!-- Sidebar Card -->
-          <div class="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-
-            {% if theme_settings.contact.whatsapp != blank %}
-            <!-- WhatsApp Form (always open) -->
-            <div class="p-5">
-              <div class="flex items-center gap-2 mb-4">
-                <div class="w-8 h-8 rounded-full bg-[#22c55e]/10 flex items-center justify-center">
-                  <i class="ph-fill ph-whatsapp-logo text-[#22c55e] text-lg"></i>
-                </div>
-                <h3 class="text-base font-semibold text-gray-900">Falar no WhatsApp</h3>
-              </div>
-              {% form 'property_interest' %}
-                <input type="hidden" name="property_interest[property_id]" value="{{ property.id }}">
-                <input type="hidden" name="property_interest[property_sku]" value="{{ property.sku }}">
-                <input type="hidden" name="property_interest[property_type]" value="{{ property.type }}">
-                <input type="hidden" name="property_interest[contact_type]" value="whatsapp">
-                <div class="space-y-3">
-                  <input type="text" name="property_interest[name]" required placeholder="Seu nome" x-model="f.name" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-[#22c55e]/20 focus:border-[#22c55e] transition-colors outline-none placeholder:text-gray-400">
-                  <input type="email" name="property_interest[email]" required placeholder="Seu e-mail" x-model="f.email" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-[#22c55e]/20 focus:border-[#22c55e] transition-colors outline-none placeholder:text-gray-400">
-                  {% include 'components/global/form/phone-input', name: 'property_interest[phone]', placeholder: 'Seu celular', x_model: 'f.phone' %}
-                  <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-[#22c55e] hover:bg-[#16a34a] text-white px-4 py-3 rounded-lg font-semibold text-base transition-colors">
-                    <i class="ph ph-whatsapp-logo text-lg"></i>
-                    Conversar no WhatsApp
-                  </button>
-                </div>
-              {% endform %}
-            </div>
-            {% endif %}
-
-            <!-- Divider + Action Buttons -->
-            <div class="border-t border-gray-100 p-5 bg-gray-100">
-              <p class="text-xs text-gray-400 uppercase tracking-wider font-medium text-center mb-3">ou entre em contato</p>
-              <div class="grid grid-cols-2 gap-2.5">
-                <button
-                  @click="modalOpen = 'visit'"
-                  class="flex flex-col items-center gap-1.5 px-3 py-3.5 rounded-xl border border-gray-200 bg-white hover:border-primary/30 hover:bg-primary/5 transition-all group"
-                >
-                  <i class="ph ph-calendar-check text-xl text-gray-500 group-hover:text-primary transition-colors"></i>
-                  <span class="text-sm font-semibold text-gray-700 group-hover:text-primary transition-colors">Agendar visita</span>
-                </button>
-                <button
-                  @click="modalOpen = 'proposal'"
-                  class="flex flex-col items-center gap-1.5 px-3 py-3.5 rounded-xl border border-gray-200 bg-white hover:border-primary/30 hover:bg-primary/5 transition-all group"
-                >
-                  <i class="ph ph-hand-heart text-xl text-gray-500 group-hover:text-primary transition-colors"></i>
-                  <span class="text-sm font-semibold text-gray-700 group-hover:text-primary transition-colors">Fazer proposta</span>
-                </button>
-              </div>
-            </div>
-
+        <!-- Imóveis similares -->
+        {% if related.size > 0 %}
+        <section class="pt-[45px] pb-[80px]">
+          <h2 class="vp-prop-title">Imóveis similares</h2>
+          <div class="grid grid-cols-1 gap-[30px] md:grid-cols-2">
+            {% for property in related limit: 4 %}
+              {% include 'components/elegance-property-card' %}
+            {% endfor %}
           </div>
-        </div>
-
-        <!-- Modal: Agendar Visita -->
-        <div
-          x-show="modalOpen === 'visit'"
-          x-transition:enter="transition ease-out duration-200"
-          x-transition:enter-start="opacity-0"
-          x-transition:enter-end="opacity-100"
-          x-transition:leave="transition ease-in duration-150"
-          x-transition:leave-start="opacity-100"
-          x-transition:leave-end="opacity-0"
-          class="fixed inset-0 z-50 flex items-center justify-center p-4"
-          x-cloak
-          @keydown.escape.window="modalOpen = null"
-        >
-          <div class="absolute inset-0 bg-black/50" @click="modalOpen = null"></div>
-          <div
-            class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95 translate-y-4"
-            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-            @click.stop
-          >
-            <!-- Header -->
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-                  <i class="ph ph-calendar-check text-primary text-lg"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900">Agendar uma visita</h3>
-              </div>
-              <button @click="modalOpen = null" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
-                <i class="ph ph-x text-lg"></i>
-              </button>
-            </div>
-            <!-- Body -->
-            <div class="px-6 py-5">
-              <p class="text-sm text-gray-500 mb-4">Preencha seus dados e entraremos em contato para confirmar o melhor horário.</p>
-              {% form 'property_interest' %}
-                <input type="hidden" name="property_interest[property_id]" value="{{ property.id }}">
-                <input type="hidden" name="property_interest[property_sku]" value="{{ property.sku }}">
-                <input type="hidden" name="property_interest[property_type]" value="{{ property.type }}">
-                <input type="hidden" name="property_interest[contact_type]" value="visit">
-                <div class="space-y-3">
-                  <input type="text" name="property_interest[name]" required placeholder="Seu nome" x-model="f.name" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none placeholder:text-gray-400">
-                  <input type="email" name="property_interest[email]" required placeholder="Seu e-mail" x-model="f.email" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none placeholder:text-gray-400">
-                  {% include 'components/global/form/phone-input', name: 'property_interest[phone]', placeholder: 'Seu celular', x_model: 'f.phone' %}
-                  <div class="grid grid-cols-2 gap-3">
-                    <input type="text" name="property_interest[preferred_date]" required readonly placeholder="Data preferida" x-init="flatpickr($el, { minDate: new Date(Date.now() + 86400000), maxDate: new Date(Date.now() + 86400000 * 31), dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y', altInputClass: 'w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none', disable: [function(date){ return date.getDay() === 0 || date.getDay() === 6; }], locale: flatpickr.l10ns.pt })" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none">
-                    {% include 'components/global/form/select',
-                      name: 'property_interest[preferred_time]',
-                      placeholder: 'Horário',
-                      searchable: true,
-                      options_str: '08:00|08:00||08:30|08:30||09:00|09:00||09:30|09:30||10:00|10:00||10:30|10:30||11:00|11:00||11:30|11:30||12:00|12:00||12:30|12:30||13:00|13:00||13:30|13:30||14:00|14:00||14:30|14:30||15:00|15:00||15:30|15:30||16:00|16:00||16:30|16:30||17:00|17:00||17:30|17:30||18:00|18:00'
-                    %}
-                  </div>
-                  <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-lg font-semibold text-sm transition-colors">
-                    Solicitar agendamento
-                  </button>
-                </div>
-              {% endform %}
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal: Fazer Proposta -->
-        <div
-          x-show="modalOpen === 'proposal'"
-          x-transition:enter="transition ease-out duration-200"
-          x-transition:enter-start="opacity-0"
-          x-transition:enter-end="opacity-100"
-          x-transition:leave="transition ease-in duration-150"
-          x-transition:leave-start="opacity-100"
-          x-transition:leave-end="opacity-0"
-          class="fixed inset-0 z-50 flex items-center justify-center p-4"
-          x-cloak
-          @keydown.escape.window="modalOpen = null"
-        >
-          <div class="absolute inset-0 bg-black/50" @click="modalOpen = null"></div>
-          <div
-            class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
-            x-transition:enter="transition ease-out duration-200"
-            x-transition:enter-start="opacity-0 scale-95 translate-y-4"
-            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
-            @click.stop
-          >
-            <!-- Header -->
-            <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-                  <i class="ph ph-hand-heart text-primary text-lg"></i>
-                </div>
-                <h3 class="text-lg font-bold text-gray-900">Fazer uma proposta</h3>
-              </div>
-              <button @click="modalOpen = null" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
-                <i class="ph ph-x text-lg"></i>
-              </button>
-            </div>
-            <!-- Body -->
-            <div class="px-6 py-5">
-              <p class="text-sm text-gray-500 mb-4">Envie sua proposta e um consultor entrará em contato para negociação.</p>
-              {% form 'property_interest' %}
-                <input type="hidden" name="property_interest[property_id]" value="{{ property.id }}">
-                <input type="hidden" name="property_interest[property_sku]" value="{{ property.sku }}">
-                <input type="hidden" name="property_interest[property_type]" value="{{ property.type }}">
-                <input type="hidden" name="property_interest[contact_type]" value="proposal">
-                <div class="space-y-3">
-                  <input type="text" name="property_interest[name]" required placeholder="Seu nome" x-model="f.name" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none placeholder:text-gray-400">
-                  <input type="email" name="property_interest[email]" required placeholder="Seu e-mail" x-model="f.email" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none placeholder:text-gray-400">
-                  {% include 'components/global/form/phone-input', name: 'property_interest[phone]', placeholder: 'Seu celular', x_model: 'f.phone' %}
-                  <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Valor da proposta</label>
-                    {% include 'components/global/form/currency-input',
-                      name: 'property_interest[proposal_value]',
-                      currency: 'BRL',
-                      placeholder: '0,00'
-                    %}
-                  </div>
-                  <textarea name="property_interest[message]" rows="3" placeholder="Observações (opcional)" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none placeholder:text-gray-400 resize-none"></textarea>
-                  <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-lg font-semibold text-sm transition-colors">
-                    Enviar proposta
-                  </button>
-                </div>
-              {% endform %}
-            </div>
-          </div>
-        </div>
+        </section>
+        {% else %}
+        <div class="pb-[80px]"></div>
+        {% endif %}
       </div>
     </div>
   </div>
 </article>
 
-<!-- Mobile Fixed CTA Bar -->
-<div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 px-4 py-3 shadow-[0_-4px_16px_rgba(0,0,0,0.08)]" id="mobileCTABar"
-  x-data="{ mobileModal: null, f: { name: '', email: '', phone: '' } }"
->
-  <div class="flex gap-2">
-    {% if theme_settings.contact.whatsapp != blank %}
-    <button
-      @click="mobileModal = 'wa'"
-      class="flex-1 bg-[#22C55E] hover:bg-[#16A34A] text-white px-3 py-3 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-colors text-sm"
-    >
-      <i class="ph-fill ph-whatsapp-logo text-lg"></i>
-      WhatsApp
-    </button>
-    {% endif %}
-    <button
-      @click="mobileModal = 'visit'"
-      class="flex-1 bg-white border border-gray-200 text-gray-700 px-3 py-3 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-colors text-sm hover:bg-gray-50"
-    >
-      <i class="ph ph-calendar-check text-lg"></i>
-      Visita
-    </button>
-    <button
-      @click="mobileModal = 'proposal'"
-      class="flex-1 bg-white border border-gray-200 text-gray-700 px-3 py-3 rounded-xl font-semibold flex items-center justify-center gap-1.5 transition-colors text-sm hover:bg-gray-50"
-    >
-      <i class="ph ph-hand-heart text-lg"></i>
-      Proposta
-    </button>
-  </div>
-
-  <!-- Mobile Modal: WhatsApp -->
-  <div
-    x-show="mobileModal === 'wa'"
-    x-transition:enter="transition ease-out duration-200"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in duration-150"
-    class="fixed inset-0 z-50"
-    x-cloak
-    @keydown.escape.window="mobileModal = null"
-  >
-    <div class="absolute inset-0 bg-black/50" @click="mobileModal = null"></div>
-    <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[90vh] overflow-y-auto"
-      x-transition:enter="transition ease-out duration-300"
-      x-transition:enter-start="translate-y-full"
-      x-transition:enter-end="translate-y-0"
-      x-transition:leave="transition ease-in duration-200"
-      x-transition:leave-start="translate-y-0"
-      x-transition:leave-end="translate-y-full"
-    >
-      <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-300 rounded-full"></div></div>
-      <div class="px-5 pb-6">
-        <div class="flex items-center gap-2.5 mb-4">
-          <div class="w-9 h-9 rounded-full bg-[#22C55E]/10 flex items-center justify-center">
-            <i class="ph-fill ph-whatsapp-logo text-[#22C55E] text-lg"></i>
-          </div>
-          <h3 class="text-lg font-bold text-gray-900">Falar no WhatsApp</h3>
-        </div>
-        {% form 'property_interest' %}
-          <input type="hidden" name="property_interest[property_id]" value="{{ property.id }}">
-          <input type="hidden" name="property_interest[property_sku]" value="{{ property.sku }}">
-          <input type="hidden" name="property_interest[property_type]" value="{{ property.type }}">
-          <input type="hidden" name="property_interest[contact_type]" value="whatsapp">
-          <div class="space-y-3">
-            <input type="text" name="property_interest[name]" required placeholder="Seu nome" x-model="f.name" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-[#22C55E]/20 focus:border-[#22C55E] transition-colors outline-none placeholder:text-gray-400">
-            <input type="email" name="property_interest[email]" required placeholder="Seu e-mail" x-model="f.email" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-[#22C55E]/20 focus:border-[#22C55E] transition-colors outline-none placeholder:text-gray-400">
-            {% include 'components/global/form/phone-input', name: 'property_interest[phone]', placeholder: 'Seu celular', x_model: 'f.phone' %}
-            <button type="submit" class="w-full bg-[#22C55E] hover:bg-[#16A34A] text-white px-4 py-3 rounded-lg font-semibold text-sm transition-colors flex items-center justify-center gap-2">
-              <i class="ph ph-whatsapp-logo"></i>
-              Iniciar conversa
-            </button>
-          </div>
-        {% endform %}
-      </div>
-    </div>
-  </div>
-
-  <!-- Mobile Modal: Agendar Visita -->
-  <div
-    x-show="mobileModal === 'visit'"
-    x-transition:enter="transition ease-out duration-200"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in duration-150"
-    class="fixed inset-0 z-50"
-    x-cloak
-    @keydown.escape.window="mobileModal = null"
-  >
-    <div class="absolute inset-0 bg-black/50" @click="mobileModal = null"></div>
-    <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[90vh] overflow-y-auto"
-      x-transition:enter="transition ease-out duration-300"
-      x-transition:enter-start="translate-y-full"
-      x-transition:enter-end="translate-y-0"
-      x-transition:leave="transition ease-in duration-200"
-      x-transition:leave-start="translate-y-0"
-      x-transition:leave-end="translate-y-full"
-    >
-      <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-300 rounded-full"></div></div>
-      <div class="px-5 pb-6">
-        <div class="flex items-center gap-2.5 mb-4">
-          <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-            <i class="ph ph-calendar-check text-primary text-lg"></i>
-          </div>
-          <h3 class="text-lg font-bold text-gray-900">Agendar uma visita</h3>
-        </div>
-        {% form 'property_interest' %}
-          <input type="hidden" name="property_interest[property_id]" value="{{ property.id }}">
-          <input type="hidden" name="property_interest[property_sku]" value="{{ property.sku }}">
-          <input type="hidden" name="property_interest[property_type]" value="{{ property.type }}">
-          <input type="hidden" name="property_interest[contact_type]" value="visit">
-          <div class="space-y-3">
-            <input type="text" name="property_interest[name]" required placeholder="Seu nome" x-model="f.name" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none placeholder:text-gray-400">
-            <input type="email" name="property_interest[email]" required placeholder="Seu e-mail" x-model="f.email" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none placeholder:text-gray-400">
-            {% include 'components/global/form/phone-input', name: 'property_interest[phone]', placeholder: 'Seu celular', x_model: 'f.phone' %}
-            <input type="text" name="property_interest[preferred_date]" required readonly placeholder="Data preferida" x-init="flatpickr($el, { minDate: new Date(Date.now() + 86400000), maxDate: new Date(Date.now() + 86400000 * 31), dateFormat: 'Y-m-d', altInput: true, altFormat: 'd/m/Y', altInputClass: 'w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none', disable: [function(date){ return date.getDay() === 0 || date.getDay() === 6; }], locale: flatpickr.l10ns.pt })" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none">
-            <select name="property_interest[preferred_time]" required class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none bg-white">
-              <option value="" disabled selected>Horário</option>
-              <option value="08:00">08:00</option>
-              <option value="08:30">08:30</option>
-              <option value="09:00">09:00</option>
-              <option value="09:30">09:30</option>
-              <option value="10:00">10:00</option>
-              <option value="10:30">10:30</option>
-              <option value="11:00">11:00</option>
-              <option value="11:30">11:30</option>
-              <option value="12:00">12:00</option>
-              <option value="12:30">12:30</option>
-              <option value="13:00">13:00</option>
-              <option value="13:30">13:30</option>
-              <option value="14:00">14:00</option>
-              <option value="14:30">14:30</option>
-              <option value="15:00">15:00</option>
-              <option value="15:30">15:30</option>
-              <option value="16:00">16:00</option>
-              <option value="16:30">16:30</option>
-              <option value="17:00">17:00</option>
-              <option value="17:30">17:30</option>
-              <option value="18:00">18:00</option>
-            </select>
-            <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-lg font-semibold text-sm transition-colors">
-              Solicitar agendamento
-            </button>
-          </div>
-        {% endform %}
-      </div>
-    </div>
-  </div>
-
-  <!-- Mobile Modal: Fazer Proposta -->
-  <div
-    x-show="mobileModal === 'proposal'"
-    x-transition:enter="transition ease-out duration-200"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in duration-150"
-    class="fixed inset-0 z-50"
-    x-cloak
-    @keydown.escape.window="mobileModal = null"
-  >
-    <div class="absolute inset-0 bg-black/50" @click="mobileModal = null"></div>
-    <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[90vh] overflow-y-auto"
-      x-transition:enter="transition ease-out duration-300"
-      x-transition:enter-start="translate-y-full"
-      x-transition:enter-end="translate-y-0"
-      x-transition:leave="transition ease-in duration-200"
-      x-transition:leave-start="translate-y-0"
-      x-transition:leave-end="translate-y-full"
-    >
-      <div class="flex justify-center pt-3 pb-1"><div class="w-10 h-1 bg-gray-300 rounded-full"></div></div>
-      <div class="px-5 pb-6">
-        <div class="flex items-center gap-2.5 mb-4">
-          <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
-            <i class="ph ph-hand-heart text-primary text-lg"></i>
-          </div>
-          <h3 class="text-lg font-bold text-gray-900">Fazer uma proposta</h3>
-        </div>
-        {% form 'property_interest' %}
-          <input type="hidden" name="property_interest[property_id]" value="{{ property.id }}">
-          <input type="hidden" name="property_interest[property_sku]" value="{{ property.sku }}">
-          <input type="hidden" name="property_interest[property_type]" value="{{ property.type }}">
-          <input type="hidden" name="property_interest[contact_type]" value="proposal">
-          <div class="space-y-3">
-            <input type="text" name="property_interest[name]" required placeholder="Seu nome" x-model="f.name" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none placeholder:text-gray-400">
-            <input type="email" name="property_interest[email]" required placeholder="Seu e-mail" x-model="f.email" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none placeholder:text-gray-400">
-            {% include 'components/global/form/phone-input', name: 'property_interest[phone]', placeholder: 'Seu celular', x_model: 'f.phone' %}
-            <div>
-              <label class="block text-xs font-medium text-gray-500 mb-1">Valor da proposta</label>
-              {% include 'components/global/form/currency-input',
-                name: 'property_interest[proposal_value]',
-                currency: 'BRL',
-                placeholder: '0,00'
-              %}
-            </div>
-            <textarea name="property_interest[message]" rows="3" placeholder="Observações (opcional)" class="w-full border border-gray-200 rounded-lg px-3.5 py-2.5 text-base focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors outline-none placeholder:text-gray-400 resize-none"></textarea>
-            <button type="submit" class="w-full bg-primary hover:bg-primary/90 text-white px-4 py-3 rounded-lg font-semibold text-sm transition-colors">
-              Enviar proposta
-            </button>
-          </div>
-        {% endform %}
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- Related Properties -->
-{% if related.size > 0 %}
-<section class="py-12 bg-gray-100">
-  <div class="max-w-screen-2xl mx-auto px-[3%]">
-    <h2 class="text-2xl font-bold text-gray-900 mb-8">Você também pode gostar</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      {% for property in related %}
-      {% include 'components/property-card' %}
-      {% endfor %}
-    </div>
-  </div>
-</section>
-{% endif %}
+<!-- Condição Especial (mesma seção da home) -->
+{% section 'home/promotion' %}
 
 <!-- Plantas Modal -->
 {% if property.floor_plans and property.floor_plans.size > 0 %}
@@ -963,11 +378,7 @@
   </div>
 </div>
 {% endblock %}
-
 {% block head_assets %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script defer src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
 {%- comment -%} ======= JSON-LD: RealEstateListing + BreadcrumbList ======= {%- endcomment -%}
 {%- assign _url_parts = canonical_url | split: '/' -%}
@@ -1139,15 +550,6 @@
 }
 </script>
 
-<!-- Gallery Modal Styles -->
-<style>
-  /* Mobile CTA: push content above fixed bar */
-  @media (max-width: 1023px) {
-    .vp-property-single {
-      padding-bottom: 80px;
-    }
-  }
-</style>
 <style>
   #galleryModal {
     user-select: none;
@@ -1193,6 +595,32 @@
 {% endblock %}
 
 {% block body_assets %}
+
+<!-- Galeria principal (3 fotos por vez) e carrossel de plantas -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof Swiper === 'undefined') return;
+  if (document.querySelector('.vp-prop-gallery__swiper')) {
+    // Até 3 fotos por vez; com menos fotos elas dividem a largura (sem espaço vazio)
+    var n = {{ property.images.size | default: 0 }};
+    new Swiper('.vp-prop-gallery__swiper', {
+      slidesPerView: 1,
+      spaceBetween: 5,
+      loop: n > 3,
+      navigation: { prevEl: '.vp-prop-gallery__prev', nextEl: '.vp-prop-gallery__next' },
+      breakpoints: { 640: { slidesPerView: Math.min(2, n) }, 1024: { slidesPerView: Math.min(3, n) } }
+    });
+  }
+  if (document.querySelector('.vp-plantas__swiper')) {
+    new Swiper('.vp-plantas__swiper', {
+      slidesPerView: 1,
+      spaceBetween: 30,
+      navigation: { prevEl: '.vp-plantas__prev', nextEl: '.vp-plantas__next' },
+      breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }
+    });
+  }
+});
+</script>
 
 {% if property.floor_plans and property.floor_plans.size > 0 %}
 <script>

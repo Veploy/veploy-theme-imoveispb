@@ -121,6 +121,57 @@
     transition: background-color .2s, color .2s, border-color .2s;
   }
 
+  /* Detalhe do imóvel — ações (Fotos / Mapa / Plantas) */
+  .vp-prop-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 15px;
+    border: 1px solid #000;
+    font-size: 14px;
+    line-height: 1;
+    text-transform: uppercase;
+    color: #000;
+    background: #fff;
+    transition: background-color .2s, color .2s;
+  }
+  .vp-prop-action i { font-size: 17px; }
+  .vp-prop-action:hover { background: #000; color: #fff; }
+
+  /* Detalhe do imóvel — títulos de seção ("Sobre o imóvel", "Plantas"...) */
+  .vp-prop-title {
+    margin-bottom: 20px;
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: #000;
+  }
+
+  /* Características separadas por linhas verticais */
+  .vp-prop-features li { margin-right: 20px; padding-right: 20px; border-right: 1px solid #000; }
+  @media (max-width: 767px) { .vp-prop-features li { margin-right: 12px; padding-right: 12px; } }
+
+  .vp-prop-description p + p { margin-top: 1em; }
+
+  /* Card "Gostou deste imóvel?" — campos compactos */
+  .vp-prop-lead__input {
+    width: 100%;
+    height: 42px;
+    padding: 0 15px;
+    border: 1px solid #DDDDDD;
+    border-radius: 0;
+    background-color: #fff;
+    font-size: 15px;
+    color: #000;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .vp-prop-lead__input::placeholder { color: #717171; }
+  .vp-prop-lead__input:focus { border-color: #000; }
+  select.vp-prop-lead__input { font-size: 14px; }
+
   /* Hero Swiper */
   .hero-swiper .swiper-button-prev,
   .hero-swiper .swiper-button-next {
