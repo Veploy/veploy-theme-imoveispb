@@ -1,0 +1,76 @@
+<!-- Trabalhe conosco — Benefícios (Elegance): linha divisória, título e quatro colunas
+     com ícone em caixa cinza, separadas por linhas verticais pretas -->
+{%- assign cb = sections['careers/benefits'] -%}
+{%- assign cb_eyebrow = cb.eyebrow | default: '/Benefícios' -%}
+{%- assign cb_title = cb.title | default: 'Vantagens exclusivas para corretores Lopes Elegance' -%}
+{%- assign cb_description = cb.description | default: 'Junte-se à Lopes Elegance e tenha acesso a comissões atrativas, capacitação contínua, flexibilidade no dia a dia e suporte completo para alcançar os melhores resultados no mercado imobiliário.' -%}
+{%- assign cb_items = cb.items.items -%}
+
+<section {{ section_attrs }} class="vp-section vp-careers-benefits w-full bg-white px-[5%]{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="max-w-[1300px] mx-auto pb-[30px] md:pb-[60px]">
+    <hr class="my-[15px] border-0 border-t border-[#DDDDDD]">
+
+    <span class="vp-eyebrow pt-[30px] md:pt-[60px] pb-[15px] text-[#181A20]">{{ cb_eyebrow }}</span>
+    <h2 class="font-serif text-[30px] leading-[35px] md:text-[35px] md:leading-[45px] font-light text-[#181A20]">{{ cb_title }}</h2>
+    <p class="max-w-[900px] pt-5 text-[14px] md:text-[15px] leading-[22px] text-[#181A20]">{{ cb_description }}</p>
+
+    {% if cb_items and cb_items.size > 0 %}
+    <div class="grid grid-cols-1 min-[1201px]:grid-cols-4 pt-[20px] min-[1201px]:py-[50px]">
+      {% for item in cb_items %}
+      <div class="flex items-center px-[30px] py-[30px] min-[1201px]:py-0{% unless forloop.last %} border-b border-black min-[1201px]:border-b-0 min-[1201px]:border-r{% endunless %}">
+        <div>
+          <span class="mb-[15px] inline-flex h-[50px] w-[50px] items-center justify-center rounded-[4px] bg-[#F1F1F1] p-[10px] text-black">
+            {%- case item.icon -%}
+              {%- when 'bullhorn' -%}
+              <svg aria-hidden="true" viewBox="0 0 576 512" class="h-full w-full fill-current"><path d="M576 240c0-23.63-12.95-44.04-32-55.12V32.01C544 23.26 537.02 0 512 0c-7.12 0-14.19 2.38-19.98 7.02l-85.03 68.03C364.28 109.19 310.66 128 256 128H64c-35.35 0-64 28.65-64 64v96c0 35.35 28.65 64 64 64h33.7c-1.39 10.48-2.18 21.14-2.18 32 0 39.77 9.26 77.35 25.56 110.94 5.19 10.69 16.52 17.06 28.4 17.06h74.28c26.05 0 41.69-29.84 25.9-50.56-16.4-21.52-26.15-48.36-26.15-77.44 0-11.11 1.62-21.79 4.41-32H256c54.66 0 108.28 18.81 150.98 52.95l85.03 68.03a32.023 32.023 0 0 0 19.98 7.02c24.92 0 32-22.78 32-32V295.13C563.05 284.04 576 263.63 576 240zm-96 141.42l-33.05-26.44C392.95 311.78 325.12 288 256 288v-96c69.12 0 136.95-23.78 190.95-66.98L480 98.58v282.84z"/></svg>
+              {%- when 'tools' -%}
+              <svg aria-hidden="true" viewBox="0 0 512 512" class="h-full w-full fill-current"><path d="M501.1 395.7L384 278.6c-23.1-23.1-57.6-27.6-85.4-13.9L192 158.1V96L64 0 0 64l96 128h62.1l106.6 106.6c-13.6 27.8-9.2 62.3 13.9 85.4l117.1 117.1c14.6 14.6 38.2 14.6 52.7 0l52.7-52.7c14.5-14.6 14.5-38.2 0-52.7zM331.7 225c28.3 0 54.9 11 74.9 31l19.4 19.4c15.8-6.9 30.8-16.5 43.8-29.5 37.1-37.1 49.7-89.3 37.9-136.7-2.2-9-13.5-12.1-20.1-5.5l-74.4 74.4-67.9-11.3L334 98.9l74.4-74.4c6.6-6.6 3.4-17.9-5.7-20.2-47.4-11.7-99.6.9-136.6 37.9-28.5 28.5-41.9 66.1-41.2 103.6l82.1 82.1c8.1-1.9 16.5-2.9 24.7-2.9zm-103.9 82l-56.7-56.7L18.7 402.8c-25 25-25 65.5 0 90.5s65.5 25 90.5 0l123.6-123.6c-7.6-19.9-9.9-41.6-5-62.7zM64 472c-13.2 0-24-10.8-24-24 0-13.3 10.7-24 24-24s24 10.7 24 24c0 13.2-10.7 24-24 24z"/></svg>
+              {%- when 'key' -%}
+              <svg aria-hidden="true" viewBox="0 0 512 512" class="h-full w-full fill-current"><path d="M512 176.001C512 273.203 433.202 352 336 352c-11.22 0-22.19-1.062-32.827-3.069l-24.012 27.014A23.999 23.999 0 0 1 261.223 384H224v40c0 13.255-10.745 24-24 24h-40v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24v-78.059c0-6.365 2.529-12.47 7.029-16.971l161.802-161.802C163.108 213.814 160 195.271 160 176 160 78.798 238.797.001 335.999 0 433.488-.001 512 78.511 512 176.001zM336 128c0 26.51 21.49 48 48 48s48-21.49 48-48-21.49-48-48-48-48 21.49-48 48z"/></svg>
+              {%- else -%}
+              <svg aria-hidden="true" viewBox="0 0 640 512" class="h-full w-full fill-current"><path d="M434.7 64h-85.9c-8 0-15.7 3-21.6 8.4l-98.3 90c-.1.1-.2.3-.3.4-16.6 15.6-16.3 40.5-2.1 56 12.7 13.9 39.4 17.6 56.1 2.7.1-.1.3-.1.4-.2l79.9-73.2c6.5-5.9 16.7-5.5 22.6 1 6 6.5 5.5 16.6-1 22.6l-26.1 23.9L504 313.8c2.9 2.4 5.5 5 7.9 7.7V128l-54.6-54.6c-5.9-6-14.1-9.4-22.6-9.4zM544 128.2v223.9c0 17.7 14.3 32 32 32h64V128.2h-96zm48 223.9c-8.8 0-16-7.2-16-16s7.2-16 16-16 16 7.2 16 16-7.2 16-16 16zM0 384h64c17.7 0 32-14.3 32-32V128.2H0V384zm48-63.9c8.8 0 16 7.2 16 16s-7.2 16-16 16-16-7.2-16-16c0-8.9 7.2-16 16-16zm435.9 18.6L334.6 217.5l-30 27.5c-29.7 27.1-75.2 24.5-101.7-4.4-26.9-29.4-24.8-74.9 4.4-101.7L289.1 64h-83.8c-8.5 0-16.6 3.4-22.6 9.4L128 128v223.9h18.3l90.5 81.9c27.4 22.3 67.7 18.1 90-9.3l.2-.2 17.9 15.5c15.9 13 39.4 10.5 52.3-5.4l31.4-38.6 5.4 4.4c13.7 11.1 33.9 9.1 45-4.7l9.5-11.7c11.2-13.8 9.1-33.9-4.6-45.1z"/></svg>
+            {%- endcase -%}
+          </span>
+          <h3 class="font-serif mb-[5px] text-[16px] font-medium leading-[26px] text-black">{{ item.title }}</h3>
+          <p class="text-[15px] leading-[22px] text-[#717171]">{{ item.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Trabalhe conosco — benefícios",
+  "location": "careers",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/Benefícios" },
+    { "type": "textarea", "id": "title", "label": "Título" },
+    { "type": "textarea", "id": "description", "label": "Descrição" },
+    {
+      "type": "repeater",
+      "id": "items",
+      "label": "Benefícios",
+      "max_items": 4,
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Ícone",
+          "default": "handshake",
+          "options": [
+            { "value": "handshake", "label": "Aperto de mãos" },
+            { "value": "bullhorn", "label": "Megafone" },
+            { "value": "tools", "label": "Ferramentas" },
+            { "value": "key", "label": "Chave" }
+          ]
+        },
+        { "type": "text", "id": "title", "label": "Título" },
+        { "type": "textarea", "id": "description", "label": "Descrição" }
+      ]
+    }
+  ]
+}
+{% endschema %}

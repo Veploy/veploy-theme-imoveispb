@@ -1,0 +1,92 @@
+<!-- Trabalhe conosco (Elegance): texto + botão WhatsApp + formulário à esquerda,
+     imagem com texto sobreposto (degradê preto embaixo) à direita -->
+{%- assign cm = sections['careers/main'] -%}
+{%- assign cm_eyebrow = cm.eyebrow | default: '/Trabalhe conosco' -%}
+{%- assign cm_title = cm.title | default: 'Faça parte da nossa equipe e cresça com a Lopes Elegance' -%}
+{%- assign cm_description = cm.description | default: 'Preencha o formulário abaixo e venha fazer parte da maior rede de imobiliárias da América Latina.' -%}
+{%- assign cm_wa_text = cm.cta_whatsapp_text | default: 'Chamar no WhatsApp' -%}
+{%- assign cm_submit = cm.submit_text | default: 'Solicitar contato' -%}
+{%- assign cm_overlay_text = cm.overlay_text | default: 'Aqui você encontra o ambiente ideal para crescer no mercado imobiliário. Com estrutura moderna, apoio constante e foco no seu desenvolvimento, oferecemos as condições perfeitas para transformar seu potencial em grandes conquistas.' -%}
+{%- assign cm_overlay_company = cm.overlay_company | default: 'Lopes Elegance' -%}
+{%- assign _wa = theme_settings.contact.whatsapp | remove: '-' | remove: '(' | remove: ')' | remove: ' ' -%}
+{%- assign whatsapp_url = theme_settings.contact.whatsapp_link | default: '' -%}
+{%- if whatsapp_url == '' -%}{%- assign whatsapp_url = 'https://wa.me/55' | append: _wa -%}{%- endif -%}
+
+<section {{ section_attrs }} class="vp-section vp-careers-main w-full bg-white px-[5%]{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="max-w-[1300px] mx-auto flex flex-col min-[881px]:flex-row justify-between gap-5 lg:gap-[80px] pt-[40px] pb-[40px] md:pt-[60px] md:pb-[30px]">
+    <!-- Texto + formulário -->
+    <div class="w-full min-[881px]:w-[45%] xl:w-1/2 pb-[50px] min-[881px]:py-[50px] xl:px-[30px]">
+      <span class="vp-eyebrow text-[#181A20]">{{ cm_eyebrow }}</span>
+      <h1 class="font-serif mt-[20px] text-[30px] leading-[35px] md:text-[35px] md:leading-[45px] font-light text-[#181A20]">{{ cm_title }}</h1>
+      <p class="mt-5 text-[14px] md:text-[15px] leading-[22px] text-[#181A20]">{{ cm_description }}</p>
+
+      {%- if theme_settings.contact.whatsapp != blank -%}
+      <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="vp-btn mt-5 border-black bg-white text-black hover:bg-black hover:text-white">
+        <i class="ph ph-whatsapp-logo text-[16px]"></i>
+        {{ cm_wa_text }}
+      </a>
+      {%- endif -%}
+
+      <div class="vp-form pt-[50px]">
+        {% form 'contact', name: 'Trabalhe conosco' %}
+          {% if form.posted_successfully %}
+            <p class="mb-6 border border-green-200 bg-green-50 p-4 text-green-800 font-medium">{{ form.success }}</p>
+          {% endif %}
+          {% if form.errors %}
+            <p class="mb-6 border border-red-200 bg-red-50 p-4 text-red-800 font-medium">{{ form.errors | first }}</p>
+          {% endif %}
+          <div class="space-y-[30px] md:space-y-[40px]">
+            <div>
+              <label for="tc-name">Nome</label>
+              <input id="tc-name" type="text" name="contact[name]" required class="vp-form__input">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-[30px] sm:gap-[10px]">
+              <div>
+                <label>Telefone</label>
+                {% include 'components/global/form/phone-input', name: 'contact[phone]', input_class: 'vp-form__input' %}
+              </div>
+              <div>
+                <label for="tc-email">E-mail</label>
+                <input id="tc-email" type="email" name="contact[email]" required class="vp-form__input">
+              </div>
+            </div>
+            <div>
+              <label for="tc-message">Breve resumo sobre você (opcional)</label>
+              <textarea id="tc-message" name="contact[message]" rows="4" class="vp-form__input"></textarea>
+            </div>
+
+            {% if workspace.settings.turnstile.enabled %}
+              <div class="cf-turnstile" data-sitekey="{{ workspace.settings.turnstile.site_key }}"></div>
+            {% endif %}
+
+            <button type="submit" class="vp-form__submit !py-[12px]">{{ cm_submit }}</button>
+          </div>
+        {% endform %}
+      </div>
+    </div>
+
+    <!-- Imagem com texto sobreposto -->
+    <div class="relative flex min-h-[520px] w-full min-[881px]:w-1/2 flex-col justify-end overflow-hidden rounded-[8px] bg-cover bg-top md:bg-center p-[40px]"{% if cm.image %} style="background-image: url('{{ cm.image }}');"{% endif %}>
+      <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/[.18] to-black opacity-50"></div>
+      <p class="relative font-serif text-[18px] font-light leading-[1.3] text-white [text-shadow:0_0_10px_#000]">{{ cm_overlay_text }}</p>
+      <p class="relative mt-5 font-serif text-[15px] font-semibold leading-[1.3] text-white [text-shadow:0_0_62px_#000]">{{ cm_overlay_company }}</p>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Trabalhe conosco — formulário",
+  "location": "careers",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/Trabalhe conosco" },
+    { "type": "textarea", "id": "title", "label": "Título" },
+    { "type": "textarea", "id": "description", "label": "Descrição" },
+    { "type": "text", "id": "cta_whatsapp_text", "label": "Texto do botão WhatsApp", "default": "Chamar no WhatsApp" },
+    { "type": "text", "id": "submit_text", "label": "Texto do botão de envio", "default": "Solicitar contato" },
+    { "type": "image_picker", "id": "image", "label": "Imagem à direita" },
+    { "type": "textarea", "id": "overlay_text", "label": "Texto sobre a imagem" },
+    { "type": "text", "id": "overlay_company", "label": "Assinatura sobre a imagem", "default": "Lopes Elegance" }
+  ]
+}
+{% endschema %}
