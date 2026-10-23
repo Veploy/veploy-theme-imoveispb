@@ -1,9 +1,13 @@
 /* Fontes da marca, servidas pelo próprio tema (as do WordPress morrem com ele).
-   Lopes Sans: mesmos 3 pesos que o site original carrega (500/600 caem no mais próximo). */
-@font-face { font-family: 'Lopes Sans'; src: url('../../fonts/LopesSans-Light.woff2') format('woff2'); font-weight: 300; font-style: normal; font-display: swap; }
-@font-face { font-family: 'Lopes Sans'; src: url('../../fonts/LopesSans-Regular.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: 'Lopes Sans'; src: url('../../fonts/LopesSans-Bold.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
-@font-face { font-family: 'White Angelica'; src: url('../../fonts/WhiteAngelica.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+   Reckless Neue: os mesmos pesos que o site original declara para os títulos. */
+@font-face { font-family: 'Reckless Neue'; src: url('../../fonts/reckless-neue-light.ttf') format('truetype'); font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Reckless Neue'; src: url('../../fonts/reckless-neue-light-italic.ttf') format('truetype'); font-weight: 300; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Reckless Neue'; src: url('../../fonts/reckless-neue-regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Reckless Neue'; src: url('../../fonts/reckless-neue-regular-italic.ttf') format('truetype'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Reckless Neue'; src: url('../../fonts/reckless-neue-medium.ttf') format('truetype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Reckless Neue'; src: url('../../fonts/reckless-neue-semi-bold.ttf') format('truetype'); font-weight: 600; font-style: normal; font-display: swap; }
+
+@font-face { font-family: 'Aurantiaca'; src: url('../../fonts/Aurantiaca.ttf') format('truetype'); font-weight: 300 400; font-style: normal; font-display: swap; }
 
 @tailwind base;
 @tailwind components;
@@ -15,6 +19,13 @@
 @layer base {
   body {
     @apply font-sans antialiased;
+    /* Tem que ser `hidden`, não `clip`. O overflow do body se propaga para a
+       viewport, e `clip` não cria contêiner de rolagem — com ele a página
+       inteira trava, sem rolar. `hidden` corta o estouro horizontal e mantém
+       a rolagem vertical. */
+    overflow-x: hidden;
+    background: #fff;
+    color: var(--color-text, #717171);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -29,20 +40,144 @@
   [x-cloak] {
     display: none !important;
   }
+
+  /* Campos: mesma borda/altura/raio do site original.
+     Checkbox e radio ficam de fora — a altura mínima os deformava. */
+  input:not([type='checkbox']):not([type='radio']), textarea, select {
+    border-color: #eeeeee;
+    min-height: 42px;
+    border-radius: 8px;
+  }
+  input:not([type='checkbox']):not([type='radio']):focus, textarea:focus, select:focus {
+    border-color: #000;
+  }
+
+  /* O popup do select é desenhado pelo sistema. Com o SO em modo escuro o
+     Chrome pinta esse popup escuro e o texto das opções some — só reaparece
+     na faixa de hover. Travar o esquema em claro e pintar fundo e cor da
+     própria opção resolve em qualquer tema do sistema. */
+  select {
+    color-scheme: light;
+  }
+  select option,
+  select optgroup {
+    color: #181A20;
+    background-color: #fff;
+  }
 }
 
 /* ============================================
-   ELEGANCE THEME — TYPOGRAPHY
+   PASSOS & BUYTENDORP — TIPOGRAFIA
    ============================================ */
 .font-serif {
-  font-family: var(--font-heading, 'Playfair Display'), Georgia, serif;
+  font-family: var(--font-heading, 'Reckless Neue'), Georgia, serif;
 }
 
-/* Script do hero ("cada detalhe") — White Angelica vem de fonts.custom_files */
-.font-script {
-  font-family: 'White Angelica', 'Allura', cursive;
-  font-weight: 400;
+/* ============================================
+   PASSOS & BUYTENDORP — BLOCOS DE SEÇÃO
+   Medidas tiradas do CSS compilado do Elementor em produção.
+   ============================================ */
+
+/* Faixa horizontal: 5% de respiro nas laterais, conteúdo travado em 1300px */
+.pb-section { padding-left: 5%; padding-right: 5%; }
+.pb-container {
+  width: 100%;
+  max-width: 1300px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 64px;
 }
+/* O header usa o mesmo wrapper; ali a margem empurraria a barra de navegação. */
+.pb-header .pb-container { margin-bottom: 0; }
+
+/* Sobretítulo ("mais buscados", "sobre nós", "destaques") */
+.pb-eyebrow {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2em;
+  text-transform: uppercase;
+  color: #877C67;
+}
+.pb-eyebrow--light { color: #E7E0D2; }
+
+/* Título de seção: Reckless Neue 40px/300, com o trecho em <span> em 600 */
+.pb-title {
+  font-family: var(--font-heading);
+  font-size: 40px;
+  font-weight: 300;
+  line-height: 1.2em;
+  color: #181A20;
+  max-width: 710px;
+}
+.pb-title span { font-weight: 600; }
+.pb-title--italic { font-style: italic; }
+.pb-title--light { color: #FDFBF7; }
+@media (max-width: 1024px) { .pb-title { font-size: 34px; } }
+@media (max-width: 767px)  { .pb-title { font-size: 28px; } }
+
+/* Linha fina que divide o título do botão "Ver mais imóveis" */
+.pb-divider {
+  flex: 1 1 auto;
+  height: 0;
+  border-top: 1px solid #666158;
+  margin-block: 15px;
+}
+.pb-divider--light { border-top-color: #877C67; }
+
+/* Link-botão com a seta depois do texto (row-reverse no Elementor) */
+.pb-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-direction: row-reverse;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #877B66;
+  white-space: nowrap;
+  transition: color .2s;
+}
+.pb-link:hover { color: #181A20; }
+.pb-link--light { color: #E7E0D2; }
+.pb-link--light:hover { color: #fff; }
+.pb-link svg { width: 16px; height: 16px; flex: none; }
+
+/* Botão sólido (CTA "Fale conosco", "Cadastrar agora") */
+.pb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  background: var(--btn-primary-bg, #181A20);
+  color: var(--btn-primary-text, #fff);
+  transition: background-color .2s, color .2s, border-color .2s;
+}
+.pb-btn:hover { background: var(--btn-primary-hover, #373630); }
+.pb-btn--outline {
+  background: transparent;
+  color: #181A20;
+  border: 1px solid #181A20;
+}
+.pb-btn--outline:hover { background: #181A20; color: #fff; }
+
+/* Texto corrido das seções */
+.pb-text {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: #717171;
+}
+.pb-text p + p { margin-top: 1em; }
+.pb-text--light { color: #E1DCD6; }
 
 /* ============================================
    COMPONENTS
@@ -566,3 +701,161 @@
     @apply w-12 h-12;
   }
 }
+
+/* ============================================
+   PASSOS & BUYTENDORP — CARD DE IMÓVEL
+   Moldura de 1px, bloco branco subindo 40px sobre a foto.
+   ============================================ */
+.pb-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid #ECECEC;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgb(0 0 0 / .05);
+  overflow: hidden;
+}
+.pb-card__media { overflow: hidden; }
+.pb-card__swiper img { transition: transform .8s; }
+.pb-card:hover .pb-card__swiper img { transform: scale(1.04); }
+
+.pb-card__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  transform: translateY(-50%);
+  background: rgb(255 255 255 / .85);
+  color: #181A20;
+  transition: background-color .2s, opacity .2s;
+}
+.pb-card__nav:hover { background: #fff; }
+@media (min-width: 1025px) {
+  .pb-card__nav { opacity: 0; }
+  .pb-card:hover .pb-card__nav { opacity: 1; }
+}
+
+.pb-card__fav {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  filter: drop-shadow(0 1px 3px rgb(0 0 0 / .45));
+}
+
+/* Bloco de texto: sobe sobre a foto, como no original */
+.pb-card__body {
+  position: relative;
+  z-index: 9;
+  margin-top: -40px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.pb-card__sku {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4em;
+  color: #666158;
+  padding-bottom: 5px;
+}
+.pb-card__title {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: #181A20;
+  padding-bottom: 10px;
+}
+.pb-card__title a { transition: opacity .2s; }
+.pb-card__title a:hover { opacity: .7; }
+.pb-card__price {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #181A20;
+}
+.pb-card__price-suffix { font-size: 14px; font-weight: 400; color: #717171; }
+
+/* Características separadas por bolinhas */
+.pb-card__features {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #666158;
+}
+.pb-card__features li { display: inline-flex; align-items: center; }
+.pb-card__features li + li::before {
+  content: '';
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin: 0 10px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: .6;
+}
+
+/* ============================================
+   PASSOS & BUYTENDORP — FORMULÁRIOS
+   Campos sem caixa: só a linha de baixo, como no original.
+   ============================================ */
+.pb-form__field {
+  width: 100%;
+  min-height: 48px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid #E7E0D2;
+  border-radius: 0;
+  padding: 12px 12px 12px 14px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #181A20;
+  outline: none;
+  transition: border-color .2s;
+}
+.pb-form__field::placeholder { color: #9A958C; opacity: 1; }
+.pb-form__field:focus { border-bottom-color: #181A20; }
+textarea.pb-form__field { min-height: 130px; resize: vertical; }
+select.pb-form__field { cursor: pointer; }
+
+.pb-form__label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: #666158;
+  padding-left: 14px;
+}
+
+.pb-form__submit {
+  width: 100%;
+  min-height: 50px;
+  background: var(--btn-primary-bg, #181A20);
+  color: var(--btn-primary-text, #fff);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 4px;
+  transition: background-color .2s;
+}
+.pb-form__submit:hover { background: var(--btn-primary-hover, #373630); }
+
+.pb-form__notice { border-radius: 4px; padding: 14px; font-size: 14px; }

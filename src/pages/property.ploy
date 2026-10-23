@@ -286,7 +286,7 @@
 </article>
 
 <!-- Condição Especial (mesma seção da home) -->
-{% section 'home/promotion' %}
+{% section 'home/contact-section' %}
 
 <!-- Plantas Modal -->
 {% if property.floor_plans and property.floor_plans.size > 0 %}

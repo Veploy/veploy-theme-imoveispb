@@ -1,108 +1,230 @@
-<!-- Anuncie seu imóvel (Elegance): faixa preta em cima / clara embaixo, texto à esquerda e
-     card de formulário (captação de imóvel) sobreposto à divisão, à direita -->
-{%- assign af = sections['advertise/form'] -%}
-{%- assign af_eyebrow = af.eyebrow | default: '/Anuncie seu imóvel' -%}
-{%- assign af_title = af.title | default: 'Potencialize seu anúncio e valorize seu imóvel com nosso auxílio especializado.' -%}
-{%- assign af_description = af.description | default: 'Envie-nos uma mensagem e um dos nossos consultores entrará em contato com você. Será um prazer lhe atender!' -%}
-{%- assign af_wa_text = af.cta_whatsapp_text | default: 'Chamar no WhatsApp' -%}
-{%- assign af_help_title = af.help_title | default: 'Ficou com alguma dúvida?' -%}
-{%- assign af_bottom_bg = af.bottom_bg_color | default: '#F8F8F8' -%}
-{%- assign _wa = theme_settings.contact.whatsapp | remove: '-' | remove: '(' | remove: ')' | remove: ' ' -%}
-{%- assign whatsapp_url = theme_settings.contact.whatsapp_link | default: '' -%}
-{%- if whatsapp_url == '' -%}{%- assign whatsapp_url = 'https://wa.me/55' | append: _wa -%}{%- endif -%}
+{%- comment -%}
+  Corpo do "Anuncie seu imóvel": à esquerda os benefícios, o painel cinza de
+  reforço e o passo a passo; à direita o cartão do formulário, que acompanha a
+  rolagem (sticky) como no original.
 
-<section {{ section_attrs }} id="anunciar-form" class="vp-section vp-advertise-form w-full -mt-px px-[5%] overflow-hidden{% if section_class %} {{ section_class }}{% endif %}" style="background-color: {{ af_bottom_bg }};">
-  <div class="max-w-[1300px] mx-auto grid grid-cols-1 lg:grid-cols-2">
-    <!-- Faixa preta: texto + WhatsApp -->
-    <div class="vp-band pt-[90px] pb-[80px] lg:pr-[60px] text-white">
-      <span class="vp-eyebrow text-[#FBFBFB] pb-[10px]">{{ af_eyebrow }}</span>
-      <h1 class="font-serif text-[30px] leading-[40px] md:text-[39px] md:leading-[52px] font-normal text-white mb-5">{{ af_title }}</h1>
-      <p class="text-[15px] leading-[22px] text-white mb-10">{{ af_description }}</p>
-      {%- if theme_settings.contact.whatsapp != blank -%}
-      <a href="{{ whatsapp_url }}" target="_blank" rel="noopener" class="vp-btn border-white text-white bg-transparent hover:bg-white hover:text-black">
-        <i class="ph ph-whatsapp-logo text-[16px]"></i>
-        {{ af_wa_text }}
-      </a>
-      {%- endif -%}
-    </div>
+  Os textos vêm de três grupos: `advertise/benefits`, `advertise/process` e
+  `advertise/form`.
+{%- endcomment -%}
+{%- assign b = sections['advertise/benefits'] -%}
+{%- assign p = sections['advertise/process'] -%}
+{%- assign f = sections['advertise/form'] -%}
+{%- assign benefits = b.benefits.items | default: empty -%}
+{%- assign steps = p.process.items | default: empty -%}
 
-    <!-- Card do formulário de captação (sobrepõe a divisão preto/claro) -->
-    <div class="relative z-[3] -mt-[40px] lg:row-span-2 lg:mt-[110px] mb-[60px] lg:mb-[80px]">
-      <div class="vp-form bg-white p-6 sm:p-10 md:p-[70px] shadow-[0_10px_40px_0_rgb(0_0_0/0.10)]">
-        {% form 'property_submission' %}
-          {% if form.posted_successfully %}
-            <p class="mb-6 border border-green-200 bg-green-50 p-4 text-green-800 font-medium">{{ form.success }}</p>
-          {% endif %}
-          {% if form.errors %}
-            <p class="mb-6 border border-red-200 bg-red-50 p-4 text-red-800 font-medium">{{ form.errors | first }}</p>
-          {% endif %}
-          <div class="space-y-[30px]">
-            <div>
-              <label for="af-name">Nome</label>
-              <input id="af-name" type="text" name="property_submission[name]" required placeholder="Nome completo" class="vp-form__input">
-            </div>
-            <div>
-              <label for="af-email">E-mail</label>
-              <input id="af-email" type="email" name="property_submission[email]" required placeholder="Seu melhor e-mail" class="vp-form__input">
-            </div>
-            <div>
-              <label>Telefone com DDD</label>
-              {% include 'components/global/form/phone-input', name: 'property_submission[phone]', placeholder: '(99) 99999-9999', input_class: 'vp-form__input' %}
-            </div>
-            <div>
-              <label for="af-method">Selecione a forma de contato desejada</label>
-              <select id="af-method" name="property_submission[contact_method]" class="vp-form__input cursor-pointer">
-                <option value="Telefone">Telefone</option>
-                <option value="Whatsapp">Whatsapp</option>
-              </select>
-            </div>
-            <div>
-              <label for="af-type">Tipo de imóvel</label>
-              <input id="af-type" type="text" name="property_submission[property_type]" placeholder="Casa, apartamento, lote..." class="vp-form__input">
-            </div>
-            <div>
-              <label for="af-operation">Eu quero</label>
-              <select id="af-operation" name="property_submission[operation]" class="vp-form__input cursor-pointer">
-                <option value="Vender">Vender</option>
-                <option value="Alugar">Alugar</option>
-                <option value="Permutar">Permutar</option>
-              </select>
-            </div>
+<style>
+  .pb-ad__card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 30px;
+    border: 1px solid #E7E0D2;
+    border-radius: 4px;
+  }
+  .pb-ad__card h3 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2em;
+    color: #181A20;
+  }
+  .pb-ad__step {
+    padding: 20px 15px 20px 30px;
+    border-left: 1px solid #E7E0D2;
+  }
+  .pb-ad__step h3 {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2em;
+    color: #181A20;
+    margin-bottom: 15px;
+  }
+  .pb-ad__panel {
+    background: #F8F8F8;
+    border-radius: 4px;
+    padding: 70px 40px;
+    text-align: center;
+  }
+  .pb-ad__panel h2 {
+    font-family: var(--font-heading);
+    font-size: 40px;
+    font-weight: 300;
+    line-height: 1.2em;
+    color: #181A20;
+    max-width: 620px;
+    margin-inline: auto;
+  }
+  .pb-ad__panel h2 span { font-weight: 600; }
+  @media (max-width: 767px) { .pb-ad__panel { padding: 40px 20px; } .pb-ad__panel h2 { font-size: 26px; } }
 
-            {% if workspace.settings.turnstile.enabled %}
-              <div class="cf-turnstile" data-sitekey="{{ workspace.settings.turnstile.site_key }}"></div>
-            {% endif %}
+  .pb-ad__form {
+    background: #fff;
+    border: 1px solid #E7E0D2;
+    border-radius: 4px;
+    padding: 30px;
+  }
+  .pb-ad__form-title {
+    font-family: var(--font-heading);
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1.2em;
+    color: #181A20;
+  }
+  @media (min-width: 1025px) {
+    .pb-ad__sticky { position: sticky; top: 120px; }
+  }
+</style>
 
-            <button type="submit" class="vp-form__submit">Enviar</button>
+<section {{ section_attrs }} class="pb-ad pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="pb-container grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10 lg:gap-14 pt-[90px] pb-[90px]">
+
+    {%- comment -%} Coluna da esquerda {%- endcomment -%}
+    <div class="flex flex-col gap-[80px]">
+
+      {%- comment -%} Benefícios {%- endcomment -%}
+      <div>
+        {% include 'components/home-section-header',
+           eyebrow: b.eyebrow,
+           heading: b.title,
+           heading_highlight: b.title_highlight,
+           heading_after: b.title_after %}
+        {%- if b.description != blank %}
+        <div class="pb-text max-w-[710px] mt-4">{{ b.description }}</div>
+        {%- endif %}
+        {%- if b.cta_text != blank %}
+        <div class="flex items-center gap-6 mt-4">
+          <span class="pb-divider"></span>
+          <a href="{{ b.cta_url }}"{% if b.cta_url contains '://' %} target="_blank" rel="noopener"{% endif %} class="pb-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"/></svg>
+            <span>{{ b.cta_text }}</span>
+          </a>
+        </div>
+        {%- endif %}
+
+        {%- if benefits != empty and benefits.size > 0 %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mt-10">
+          {%- for item in benefits -%}
+          <div class="pb-ad__card">
+            <h3>{{ item.title }}</h3>
+            <p class="pb-text">{{ item.description }}</p>
           </div>
-        {% endform %}
+          {%- endfor -%}
+        </div>
+        {%- endif %}
+      </div>
+
+      {%- comment -%} Painel cinza de reforço {%- endcomment -%}
+      {%- if b.highlight_title != blank %}
+      <div class="pb-ad__panel">
+        <h2>
+          {{- b.highlight_title }}{% if b.highlight_title_highlight != blank %} <span>{{ b.highlight_title_highlight }}</span>{% endif %}{% if b.highlight_title_after != blank %} {{ b.highlight_title_after }}{% endif -%}
+        </h2>
+        {%- if b.highlight_description != blank %}
+        <div class="pb-text max-w-[620px] mx-auto mt-5">{{ b.highlight_description }}</div>
+        {%- endif %}
+        {%- if b.highlight_image != blank %}
+        <img src="{{ b.highlight_image }}" alt="{{ workspace.name }}" class="mx-auto mt-10 w-[80px] h-auto object-contain" loading="lazy" width="80" height="80">
+        {%- endif %}
+      </div>
+      {%- endif %}
+
+      {%- comment -%} Como anunciar {%- endcomment -%}
+      <div>
+        {% include 'components/home-section-header',
+           eyebrow: p.eyebrow,
+           heading: p.title,
+           heading_highlight: p.title_highlight,
+           heading_after: p.title_after %}
+        {%- if p.description != blank %}
+        <div class="pb-text max-w-[710px] mt-4">{{ p.description }}</div>
+        {%- endif %}
+        {%- if p.cta_text != blank %}
+        <div class="flex items-center gap-6 mt-4">
+          <span class="pb-divider"></span>
+          <a href="{{ p.cta_url }}"{% if p.cta_url contains '://' %} target="_blank" rel="noopener"{% endif %} class="pb-link">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"/></svg>
+            <span>{{ p.cta_text }}</span>
+          </a>
+        </div>
+        {%- endif %}
+
+        {%- if steps != empty and steps.size > 0 %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-10">
+          {%- for item in steps -%}
+          <div class="pb-ad__step">
+            <h3>{{ item.title }}</h3>
+            <p class="pb-text">{{ item.description }}</p>
+          </div>
+          {%- endfor -%}
+        </div>
+        {%- endif %}
       </div>
     </div>
 
-    <!-- Área clara: dúvidas + canais -->
-    <div class="pt-[60px] pb-[60px] lg:pb-[80px] lg:pr-[60px] lg:pl-[10px]">
-      <h2 class="font-serif text-[32px] font-bold leading-[37px] text-black pb-[10px] mb-4">{{ af_help_title }}</h2>
-      {%- if theme_settings.contact.email != blank -%}
-      <p class="text-[15px] leading-[22px] text-black mb-6">
-        Envie uma mensagem para <a href="mailto:{{ theme_settings.contact.email }}" class="hover:underline">{{ theme_settings.contact.email }}</a> e nós te responderemos assim que possível.
-      </p>
-      {%- endif -%}
-      {% include 'components/contact-channels', social_style: 'outline', show_email: false, show_whatsapp_social: true %}
+    {%- comment -%} Coluna da direita: formulário que acompanha a rolagem {%- endcomment -%}
+    <div>
+      <div id="anunciar-form" class="pb-ad__sticky">
+        <div class="pb-ad__form">
+          <h2 class="pb-ad__form-title">{{ f.eyebrow | default: 'Anuncie conosco' }}</h2>
+          {%- if f.title != blank %}
+          <p class="pb-text mt-2 mb-6">{{ f.title }}</p>
+          {%- endif %}
+
+          {% form 'contact', name: 'Anuncie seu imóvel' %}
+            {% if form.posted_successfully %}
+            <p class="pb-form__notice mb-5 border border-green-200 bg-green-50 text-green-800">{{ form.success }}</p>
+            {% endif %}
+            {% if form.errors %}
+            <p class="pb-form__notice mb-5 border border-red-200 bg-red-50 text-red-800">{{ form.errors | first }}</p>
+            {% endif %}
+
+            <div class="flex flex-col gap-4">
+              <input type="text" name="contact[name]" required placeholder="Nome" class="pb-form__field" aria-label="Nome">
+              <input type="email" name="contact[email]" required placeholder="E-mail" class="pb-form__field" aria-label="E-mail">
+              {% include 'components/global/form/phone-input', name: 'contact[phone]', placeholder: 'Telefone', input_class: 'pb-form__field', id: 'pb-ad-phone' %}
+
+              <div>
+                <label class="pb-form__label" for="pb-ad-type">Tipo de imóvel</label>
+                <select id="pb-ad-type" name="contact[property_type]" class="pb-form__field">
+                  <option value="Terreno">Terreno</option>
+                  <option value="Imóvel comercial">Imóvel comercial</option>
+                  <option value="Casa em condomínio">Casa em condomínio</option>
+                  <option value="Casa">Casa</option>
+                  <option value="Apartamento">Apartamento</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="pb-form__label" for="pb-ad-interest">Estou interessado em</label>
+                <select id="pb-ad-interest" name="contact[interest]" class="pb-form__field">
+                  <option value="Vender">Vender</option>
+                  <option value="Alugar">Alugar</option>
+                  <option value="Permutar">Permutar</option>
+                </select>
+              </div>
+
+              {% if workspace.settings.turnstile.enabled %}
+              <div class="cf-turnstile" data-sitekey="{{ workspace.settings.turnstile.site_key }}"></div>
+              {% endif %}
+
+              <button type="submit" class="pb-form__submit mt-1">{{ f.submit_text | default: 'Anunciar imóvel' }}</button>
+            </div>
+          {% endform %}
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 {% schema %}
 {
-  "name": "Formulário de anúncio",
+  "name": "Anuncie — conteúdo e formulário",
   "location": "advertise",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/Anuncie seu imóvel" },
-    { "type": "textarea", "id": "title", "label": "Título" },
-    { "type": "textarea", "id": "description", "label": "Descrição" },
-    { "type": "text", "id": "cta_whatsapp_text", "label": "Texto do botão WhatsApp", "default": "Chamar no WhatsApp" },
-    { "type": "text", "id": "help_title", "label": "Título do bloco de dúvidas", "default": "Ficou com alguma dúvida?" },
-    { "type": "color", "id": "bottom_bg_color", "label": "Cor de fundo da parte de baixo", "default": "#F8F8F8" }
+    { "type": "text", "id": "eyebrow", "label": "Título do formulário", "default": "Anuncie conosco" },
+    { "type": "textarea", "id": "title", "label": "Chamada do formulário", "default": "Preencha o formulário e fale conosco." },
+    { "type": "text", "id": "submit_text", "label": "Texto do botão", "default": "Anunciar imóvel" }
   ]
 }
 {% endschema %}

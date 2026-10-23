@@ -1,0 +1,122 @@
+{%- comment -%}
+  "Nosso time" da home: faixa escura (colors.primary) com o cabeçalho ocupando
+  só a metade direita, linha + link "Conheça nossa história" e, embaixo, as
+  fotos dos sócios com nome em Reckless Neue e o cargo em caixa alta.
+
+  A linha bege que corre sob cada foto no hover vem do original
+  (`.partner-container-home::after`).
+{%- endcomment -%}
+{%- assign s = sections['home/team'] -%}
+{%- assign members = s.members.items | default: empty -%}
+{%- assign _cta = s.cta_url | replace: '{{routes.about-us}}', routes['about-us'] | replace: '{{routes.contact}}', routes.contact -%}
+
+<style>
+  /* Sobe por cima da seção anterior, que fica fixa no rodapé (scroll-overlay.js).
+     O z-index e o fundo opaco são o que garantem a sobreposição. */
+  .pb-team {
+    position: relative;
+    z-index: 2;
+    background-color: #181A20;
+    min-height: 100vh;
+  }
+  .pb-team__member { position: relative; padding-bottom: 10px; }
+  .pb-team__member::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background-color: #E7E0D2;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .9s cubic-bezier(.165, .84, .44, 1);
+  }
+  .pb-team__member:hover::after { transform: scaleX(1); }
+  .pb-team__photo { overflow: hidden; border-radius: 4px; }
+  .pb-team__photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s; }
+  .pb-team__member:hover .pb-team__photo img { transform: scale(1.04); }
+  .pb-team__name {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2em;
+    color: #FDFBF7;
+    padding-top: 20px;
+  }
+  .pb-team__role {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.2em;
+    text-transform: uppercase;
+    color: #E7E0D2;
+  }
+</style>
+
+<section {{ section_attrs }} class="pb-team pb-section{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="pb-container pt-[100px] pb-[60px]">
+    {%- comment -%} Cabeçalho na metade direita, como no original {%- endcomment -%}
+    <div class="lg:flex lg:justify-end">
+      <div class="w-full lg:w-1/2 lg:pl-[30px]">
+        {% include 'components/home-section-header',
+           eyebrow: s.eyebrow,
+           heading: s.title,
+           heading_highlight: s.title_highlight,
+           variant: 'dark',
+           italic: true %}
+      </div>
+    </div>
+
+    {%- if s.cta_text != blank %}
+    <div class="flex items-center gap-6 mt-2">
+      <span class="pb-divider pb-divider--light"></span>
+      <a href="{% unless _cta contains '://' %}{{ locale_prefix }}{% endunless %}{{ _cta }}" class="pb-link pb-link--light">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"/></svg>
+        <span>{{ s.cta_text }}</span>
+      </a>
+    </div>
+    {%- endif %}
+
+    {%- if members != empty and members.size > 0 %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-10">
+      {%- for m in members -%}
+      <div class="pb-team__member">
+        {%- if m.image != blank %}
+        <div class="pb-team__photo aspect-[1197/900]">
+          <img src="{{ m.image }}" alt="{{ m.name }}" loading="lazy" width="1197" height="900">
+        </div>
+        {%- endif %}
+        <h3 class="pb-team__name">{{ m.name }}</h3>
+        {%- if m.role != blank %}<p class="pb-team__role">{{ m.role }}</p>{% endif %}
+      </div>
+      {%- endfor -%}
+    </div>
+    {%- endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Nosso time (home)",
+  "location": "home",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "Nosso time" },
+    { "type": "textarea", "id": "title", "label": "Título" },
+    { "type": "text", "id": "title_highlight", "label": "Título — trecho em destaque" },
+    { "type": "text", "id": "cta_text", "label": "Texto do link", "default": "Conheça nossa história" },
+    { "type": "url", "id": "cta_url", "label": "Link do link" },
+    {
+      "type": "repeater",
+      "id": "members",
+      "label": "Sócios",
+      "max_items": 4,
+      "settings": [
+        { "type": "text", "id": "name", "label": "Nome" },
+        { "type": "text", "id": "role", "label": "Cargo" },
+        { "type": "image_picker", "id": "image", "label": "Foto" }
+      ]
+    }
+  ]
+}
+{% endschema %}

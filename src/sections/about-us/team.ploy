@@ -1,0 +1,118 @@
+{%- comment -%}
+  "Nosso time" da página Sobre nós: cabeçalho com linha, e cada sócio numa faixa
+  com foto e biografia alternando de lado. O nome usa a Aurantiaca, como no
+  original.
+{%- endcomment -%}
+{%- assign s = sections['about-us/team'] -%}
+{%- assign members = s.members.items | default: empty -%}
+
+<style>
+  .pb-member__name {
+    font-family: 'Aurantiaca', var(--font-heading);
+    font-size: 55px;
+    font-weight: 300;
+    line-height: 55px;
+    color: #181A20;
+    text-shadow: 0 0 10px rgba(255, 255, 255, .82);
+  }
+  @media (max-width: 767px) { .pb-member__name { font-size: 40px; line-height: 42px; } }
+  .pb-member__bio p + p { margin-top: 1em; }
+  .pb-member__social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 4px;
+    background: #181A20;
+    color: #fff;
+    transition: opacity .2s;
+  }
+  .pb-member__social:hover { opacity: .8; }
+  .pb-member__social svg { width: 16px; height: 16px; fill: currentColor; }
+</style>
+
+<section {{ section_attrs }} class="pb-aboutteam pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="pb-container pt-[80px] pb-[60px]">
+    {% include 'components/home-section-header',
+       eyebrow: s.eyebrow,
+       heading: s.title,
+       heading_highlight: s.title_highlight %}
+
+    {%- if s.description != blank %}
+    <div class="pb-text max-w-[850px] mt-5">{{ s.description }}</div>
+    {%- endif %}
+
+    <div class="flex items-center mt-6">
+      <span class="pb-divider"></span>
+    </div>
+
+    {%- if members != empty and members.size > 0 %}
+    <div class="flex flex-col gap-[70px] mt-[60px]">
+      {%- for m in members -%}
+      {%- assign _odd = forloop.index | modulo: 2 -%}
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+        {%- comment -%} Ímpares: foto à esquerda. Pares: foto à direita. {%- endcomment -%}
+        {%- if m.image != blank %}
+        <div class="overflow-hidden rounded-[4px]{% if _odd == 0 %} lg:order-2{% endif %}">
+          <img src="{{ m.image }}" alt="{{ m.name }}" class="w-full h-auto object-cover" loading="lazy" width="1200" height="1260">
+        </div>
+        {%- endif %}
+
+        <div{% if _odd == 0 %} class="lg:order-1"{% endif %}>
+          <h3 class="pb-member__name">{{ m.name }}</h3>
+          {%- if m.bio != blank %}
+          <div class="pb-member__bio pb-text mt-6">{{ m.bio }}</div>
+          {%- endif %}
+
+          <div class="flex items-center gap-2.5 mt-6{% if _odd == 1 %} lg:justify-end{% endif %}">
+            {%- if m.facebook != blank %}
+            <a href="{{ m.facebook }}" target="_blank" rel="noopener" class="pb-member__social" aria-label="Facebook de {{ m.name }}">
+              <svg viewBox="0 0 320 512"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg>
+            </a>
+            {%- endif %}
+            {%- if m.instagram != blank %}
+            <a href="{{ m.instagram }}" target="_blank" rel="noopener" class="pb-member__social" aria-label="Instagram de {{ m.name }}">
+              <svg viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>
+            </a>
+            {%- endif %}
+            {%- if m.linkedin != blank %}
+            <a href="{{ m.linkedin }}" target="_blank" rel="noopener" class="pb-member__social" aria-label="LinkedIn de {{ m.name }}">
+              <svg viewBox="0 0 448 512"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"/></svg>
+            </a>
+            {%- endif %}
+          </div>
+        </div>
+      </div>
+      {%- endfor -%}
+    </div>
+    {%- endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Sobre nós — nosso time",
+  "location": "about-us",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "nosso time" },
+    { "type": "text", "id": "title", "label": "Título" },
+    { "type": "textarea", "id": "title_highlight", "label": "Título — trecho em destaque" },
+    { "type": "textarea", "id": "description", "label": "Texto" },
+    {
+      "type": "repeater",
+      "id": "members",
+      "label": "Equipe",
+      "max_items": 6,
+      "settings": [
+        { "type": "text", "id": "name", "label": "Nome" },
+        { "type": "image_picker", "id": "image", "label": "Foto" },
+        { "type": "richtext", "id": "bio", "label": "Biografia" },
+        { "type": "url", "id": "facebook", "label": "Facebook" },
+        { "type": "url", "id": "instagram", "label": "Instagram" },
+        { "type": "url", "id": "linkedin", "label": "LinkedIn" }
+      ]
+    }
+  ]
+}
+{% endschema %}

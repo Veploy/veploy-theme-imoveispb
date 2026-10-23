@@ -16,8 +16,15 @@
 </script>
 {% section 'about-us/hero' %}
 {% section 'about-us/story' %}
+{% section 'about-us/team' %}
 {% section 'about-us/values' %}
 {% section 'home/contact-section' %}
-{% section 'home/promotion' %}
-
 {% endblock %}
+
+{% schema %}
+{
+  "name": "Sobre nós",
+  "location": "about-us",
+  "settings": []
+}
+{% endschema %}

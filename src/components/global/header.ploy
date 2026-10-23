@@ -1,295 +1,225 @@
 {%- comment -%}
-  Header do Elegance.
-  `overlay: true` (home, via base.ploy): fica absoluto sobre o hero, com fundo em
-  degradê preto → transparente e a barra de anúncio no topo — igual ao site original.
-  Sem overlay (páginas internas): fundo sólido em header.bg_color.
-{%- endcomment -%}
-{% assign header_overlay = overlay | default: false %}
-{% assign header_bg = workspace.theme_settings.header.bg_color | default: '#000000' %}
-{% assign header_text = workspace.theme_settings.header.text_color | default: '#FFFFFF' %}
-{% assign header_btn_bg = workspace.theme_settings.header.button_bg_color | default: '#FFEBCD' %}
-{% assign header_btn_text = workspace.theme_settings.header.button_text_color | default: '#161616' %}
-{% assign header_btn_hover = workspace.theme_settings.header.button_hover_bg_color | default: '#E7C48F' %}
-{% assign header_sticky = false %}{%- comment -%}{% assign header_sticky = workspace.theme_settings.features.header_sticky %}{%- endcomment -%}
+  Header da Passos & Buytendorp.
 
-{%- assign _hero = workspace.theme_settings.sections['home/hero-carousel'] -%}
-{%- assign announcement_text = _hero.announcement_text -%}
-{%- assign announcement_url = _hero.announcement_url -%}
-{%- assign announcement_bg = _hero.announcement_bg_color | default: header_btn_bg -%}
-{%- assign announcement_color = _hero.announcement_text_color | default: '#000000' -%}
+  Igual ao site original, que tem dois headers sobrepostos:
+  - o do topo (`#headerwhite`): absoluto sobre o hero, fundo em degradê
+    `#373630B3 → transparente`, logo negativa, menu em branco;
+  - o que aparece na rolagem (`#headerfixed`): barra flutuante fixa, fundo
+    `colors.primary`, cantos de 4px e 1% de margem nas laterais.
+
+  Aqui os dois são o mesmo elemento: o Alpine troca as classes quando a página
+  passa de 80px de rolagem. Em páginas internas (`overlay` falso) a barra já
+  nasce sólida.
+{%- endcomment -%}
+{%- assign header_overlay = overlay | default: false -%}
+{%- assign header_bg = workspace.theme_settings.header.bg_color | default: '#181A20' -%}
+{%- assign header_text = workspace.theme_settings.header.text_color | default: '#FFFFFF' -%}
+{%- assign header_btn_border = workspace.theme_settings.buttons.secondary_border | default: '#FDFBF7' -%}
+{%- assign header_fav_color = workspace.theme_settings.header.button_bg_color | default: '#E7E0D2' -%}
+{%- assign logo_pos = workspace.theme_settings.brand_identity.logo -%}
+{%- assign logo_neg = workspace.theme_settings.brand_identity.logo_negative | default: logo_pos -%}
 
 <style>
-  .vp-header__menu-link {
+  .pb-header {
     position: relative;
-    font-family: var(--font-header, var(--font-body));
-    font-size: 13px;
-    font-weight: 500;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: 13px 0;
+    z-index: 1000;
+    padding-inline: 5%;
+    transition: background-color .3s, background-image .3s, border-radius .3s, inset .3s, padding .3s;
   }
-  .vp-header__menu-link::after {
-    content: '';
+  /* Sobre o hero: absoluto, sem ocupar espaço no fluxo */
+  .pb-header--overlay {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 6px;
-    height: 1px;
-    background-color: {{ header_btn_bg }};
-    transform: scaleX(0);
-    transition: transform .3s;
+    top: 0; left: 0; right: 0;
+    background-image: linear-gradient(180deg, #373630B3 0%, #F6F6F600 90%);
   }
-  .vp-header__menu-link:hover::after { transform: scaleX(1); }
-  .header-cta,
-  .header-cta-outline {
+  .pb-header--solid {
+    background-color: {{ header_bg }};
+  }
+  /* Barra flutuante da rolagem: 1% de margem, cantos arredondados */
+  .pb-header--stuck {
+    position: fixed;
+    top: 2%;
+    left: 2%;
+    right: 2%;
+    border-radius: 4px;
+    background-image: none;
+    background-color: {{ header_bg }};
+    z-index: 9999;
+  }
+  .pb-header__link {
     font-family: var(--font-header, var(--font-body));
     font-size: 13px;
     font-weight: 500;
-    line-height: 18px;
-    letter-spacing: 1px;
+    letter-spacing: .2px;
     text-transform: uppercase;
-    padding: 10px 15px;
-    border: 1px solid {{ header_btn_bg }};
-    border-radius: 0;
+    color: {{ header_text }};
+    padding: 1px 14px;
+    transition: color .2s;
+  }
+  .pb-header__link:hover { color: #F8F8F8; opacity: .75; }
+  .pb-header__cta {
+    display: inline-flex;
+    align-items: center;
+    flex-direction: row-reverse;
+    gap: 6px;
+    font-family: var(--font-header, var(--font-body));
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .2px;
+    text-transform: uppercase;
+    color: {{ header_text }};
+    background-color: transparent;
+    border: 1px solid {{ header_btn_border }};
+    border-radius: 4px;
+    padding: 9px 16px;
     transition: background-color .2s, color .2s;
   }
-  .header-cta {
-    background-color: {{ header_btn_bg }};
-    color: {{ header_btn_text }};
-  }
-  .header-cta:hover { background-color: {{ header_btn_hover }}; }
-  .header-cta-outline {
-    background-color: transparent;
+  .pb-header__cta:hover { background-color: {{ header_btn_border }}; color: {{ header_bg }}; }
+  .pb-header__fav {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-family: var(--font-header, var(--font-body));
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
     color: {{ header_text }};
   }
-  .header-cta-outline:hover { background-color: {{ header_btn_bg }}; color: {{ header_btn_text }}; }
-  .vp-announcement {
-    font-family: var(--font-heading);
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: 1px;
+  .pb-header__fav i, .pb-header__fav svg { color: {{ header_fav_color }}; font-size: 19px; }
+  .pb-header__fav:hover { opacity: .8; }
+  .pb-header__logo { width: 185px; max-width: 185px; }
+  @media (max-width: 1024px) {
+    .pb-header__logo { width: 120px; max-width: 120px; }
   }
-  @media (max-width: 1366px) {
-    .vp-header__menu-link { font-size: 12px; }
-    .header-cta, .header-cta-outline { font-size: 11px; padding: 10px; }
+
+  /* Logo: branca sobre o hero, dourada na barra da rolagem — como no original,
+     onde o header fixo troca a imagem pela versão colorida. No mobile a dourada
+     já é a padrão. */
+  .pb-header__logo-pos { display: none; }
+  .pb-header__logo-neg { display: block; }
+  @media (max-width: 1024px) {
+    .pb-header__logo-neg { display: none; }
+    .pb-header__logo-pos { display: block; }
   }
+  .pb-header--stuck .pb-header__logo-neg { display: none; }
+  .pb-header--stuck .pb-header__logo-pos { display: block; }
 </style>
 
 <header
-  class="vp-header z-50{% if header_overlay %} vp-header--overlay absolute top-0 left-0 right-0{% endif %}{% if header_sticky %} sticky top-0{% endif %}"
-  style="{% if header_overlay %}background-image: linear-gradient(180deg, #000000 0%, #00000000 100%);{% else %}background-color: {{ header_bg }};{% endif %}"
+  x-data="{ stuck: false }"
+  x-init="stuck = window.scrollY > 80; window.addEventListener('scroll', () => stuck = window.scrollY > 80, { passive: true })"
+  class="pb-header {% if header_overlay %}pb-header--overlay{% else %}pb-header--solid{% endif %}"
+  :class="{ 'pb-header--stuck': stuck }"
 >
-  {%- if header_overlay and announcement_text != blank -%}
-  <!-- Barra de anúncio -->
-  <div class="vp-announcement w-full px-[5%] py-[5px] text-center" style="background-color: {{ announcement_bg }}; color: {{ announcement_color }};">
-    {%- if announcement_url != blank -%}
-      <a href="{{ announcement_url }}" class="hover:underline">{{ announcement_text }}</a>
-    {%- else -%}
-      {{ announcement_text }}
-    {%- endif -%}
-  </div>
-  {%- endif -%}
+  <nav class="pb-container flex items-center justify-between gap-6 min-h-[110px] py-3" x-data="{ mobileOpen: false }">
 
-  <nav class="vp-header__nav mx-auto px-[5%]" x-data="{ mobileOpen: false }">
-    <div class="vp-header__content mx-auto max-w-[1300px] flex items-center justify-between min-h-[72px] py-2">
-      <div class="vp-header__left flex items-center gap-10">
-        <!-- Logo -->
-        <a href="{{ locale_prefix }}/" class="vp-header__logo flex-shrink-0 block">
-          {%- assign _logo = workspace.theme_settings.brand_identity.logo -%}
-          {%- if header_overlay and workspace.theme_settings.brand_identity.logo_negative != blank -%}
-            {%- assign _logo = workspace.theme_settings.brand_identity.logo_negative -%}
-          {%- endif -%}
-          {% if _logo %}
-            <img
-              src="{{ _logo }}"
-              alt="{{ workspace.name }}"
-              class="h-auto w-[125px] max-w-[125px] object-contain"
-              width="125"
-              height="43"
-            >
-          {% else %}
-            <span class="text-2xl font-bold" style="color: {{ header_text }};">{{ workspace.name }}</span>
-          {% endif %}
-        </a>
+    {%- comment -%} Esquerda: menu principal (desktop) {%- endcomment -%}
+    {%- assign nav_items = workspace.theme_settings.navigation.main_menu -%}
+    <ul class="hidden lg:flex items-center flex-1">
+      {%- for item in nav_items -%}
+      {%- assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about-us}}', routes['about-us'] | replace: '{{routes.about}}', routes['about-us'] | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites -%}
+      <li>
+        <a href="{% unless resolved_url contains '://' %}{{ locale_prefix }}{% endunless %}{{ resolved_url }}" class="pb-header__link"{% if item.target == '_blank' %} target="_blank" rel="noopener"{% endif %}>{{ item.label }}</a>
+      </li>
+      {%- endfor -%}
+    </ul>
 
-        <!-- Desktop Navigation (theme_settings.navigation.main_menu — URLs já chegam resolvidas pelo engine) -->
-        {% assign nav_items = workspace.theme_settings.navigation.main_menu %}
-        {% if nav_items and nav_items.size > 0 %}
-        <ul class="vp-header__menu hidden lg:flex items-center gap-10">
-          {% for item in nav_items %}
-          <li>
-            {% assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about}}', routes['about-us'] | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites %}
-            {% assign is_absolute = false %}
-            {% if resolved_url contains 'http://' or resolved_url contains 'https://' %}
-              {% assign is_absolute = true %}
-            {% endif %}
-            <a
-              href="{% if is_absolute %}{{ resolved_url }}{% else %}{{ locale_prefix }}{{ resolved_url }}{% endif %}"
-              class="vp-header__menu-link" style="color: {{ header_text }};"
-              {% if item.target == '_blank' %}target="_blank" rel="noopener noreferrer"{% endif %}
-            >
-              {{ item.label }}
-            </a>
-          </li>
-          {% endfor %}
-        </ul>
-        {% endif %}
-      </div>
+    {%- comment -%} Centro: logo — negativa sobre o hero, positiva no mobile {%- endcomment -%}
+    <a href="{{ locale_prefix }}/" class="pb-header__logo flex-none block text-center" aria-label="{{ workspace.name }}">
+      {%- if logo_neg != blank -%}
+        {%- comment -%} As duas versões ficam no HTML; o CSS acima escolhe qual aparece. {%- endcomment -%}
+        <img src="{{ logo_neg }}" alt="{{ workspace.name }}" class="pb-header__logo-neg w-full h-auto object-contain" width="185" height="110">
+        <img src="{{ logo_pos | default: logo_neg }}" alt="{{ workspace.name }}" class="pb-header__logo-pos w-full h-auto object-contain" width="185" height="110">
+      {%- else -%}
+        <span class="text-xl font-medium" style="color: {{ header_text }};">{{ workspace.name }}</span>
+      {%- endif -%}
+    </a>
 
-      <!-- Desktop Actions -->
-      <div class="vp-header__actions hidden lg:flex items-center gap-5">
-        <a href="{{ locale_prefix }}{{ routes.contact }}" class="header-cta-outline">Fale Conosco</a>
-        <a href="{{ locale_prefix }}{{ routes.advertise }}" class="header-cta">{{ t.nav.advertise }}</a>
-      </div>
-
-      <!-- Mobile Actions: Heart + Hamburger -->
-      <div class="lg:hidden flex items-center gap-1">
-        <a
-          href="{{ locale_prefix }}{{ routes.favorites }}"
-          class="p-2 transition-colors relative" style="color: {{ header_text }};"
-          aria-label="{{ t.nav.favorites }}"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            :fill="$store.favorites.count > 0 ? '#ef4444' : 'none'"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            :stroke="$store.favorites.count > 0 ? '#ef4444' : 'currentColor'"
-            class="w-6 h-6 transition-colors"
-          >
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-          </svg>
-          <span
-            x-show="$store.favorites.count > 0"
-            x-text="$store.favorites.count"
-            class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1 leading-none"
-            x-cloak
-          ></span>
-        </a>
-        <button
-          type="button"
-          class="vp-header__mobile-toggle p-2" style="color: {{ header_text }};"
-          aria-label="Menu"
-          @click="mobileOpen = !mobileOpen"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-          </svg>
-        </button>
-      </div>
+    {%- comment -%} Direita: Favoritos + "Anuncie seu imóvel" {%- endcomment -%}
+    <div class="hidden lg:flex items-center justify-end gap-6 flex-1">
+      <a href="{{ locale_prefix }}{{ routes.favorites }}" class="pb-header__fav relative">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-[19px] h-[19px]" :fill="$store.favorites.count > 0 ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="32">
+          <path d="M458.4 64.3C400.6 15.7 311.3 23 256 79.3 200.7 23 111.4 15.6 53.6 64.3-21.6 127.6-10.6 230.8 43 285.5l175.4 178.7c10 10.2 23.4 15.9 37.6 15.9 14.3 0 27.6-5.6 37.6-15.8L469 285.5c53.5-54.7 64.7-157.9-10.6-221.2z"/>
+        </svg>
+        <span>Favoritos</span>
+        <span x-cloak x-show="$store.favorites.count > 0" x-text="$store.favorites.count" class="min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1 leading-none"></span>
+      </a>
+      <a href="{{ locale_prefix }}{{ routes.advertise }}" class="pb-header__cta">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" class="w-[13px] h-[13px]"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"/></svg>
+        <span>Anuncie seu imóvel</span>
+      </a>
     </div>
 
+    {%- comment -%} Mobile: coração + hambúrguer {%- endcomment -%}
+    <div class="lg:hidden flex items-center gap-1">
+      <a href="{{ locale_prefix }}{{ routes.favorites }}" class="p-2 relative" style="color: {{ header_fav_color }};" aria-label="{{ t.nav.favorites }}">
+        <svg xmlns="http://www.w3.org/2000/svg" :fill="$store.favorites.count > 0 ? '#ef4444' : 'none'" viewBox="0 0 24 24" stroke-width="1.5" :stroke="$store.favorites.count > 0 ? '#ef4444' : 'currentColor'" class="w-6 h-6 transition-colors">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+        </svg>
+        <span x-cloak x-show="$store.favorites.count > 0" x-text="$store.favorites.count" class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1 leading-none"></span>
+      </a>
+      <button type="button" class="p-2" style="color: {{ header_text }};" aria-label="Menu" @click="mobileOpen = !mobileOpen">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+        </svg>
+      </button>
+    </div>
 
-    <!-- Mobile Drawer Backdrop -->
+    {%- comment -%} Gaveta mobile {%- endcomment -%}
     <div
       class="lg:hidden fixed inset-0 bg-black/40 z-[998]"
-      x-cloak
-      x-show="mobileOpen"
-      x-transition:enter="transition ease-out duration-300"
-      x-transition:enter-start="opacity-0"
-      x-transition:enter-end="opacity-100"
-      x-transition:leave="transition ease-in duration-200"
-      x-transition:leave-start="opacity-100"
-      x-transition:leave-end="opacity-0"
+      x-cloak x-show="mobileOpen"
+      x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+      x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
       @click="mobileOpen = false"
     ></div>
 
-    <!-- Mobile Drawer (slide-in from right) -->
     <div
       class="lg:hidden fixed inset-y-0 right-0 w-[85vw] max-w-[360px] z-[999] shadow-2xl flex flex-col"
       style="background-color: {{ header_bg }}; color: {{ header_text }};"
-      x-cloak
-      x-show="mobileOpen"
-      x-transition:enter="transition ease-out duration-300"
-      x-transition:enter-start="translate-x-full"
-      x-transition:enter-end="translate-x-0"
-      x-transition:leave="transition ease-in duration-200"
-      x-transition:leave-start="translate-x-0"
-      x-transition:leave-end="translate-x-full"
+      x-cloak x-show="mobileOpen"
+      x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+      x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full"
       @keydown.escape.window="mobileOpen = false"
     >
-      <!-- Drawer Header -->
-      <div class="flex items-center justify-between px-5 py-4 flex-shrink-0" style="border-bottom: 1px solid {{ header_text }}15;">
-        <a href="{{ locale_prefix }}/" class="block h-8">
-          {% if workspace.theme_settings.brand_identity.logo %}
-            <img src="{{ workspace.theme_settings.brand_identity.logo }}" alt="{{ workspace.name }}" class="h-full w-auto object-contain" width="120" height="32">
-          {% else %}
-            <span class="text-lg font-bold" style="color: {{ header_text }};">{{ workspace.name }}</span>
-          {% endif %}
+      <div class="flex items-center justify-between px-5 py-4 flex-shrink-0" style="border-bottom: 1px solid {{ header_text }}20;">
+        <a href="{{ locale_prefix }}/" class="block w-[110px]">
+          {%- if logo_neg != blank -%}
+            <img src="{{ logo_pos | default: logo_neg }}" alt="{{ workspace.name }}" class="w-full h-auto object-contain" width="110" height="65">
+          {%- else -%}
+            <span class="text-lg font-medium" style="color: {{ header_text }};">{{ workspace.name }}</span>
+          {%- endif -%}
         </a>
-        <button @click="mobileOpen = false" class="w-9 h-9 flex items-center justify-center rounded-full transition-colors" style="color: {{ header_text }};" aria-label="Fechar menu">
+        <button @click="mobileOpen = false" class="w-9 h-9 flex items-center justify-center rounded-full" style="color: {{ header_text }};" aria-label="Fechar menu">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       </div>
 
-      <!-- Drawer Body (scrollable) -->
       <div class="flex-1 overflow-y-auto">
-
-        <!-- Navigation Links -->
         <nav class="py-2">
-          {% assign mobile_items = workspace.theme_settings.navigation.mobile_menu | default: nav_items %}
-          {% for item in mobile_items %}
-            {% assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about}}', routes['about-us'] | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites %}
-            {% assign is_absolute = false %}
-            {% if resolved_url contains 'http://' or resolved_url contains 'https://' %}
-              {% assign is_absolute = true %}
-            {% endif %}
+          {%- assign mobile_items = workspace.theme_settings.navigation.mobile_menu | default: nav_items -%}
+          {%- for item in mobile_items -%}
+            {%- assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about-us}}', routes['about-us'] | replace: '{{routes.about}}', routes['about-us'] | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites -%}
             <a
-              href="{% if is_absolute %}{{ resolved_url }}{% else %}{{ locale_prefix }}{{ resolved_url }}{% endif %}"
-              class="flex items-center justify-between px-5 py-3.5 transition-colors"
+              href="{% unless resolved_url contains '://' %}{{ locale_prefix }}{% endunless %}{{ resolved_url }}"
+              class="flex items-center justify-between px-5 py-3.5"
               style="color: {{ header_text }};"
-              {% if item.target == '_blank' or is_absolute %}target="_blank" rel="noopener noreferrer"{% endif %}
+              {% if item.target == '_blank' %}target="_blank" rel="noopener"{% endif %}
             >
-              <span class="text-base font-medium">{{ item.label }}</span>
+              <span class="text-[15px] font-medium uppercase tracking-[.2px]">{{ item.label }}</span>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 opacity-40">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
               </svg>
             </a>
-          {% endfor %}
+          {%- endfor -%}
         </nav>
 
-        <!-- Favorites -->
-        <div style="border-top: 1px solid {{ header_text }}15;">
-          <a
-            href="{{ locale_prefix }}{{ routes.favorites }}"
-            class="flex items-center justify-between px-5 py-3.5 transition-colors"
-            style="color: {{ header_text }};"
-          >
-            <div class="flex items-center gap-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                :fill="$store.favorites.count > 0 ? '#ef4444' : 'none'"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                :stroke="$store.favorites.count > 0 ? '#ef4444' : 'currentColor'"
-                class="w-5 h-5 transition-colors"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-              </svg>
-              <span class="text-base font-medium">{{ t.nav.favorites }}</span>
-            </div>
-            <span
-              x-show="$store.favorites.count > 0"
-              x-text="$store.favorites.count"
-              class="min-w-[22px] h-[22px] flex items-center justify-center rounded-full bg-red-500 text-white text-xs font-bold px-1.5"
-              x-cloak
-            ></span>
-          </a>
-        </div>
-
-        <!-- CTA -->
-        <div class="px-5 py-4" style="border-top: 1px solid {{ header_text }}15;">
-          <a
-            href="{{ locale_prefix }}{{ routes.advertise }}"
-            class="header-cta flex items-center justify-center gap-2 w-full px-6 py-3 rounded-xl font-semibold text-sm transition-colors"
-          >
-            {{ t.nav.advertise }}
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
+        <div class="px-5 py-4" style="border-top: 1px solid {{ header_text }}20;">
+          <a href="{{ locale_prefix }}{{ routes.advertise }}" class="pb-header__cta w-full justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" class="w-[13px] h-[13px]"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"/></svg>
+            <span>Anuncie seu imóvel</span>
           </a>
         </div>
       </div>

@@ -1,159 +1,201 @@
-{% assign footer_bg = workspace.theme_settings.footer.bg_color | default: '#000000' %}
-{% assign footer_text = workspace.theme_settings.footer.text_color | default: '#FFFFFF' %}
+{%- comment -%}
+  Rodapé da Passos & Buytendorp.
 
-{%- assign _footer_bg_hex = footer_bg -%}
-{%- if footer_bg == 'white' -%}{%- assign _footer_bg_hex = '#ffffff' -%}
-{%- elsif footer_bg == 'black' -%}{%- assign _footer_bg_hex = '#000000' -%}
-{%- elsif footer_bg == 'grey' or footer_bg == 'gray' -%}{%- assign _footer_bg_hex = '#808080' -%}
-{%- endif -%}
-{%- assign _footer_rgb = _footer_bg_hex | hex_to_rgb | split: ' ' -%}
-{%- assign _footer_r = _footer_rgb[0] | plus: 0 | times: 299 -%}
-{%- assign _footer_g = _footer_rgb[1] | plus: 0 | times: 587 -%}
-{%- assign _footer_b = _footer_rgb[2] | plus: 0 | times: 114 -%}
-{%- assign _footer_yiq = _footer_r | plus: _footer_g | plus: _footer_b | divided_by: 1000 -%}
-{%- comment -%} Arquivos de src/assets são servidos pelo endereço de assets do tema (CDN), não pela raiz do site {%- endcomment -%}
+  No original é um cartão escuro (`colors.primary`, cantos de 4px) com 10px de
+  respiro branco em volta, dividido em quatro colunas: marca + redes, Contato,
+  Institucional e Links úteis. A linha de baixo traz CNPJ, copyright e o selo
+  da Veploy.
+{%- endcomment -%}
+{%- assign footer_card_bg = theme_settings.footer.bg_color | default: '#181A20' -%}
+{%- assign footer_text = theme_settings.footer.text_color | default: '#FFFFFF' -%}
+{%- assign footer_accent = theme_settings.footer.accent_color | default: '#E7E0D2' -%}
 {%- assign _cdn = theme.assets_url | default: '' -%}
-{%- if _footer_yiq < 128 -%}
-  {%- assign veploy_credits_logo = _cdn | append: '/assets/images/logo-veploy-branca.png' -%}
-  {%- assign _footer_line = '#373737' -%}
-{%- else -%}
-  {%- assign veploy_credits_logo = _cdn | append: '/assets/images/logo-veploy.png' -%}
-  {%- assign _footer_line = '#DDDDDD' -%}
-{%- endif -%}
-
-{%- assign _logo = theme_settings.brand_identity.logo_negative | default: theme_settings.brand_identity.logo -%}
-{%- if _footer_yiq >= 128 -%}{%- assign _logo = theme_settings.brand_identity.logo -%}{%- endif -%}
-{%- assign footer_links_types = theme_settings.footer.types_list | default: empty -%}
-{%- assign footer_links_neighborhoods = theme_settings.footer.neighborhoods_list | default: empty -%}
+{%- assign _logo = theme_settings.brand_identity.logo | default: theme_settings.brand_identity.logo_negative -%}
 {%- assign _cnpj = theme_settings.contact.cnpj | default: workspace.cnpj -%}
-{%- assign _creci = theme_settings.contact.creci | remove: 'CRECI:' | strip -%}
+{%- assign _year = 'now' | date: '%Y' -%}
 
 <style>
-  .vp-footer__title {
-    font-family: var(--font-heading);
-    font-size: 17px;
-    font-weight: 600;
+  /* z-index acima da seção que fica fixa na sobreposição de rolagem da home,
+     senão ela cobriria o rodapé quando a página chega ao fim. */
+  .pb-footer { position: relative; z-index: 5; background: #fff; padding: 10px; }
+  .pb-footer__card {
+    background: {{ footer_card_bg }};
+    color: {{ footer_text }};
+    border-radius: 4px;
+    padding: 4% 5% 0;
+  }
+  /* Grade em vez de flex-wrap: as quatro colunas começam todas na mesma linha
+     de base, sem uma subir ou descer conforme o tamanho do conteúdo. */
+  .pb-footer__grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1.2fr 1fr 1fr;
+    align-items: start;
+    gap: 50px 40px;
+    max-width: 1300px;
+    margin-inline: auto;
+  }
+  @media (max-width: 1024px) {
+    .pb-footer__grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 600px) {
+    .pb-footer__grid { grid-template-columns: 1fr; gap: 36px; }
+  }
+  /* Títulos das colunas: Geist 14/700 em caixa alta, no bege do kit */
+  .pb-footer__title {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 700;
     line-height: 18px;
+    text-transform: uppercase;
+    color: {{ footer_accent }};
+    padding-bottom: 10px;
   }
-  .vp-footer__list,
-  .vp-footer__text {
-    font-family: 'Nunito', var(--font-body), sans-serif;
-    font-size: 15px;
+  .pb-footer__list { display: flex; flex-direction: column; }
+  .pb-footer__list li,
+  .pb-footer__text {
+    font-family: var(--font-body);
+    font-size: 14px;
     font-weight: 400;
+    line-height: 20px;
+    color: #FDFBF7;
+    padding-block: 5px;
   }
-  .vp-footer__list a:hover,
-  .vp-footer__text a:hover { opacity: .75; }
+  .pb-footer__list a { transition: color .2s, opacity .2s; }
+  .pb-footer__list a:hover { color: {{ footer_accent }}; }
+  /* Redes: quadradinho branco de cantos 4px, ícone de 19px na cor do fundo */
+  .pb-footer__social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 4px;
+    background: #FFFFFF;
+    color: {{ footer_card_bg }};
+    transition: opacity .2s;
+  }
+  .pb-footer__social:hover { opacity: .8; }
+  .pb-footer__social svg { width: 19px; height: 19px; fill: currentColor; }
+  .pb-footer__bottom {
+    max-width: 1300px;
+    margin-inline: auto;
+    margin-top: 40px;
+    padding: 18px 0;
+    border-top: 1px solid {{ footer_text }}1A;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: {{ footer_text }};
+  }
 </style>
 
-<footer class="vp-footer px-[5%]" style="background-color: {{ footer_bg }}; color: {{ footer_text }};">
-  <div class="max-w-[1300px] mx-auto">
-    <!-- Topo: logo + redes -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 py-5 border-b" style="border-color: {{ _footer_line }};">
-      <a href="{{ locale_prefix }}/" class="block">
-        {% if _logo %}
-          <img src="{{ _logo }}" alt="{{ workspace.name }}" class="w-[125px] h-auto object-contain" width="125" height="43" loading="lazy">
-        {% else %}
-          <span class="text-2xl font-bold">{{ workspace.name }}</span>
-        {% endif %}
-      </a>
+<footer class="pb-footer">
+  <div class="pb-footer__card">
+    <div class="pb-footer__grid">
 
-      {% if theme_settings.features.footer_show_social != false %}
-      <div class="flex items-center gap-7">
-        <h2 class="font-serif text-[20px] font-semibold leading-[22px]" style="color: {{ footer_text }};">Acompanhe nossas redes</h2>
-        <div class="flex items-center gap-4 text-[22px]">
-          {% if theme_settings.contact.instagram != blank %}
-          <a href="{{ theme_settings.contact.instagram }}" target="_blank" rel="noopener" class="hover:opacity-75 transition-opacity" aria-label="Instagram"><i class="ph ph-instagram-logo"></i></a>
-          {% endif %}
-          {% if theme_settings.contact.facebook != blank %}
-          <a href="{{ theme_settings.contact.facebook }}" target="_blank" rel="noopener" class="hover:opacity-75 transition-opacity" aria-label="Facebook"><i class="ph-fill ph-facebook-logo"></i></a>
-          {% endif %}
-          {% if theme_settings.contact.linkedin != blank %}
-          <a href="{{ theme_settings.contact.linkedin }}" target="_blank" rel="noopener" class="hover:opacity-75 transition-opacity" aria-label="LinkedIn"><i class="ph-fill ph-linkedin-logo"></i></a>
-          {% endif %}
-          {% if theme_settings.contact.youtube != blank %}
-          <a href="{{ theme_settings.contact.youtube }}" target="_blank" rel="noopener" class="hover:opacity-75 transition-opacity" aria-label="YouTube"><i class="ph-fill ph-youtube-logo"></i></a>
-          {% endif %}
-        </div>
-      </div>
-      {% endif %}
-    </div>
-
-    <!-- Colunas -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-10 py-[45px]">
+      {%- comment -%} Coluna 1: marca, assinatura, CRECI e redes {%- endcomment -%}
       <div>
-        <h4 class="vp-footer__title mb-5" style="color: {{ footer_text }};">Institucional</h4>
-        <ul class="vp-footer__list space-y-2">
-          <li><a href="{{ locale_prefix }}/">Home</a></li>
-          <li><a href="{{ locale_prefix }}{{ routes['about-us'] }}">Sobre nós</a></li>
-          <li><a href="{{ locale_prefix }}{{ routes.privacy-policy }}">Política de Privacidade</a></li>
-          <li><a href="{{ locale_prefix }}{{ routes.careers }}">Trabalhe conosco</a></li>
-          <li><a href="{{ locale_prefix }}{{ routes.advertise }}">Anuncie seu imóvel</a></li>
+        <a href="{{ locale_prefix }}/" class="block w-[150px] mb-5">
+          {%- if _logo != blank -%}
+            <img src="{{ _logo }}" alt="{{ workspace.name }}" class="w-full h-auto object-contain" width="150" height="89" loading="lazy">
+          {%- else -%}
+            <span class="text-2xl font-medium">{{ workspace.name }}</span>
+          {%- endif -%}
+        </a>
+
+        {%- if theme_settings.footer.tagline != blank %}
+        <p class="pb-footer__text max-w-[320px] mb-5">{{ theme_settings.footer.tagline }}</p>
+        {%- endif %}
+
+        {%- if theme_settings.contact.creci != blank %}
+        <ul class="pb-footer__list mb-6">
+          <li>{{ theme_settings.contact.creci }}</li>
         </ul>
-      </div>
+        {%- endif %}
 
-      <div>
-        <h4 class="vp-footer__title mb-5" style="color: {{ footer_text }};">Tipos de imóveis</h4>
-        <ul class="vp-footer__list space-y-2">
-          {% if footer_links_types != empty and footer_links_types.size > 0 %}
-            {% for item in footer_links_types %}
-              <li><a href="{{ item.url }}">{{ item.label }}</a></li>
-            {% endfor %}
-          {% else %}
-            <li><a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}/tipo/casa">Casas à venda</a></li>
-            <li><a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}/tipo/apartamento">Apartamentos à venda</a></li>
-            <li><a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}/comercial">Imóveis comerciais à venda</a></li>
-          {% endif %}
-        </ul>
-      </div>
-
-      <div>
-        <h4 class="vp-footer__title mb-5" style="color: {{ footer_text }};">Imóveis por bairro</h4>
-        <ul class="vp-footer__list space-y-2">
-          {% for item in footer_links_neighborhoods %}
-            <li><a href="{{ item.url }}">{{ item.label }}</a></li>
-          {% endfor %}
-        </ul>
-      </div>
-
-      <div class="vp-footer__text">
-        <h4 class="vp-footer__title mb-1" style="color: {{ footer_text }};">Fale conosco</h4>
-        {% if theme_settings.contact.phone != blank %}
-        <p class="mb-5"><a href="tel:{{ theme_settings.contact.phone | remove: '-' | remove: '(' | remove: ')' | remove: ' ' }}">{{ theme_settings.contact.phone }}</a></p>
-        {% endif %}
-
-        {% if theme_settings.contact.email != blank %}
-        <h4 class="vp-footer__title mb-1" style="color: {{ footer_text }};">Nos envie uma mensagem</h4>
-        <p class="mb-5 break-all"><a href="mailto:{{ theme_settings.contact.email }}">{{ theme_settings.contact.email }}</a></p>
-        {% endif %}
-
-        {% if theme_settings.contact.address != blank %}
-        <h4 class="vp-footer__title mb-1" style="color: {{ footer_text }};">Conheça nosso espaço</h4>
-        <p>{{ theme_settings.contact.address }}</p>
-        {% endif %}
-      </div>
-    </div>
-
-    <!-- Rodapé legal: CNPJ | CRECI | Copyright | Desenvolvido por Veploy -->
-    <div class="border-t py-[10px]" style="border-color: {{ _footer_line }};">
-      <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-[14px] leading-[20px]" style="color: {{ footer_text }};">
-        {% if _cnpj != blank %}
-        <span>{{ _cnpj }}</span>
-        <span class="hidden md:inline h-[20px] border-l" style="border-color: #DDDDDD;"></span>
-        {% endif %}
-        {% if _creci != blank %}
-        <span>CRECI: {{ _creci }}</span>
-        <span class="hidden md:inline">|</span>
-        {% endif %}
-        <span>Copyright {{ 'now' | date: '%Y' }} – Todos os Direitos Reservados</span>
-        <span class="hidden md:inline">|</span>
-        {%- assign _footer_host = canonical_url | split: '/' -%}
-        <span class="inline-flex items-center gap-1.5">
-          Desenvolvido por
-          <a href="https://veploy.com?utm_source={{ _footer_host[2] | url_encode }}&utm_medium=referral&utm_campaign=footer_badge" target="_blank" rel="noopener" class="inline-flex items-center hover:opacity-80 transition-opacity">
-            <img src="{{ veploy_credits_logo }}" alt="Veploy" class="w-[70px] h-auto" width="70" height="18" loading="lazy">
+        {%- if theme_settings.features.footer_show_social != false %}
+        <div class="flex items-center gap-[5px] flex-wrap">
+          {%- if theme_settings.contact.facebook != blank %}
+          <a href="{{ theme_settings.contact.facebook }}" target="_blank" rel="noopener" class="pb-footer__social" aria-label="Facebook">
+            <svg viewBox="0 0 320 512"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg>
           </a>
-        </span>
+          {%- endif %}
+          {%- if theme_settings.contact.instagram != blank %}
+          <a href="{{ theme_settings.contact.instagram }}" target="_blank" rel="noopener" class="pb-footer__social" aria-label="Instagram">
+            <svg viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>
+          </a>
+          {%- endif %}
+          {%- if theme_settings.contact.linkedin != blank %}
+          <a href="{{ theme_settings.contact.linkedin }}" target="_blank" rel="noopener" class="pb-footer__social" aria-label="LinkedIn">
+            <svg viewBox="0 0 448 512"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"/></svg>
+          </a>
+          {%- endif %}
+          {%- if theme_settings.contact.youtube != blank %}
+          <a href="{{ theme_settings.contact.youtube }}" target="_blank" rel="noopener" class="pb-footer__social" aria-label="YouTube">
+            <svg viewBox="0 0 576 512"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>
+          </a>
+          {%- endif %}
+          {%- if theme_settings.contact.tiktok != blank %}
+          <a href="{{ theme_settings.contact.tiktok }}" target="_blank" rel="noopener" class="pb-footer__social" aria-label="TikTok">
+            <svg viewBox="0 0 448 512"><path d="M448 209.91a210.06 210.06 0 0 1-122.77-39.25v178.72A162.55 162.55 0 1 1 185 188.31v89.89a74.62 74.62 0 1 0 52.23 71.18V0h88a121.18 121.18 0 0 0 1.86 22.17A122.18 122.18 0 0 0 381 102.39a121.43 121.43 0 0 0 67 20.14z"/></svg>
+          </a>
+          {%- endif %}
+        </div>
+        {%- endif %}
       </div>
+
+      {%- comment -%} Coluna 2: contato {%- endcomment -%}
+      <div>
+        <h4 class="pb-footer__title">Contato</h4>
+        <ul class="pb-footer__list">
+          {%- if theme_settings.contact.email != blank %}
+          <li><a href="mailto:{{ theme_settings.contact.email }}">{{ theme_settings.contact.email }}</a></li>
+          {%- endif %}
+          {%- if theme_settings.contact.whatsapp != blank %}
+          {%- assign _wa = theme_settings.contact.whatsapp_link | default: '' -%}
+          <li><a href="{% if _wa != blank %}{{ _wa }}{% else %}tel:{{ theme_settings.contact.phone }}{% endif %}" target="_blank" rel="noopener">{{ theme_settings.contact.whatsapp }}</a></li>
+          {%- endif %}
+          {%- if theme_settings.contact.address != blank %}
+          <li>{{ theme_settings.contact.address }}</li>
+          {%- endif %}
+        </ul>
+      </div>
+
+      {%- comment -%} Coluna 3: institucional {%- endcomment -%}
+      {%- assign _inst = theme_settings.footer.institucional_list | default: empty -%}
+      {%- if _inst != empty and _inst.size > 0 %}
+      <div>
+        <h4 class="pb-footer__title">{{ theme_settings.footer.institucional_title | default: 'Institucional' }}</h4>
+        <ul class="pb-footer__list">
+          {%- for item in _inst -%}
+          {%- assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about-us}}', routes['about-us'] | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites | replace: '{{routes.privacy-policy}}', routes['privacy-policy'] -%}
+          <li><a href="{% unless resolved_url contains '://' %}{{ locale_prefix }}{% endunless %}{{ resolved_url }}">{{ item.label }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </div>
+      {%- endif %}
+
+      {%- comment -%} Coluna 4: links úteis {%- endcomment -%}
+      {%- assign _useful = theme_settings.footer.useful_list | default: empty -%}
+      {%- if _useful != empty and _useful.size > 0 %}
+      <div>
+        <h4 class="pb-footer__title">{{ theme_settings.footer.useful_title | default: 'Links úteis' }}</h4>
+        <ul class="pb-footer__list">
+          {%- for item in _useful -%}
+          {%- assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about-us}}', routes['about-us'] | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites | replace: '{{routes.privacy-policy}}', routes['privacy-policy'] -%}
+          <li><a href="{% unless resolved_url contains '://' %}{{ locale_prefix }}{% endunless %}{{ resolved_url }}">{{ item.label }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </div>
+      {%- endif %}
+    </div>
+
+    {%- comment -%} Linha final: CNPJ, copyright e selo Veploy {%- endcomment -%}
+    <div class="pb-footer__bottom flex flex-wrap items-center justify-center gap-x-2 gap-y-2 text-center">
+      {%- if _cnpj != blank %}<span>{{ _cnpj }}</span>{%- endif %}
+      <span>| Copyright {{ _year }} &ndash; Todos os Direitos Reservados | Desenvolvido por</span>
+      <a href="https://veploy.com?utm_source={{ workspace.name | url_encode }}" target="_blank" rel="noopener" class="inline-flex">
+        <img src="{{ _cdn }}/assets/images/logo-veploy-branca.png" alt="Veploy" class="h-[22px] w-auto object-contain" width="91" height="28" loading="lazy">
+      </a>
     </div>
   </div>
 </footer>

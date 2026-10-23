@@ -1,56 +1,102 @@
 {%- comment -%}
-  Card de imóvel do Elegance (home "/Coleção" e "Imóveis similares").
-  Espera `property` no escopo. O CTA "Mais detalhes" fica ancorado no rodapé
-  do card (flex-1 + mt-auto), alinhado entre cards de alturas diferentes.
+  Card de imóvel da Passos & Buytendorp.
+
+  Igual ao loop item do original: moldura de 1px #ECECEC com 4px de canto e
+  sombra baixa, carrossel de fotos com o coração no canto superior direito e,
+  por cima da foto (margem negativa de 40px), o bloco branco com código, título
+  em Reckless Neue 17/400, preço em 17/600 e a linha de características
+  separada por bolinhas.
+
+  Espera `property` no escopo.
 {%- endcomment -%}
-{%- assign _img = '' -%}
-{%- if property.images and property.images.size > 0 -%}
-  {%- assign _img = property.images[0].url | default: property.images[0] -%}
-{%- endif -%}
+{%- assign _url = property | property_url -%}
 {%- assign _is_rent_only = false -%}
 {%- if property.for_rent and property.for_sale != true -%}{%- assign _is_rent_only = true -%}{%- endif -%}
-{%- assign _area = property.usable_area | default: property.total_area -%}
-{%- assign _url = property | property_url -%}
+{%- assign _area = property.total_area | default: property.usable_area -%}
 
-<article class="vp-property-card-elegance flex h-full flex-col bg-white shadow-[0_2px_20px_0_rgb(0_0_0/0.06)]">
-  <a href="{{ _url }}" class="relative block aspect-[412/270] overflow-hidden bg-gray-100">
-    {% if _img != blank %}
-      <img src="{{ _img | img_resize: 640, 0, false, 'webp' }}" alt="{{ property.title | escape }}" class="absolute inset-0 h-full w-full object-cover transition duration-500 hover:scale-[1.03]" loading="lazy" width="412" height="270">
-    {% endif %}
-    <span class="absolute top-[10px] left-5 z-[2] bg-white px-[10px] py-[2px] text-[12px] font-semibold uppercase text-[#0A0A0A]">
-      {% if _is_rent_only %}Locação{% else %}Venda{% endif %}
-    </span>
-  </a>
+<article class="pb-card group" x-data="{}">
+  <div class="pb-card__media relative">
+    <div class="swiper pb-card__swiper property-card-swiper-{{ property.sku }}" data-swiper-id="{{ property.sku }}">
+      <div class="swiper-wrapper">
+        {%- if property.images and property.images.size > 0 -%}
+          {%- for image in property.images limit: 5 -%}
+          <div class="swiper-slide">
+            <a href="{{ _url }}" class="block aspect-[412/290] overflow-hidden bg-[#F0EEE9]">
+              <img
+                src="{{ image.url | default: image | img_resize: 640, 0, false, 'webp' }}"
+                alt="{{ property.formatted_title | default: property.title | escape }}"
+                class="h-full w-full object-cover"
+                width="412" height="290" loading="lazy" decoding="async"
+              >
+            </a>
+          </div>
+          {%- endfor -%}
+        {%- else -%}
+          <div class="swiper-slide">
+            <div class="aspect-[412/290] bg-[#F0EEE9] flex items-center justify-center">
+              <i class="ph ph-buildings text-5xl text-[#A9A49A]"></i>
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
 
-  <div class="flex flex-1 flex-col gap-[10px] p-5">
-    <h4 class="font-serif text-[16px] font-normal leading-[1.4] text-black">
+      {%- if property.images and property.images.size > 1 %}
+      <button type="button" class="pb-card__nav swiper-button-prev-{{ property.sku }} left-3" aria-label="Imagem anterior">
+        <i class="ph ph-caret-left"></i>
+      </button>
+      <button type="button" class="pb-card__nav swiper-button-next-{{ property.sku }} right-3" aria-label="Próxima imagem">
+        <i class="ph ph-caret-right"></i>
+      </button>
+      {%- endif %}
+    </div>
+
+    <button
+      type="button"
+      class="pb-card__fav favorite-btn"
+      aria-label="Adicionar aos favoritos"
+      data-property-sku="{{ property.sku }}"
+      @click.prevent.stop="toggleFavorite($el)"
+      x-data="{ sku: '{{ property.sku }}' }"
+      :class="{ 'favorited': $store.favorites.is(sku) }"
+    >
+      <i class="text-[22px] transition-colors"
+         :class="$store.favorites.is(sku) ? 'ph-fill ph-heart' : 'ph ph-heart'"
+         :style="$store.favorites.is(sku) ? 'color:#e51f49' : 'color:#fff'"></i>
+    </button>
+  </div>
+
+  <div class="pb-card__body">
+    {%- if property.sku != blank %}
+    <span class="pb-card__sku">{{ property.sku }}</span>
+    {%- endif %}
+
+    <h3 class="pb-card__title">
       <a href="{{ _url }}">{{ property.formatted_title | default: property.title }}</a>
-    </h4>
+    </h3>
 
-    <p class="text-[15px] font-semibold leading-[22px] text-black">
+    <p class="pb-card__price">
       {%- if _is_rent_only -%}
-        Locação:
-        {% if property.rental_price and property.rental_price != 'on_request' and property.rental_price != 'negotiable' %}{{ property.rental_price | money_format }}{% else %}valor sob consulta{% endif %}
+        {%- if property.rental_price and property.rental_price != 'on_request' and property.rental_price != 'negotiable' -%}
+          {{ property.rental_price | money_format }}<span class="pb-card__price-suffix">/mês</span>
+        {%- else -%}Consulte-nos{%- endif -%}
       {%- else -%}
-        Venda:
-        {% if property.sale_price and property.sale_price != 'on_request' and property.sale_price != 'negotiable' %}{{ property.sale_price | money_format }}{% else %}valor sob consulta{% endif %}
+        {%- if property.sale_price and property.sale_price != 'on_request' and property.sale_price != 'negotiable' -%}
+          {{ property.sale_price | money_format }}
+        {%- else -%}Consulte-nos{%- endif -%}
       {%- endif -%}
     </p>
 
-    <div class="flex items-center gap-8 pt-[10px] pb-[5px] text-[14px] text-[#181A20]">
-      {% if _area and _area > 0 %}
-      <span class="inline-flex items-center gap-2"><i class="ph ph-corners-out text-[24px]"></i>{{ _area }} m²</span>
-      {% endif %}
-      {% if property.beds and property.beds > 0 %}
-      <span class="inline-flex items-center gap-2"><i class="ph ph-bed text-[24px]"></i>{{ property.beds }}</span>
-      {% endif %}
-      {% if property.bathrooms and property.bathrooms > 0 %}
-      <span class="inline-flex items-center gap-2"><i class="ph ph-shower text-[24px]"></i>{{ property.bathrooms }}</span>
-      {% endif %}
-    </div>
+    {%- assign _has_features = false -%}
+    {%- if _area and _area > 0 -%}{%- assign _has_features = true -%}{%- endif -%}
+    {%- if property.beds and property.beds > 0 -%}{%- assign _has_features = true -%}{%- endif -%}
+    {%- if property.parkings and property.parkings > 0 -%}{%- assign _has_features = true -%}{%- endif -%}
 
-    <div class="mt-auto pt-[10px]">
-      <a href="{{ _url }}" class="vp-btn text-white bg-[#181A20] border-black hover:bg-black tracking-[.5px]">Mais detalhes</a>
-    </div>
+    {%- if _has_features %}
+    <ul class="pb-card__features">
+      {%- if _area and _area > 0 %}<li>{{ _area }} m²</li>{% endif -%}
+      {%- if property.beds and property.beds > 0 %}<li>{{ property.beds }} {% if property.beds == 1 %}quarto{% else %}quartos{% endif %}</li>{% endif -%}
+      {%- if property.parkings and property.parkings > 0 %}<li>{{ property.parkings }} {% if property.parkings == 1 %}vaga{% else %}vagas{% endif %}</li>{% endif -%}
+    </ul>
+    {%- endif %}
   </div>
 </article>

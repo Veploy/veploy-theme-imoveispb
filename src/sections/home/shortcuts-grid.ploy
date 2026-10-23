@@ -1,44 +1,86 @@
-<!-- Atalhos (Elegance): "/Coleção" + 4 cards com imagem e rótulo preto sobreposto -->
-{%- assign sg = sections['home/shortcuts-grid'] -%}
-{%- assign shortcuts = sg.shortcuts.items -%}
-{%- assign sg_eyebrow = sg.eyebrow | default: '/Coleção' -%}
-{%- assign sg_title = sg.title | default: 'Conheça nossa seleção com os imóveis mais buscados.' -%}
-{%- assign sg_cta_text = sg.cta_text | default: 'Ver todos os imóveis' -%}
-{%- assign sg_cta_url = sg.cta_url | default: routes.properties -%}
+{%- comment -%}
+  "Mais buscados": três cartões de bairro/empreendimento.
 
-{% if shortcuts and shortcuts.size > 0 %}
-<section {{ section_attrs }} class="vp-section vp-home-shortcuts w-full bg-white px-[5%]{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="max-w-[1300px] mx-auto pt-[60px] pb-[80px]">
-    {% include 'components/home-section-header', eyebrow: sg_eyebrow, title: sg_title, cta_text: sg_cta_text, cta_url: sg_cta_url %}
+  No original a faixa tem um degradê branco → #F8F8F8, a foto fica dentro de uma
+  moldura bege de 6px com 70vh de altura e brilho reduzido, e o nome do bairro
+  aparece embaixo da foto em Reckless Neue 30px.
+{%- endcomment -%}
+{%- assign s = sections['home/shortcuts-grid'] -%}
+{%- assign items = s.shortcuts.items | default: empty -%}
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 sm:gap-x-0 mt-5">
-      {% for item in shortcuts %}
-        <a href="{{ item.url }}" class="vp-home-shortcut group relative block m-[5px] min-h-[300px] sm:min-h-[400px] bg-cover bg-center" style="background-image: url('{{ item.image }}');">
-          <span class="sr-only">{{ item.title }}</span>
-          <div class="absolute left-0 right-0 -bottom-[20px] mx-[6%] bg-black px-[15px] py-[20px] text-center transition-colors group-hover:bg-[#181A20]">
-            <h4 class="font-serif text-white text-[18px] font-semibold leading-[1.2em]">{{ item.title }}</h4>
-          </div>
-        </a>
-      {% endfor %}
+<style>
+  .pb-shortcuts { background-image: linear-gradient(180deg, #FFFFFF 0%, #F8F8F8 100%); }
+  .pb-shortcuts__frame {
+    background-color: #E7E0D2;
+    border: 6px solid #E0D6C4;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .pb-shortcuts__img {
+    width: 100%;
+    height: 70vh;
+    min-height: 420px;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 3px;
+    filter: brightness(58%);
+    transition: transform 1s, filter .6s;
+  }
+  .pb-shortcuts__card:hover .pb-shortcuts__img { transform: scale(1.04); filter: brightness(70%); }
+  .pb-shortcuts__name {
+    font-family: var(--font-heading);
+    font-size: 30px;
+    font-weight: 300;
+    line-height: 1.2em;
+    color: #666158;
+    padding-top: 14px;
+  }
+  @media (max-width: 1024px) {
+    .pb-shortcuts__img { height: 46vh; min-height: 320px; }
+    .pb-shortcuts__name { font-size: 24px; }
+  }
+</style>
+
+<section {{ section_attrs }} class="pb-shortcuts pb-section{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="pb-container pt-[90px] pb-[80px]">
+    {% include 'components/home-section-header',
+       eyebrow: s.eyebrow,
+       heading: s.title,
+       heading_highlight: s.title_highlight,
+       cta_text: s.cta_text,
+       cta_url: s.cta_url %}
+
+    {%- if items != empty and items.size > 0 %}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mt-10">
+      {%- for item in items -%}
+      {%- assign _url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent -%}
+      <a href="{% unless _url contains '://' %}{{ locale_prefix }}{% endunless %}{{ _url }}" class="pb-shortcuts__card block group">
+        <div class="pb-shortcuts__frame">
+          <img src="{{ item.image }}" alt="{{ item.title }}" class="pb-shortcuts__img" loading="lazy" width="1020" height="1530">
+        </div>
+        <h3 class="pb-shortcuts__name">{{ item.title }}</h3>
+      </a>
+      {%- endfor -%}
     </div>
+    {%- endif %}
   </div>
 </section>
-{% endif %}
 
 {% schema %}
 {
-  "name": "Atalhos de busca",
+  "name": "Mais buscados",
   "location": "home",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/Coleção" },
-    { "type": "text", "id": "title", "label": "Título", "default": "Conheça nossa seleção com os imóveis mais buscados." },
-    { "type": "text", "id": "cta_text", "label": "Texto do botão", "default": "Ver todos os imóveis" },
-    { "type": "url", "id": "cta_url", "label": "Link do botão", "default": "/imoveis" },
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "mais buscados" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Os empreendimentos e bairros mais buscados de" },
+    { "type": "text", "id": "title_highlight", "label": "Título — trecho em destaque", "default": "Campo Grande e região." },
+    { "type": "text", "id": "cta_text", "label": "Texto do link", "default": "Ver mais imóveis" },
+    { "type": "url", "id": "cta_url", "label": "Link", "default": "/imoveis" },
     {
       "type": "repeater",
       "id": "shortcuts",
-      "label": "Atalhos",
-      "max_items": 4,
+      "label": "Cartões",
+      "max_items": 3,
       "settings": [
         { "type": "text", "id": "title", "label": "Título" },
         { "type": "image_picker", "id": "image", "label": "Imagem" },

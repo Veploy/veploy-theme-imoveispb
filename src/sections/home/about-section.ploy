@@ -1,64 +1,65 @@
-<!-- Sobre (Elegance): faixa preta "/ Quem somos" + bloco "/Alto padrão" com imagem -->
-{%- assign about = sections['home/about-section'] -%}
-{%- assign about_eyebrow = about.eyebrow | default: '/ Quem somos' -%}
-{%- assign about_title = about.title | default: 'Descubra a chave do seu novo lar com a imobiliária que transforma sonhos em endereços!' -%}
-{%- assign about_sub_eyebrow = about.subtitle_eyebrow | default: '/Alto padrão' -%}
-{%- assign about_subtitle = about.subtitle | default: 'Assistência completa para venda, compra, locação e financiamento de imóveis.' -%}
-{%- assign about_cta_text = about.cta_text | default: 'Conheça nossa história' -%}
-{%- assign about_cta_url = about.cta_url | default: routes['about-us'] -%}
-{%- assign about_image = about.image | default: 'https://www.lopeselegance.com.br/wp-content/uploads/2025/08/Banner-home-sobre-nos.png' -%}
+{%- comment -%}
+  "Sobre nós" da home: título à esquerda, texto numa coluna estreita à direita
+  e, logo abaixo, uma foto de 85vh que ocupa toda a largura do container, com
+  degradê para preto no pé — como no original.
+{%- endcomment -%}
+{%- assign s = sections['home/about-section'] -%}
 
-<section {{ section_attrs }} class="vp-section vp-home-about w-full{% if section_class %} {{ section_class }}{% endif %}">
-  <!-- / Quem somos -->
-  <div class="relative">
-    <!-- Círculo metade fora / metade dentro da faixa preta -->
-    <div class="absolute top-0 left-1/2 z-[3] flex h-[80px] w-[80px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-[0_4px_16px_0_rgb(0_0_0/0.12)]">
-      <svg xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 -960 960 960" width="48" aria-hidden="true"><path d="M480-229.231 267.692-441.538l22-22.001L480-272.462l190.308-191.077 22 22.001L480-229.231Zm0-244.538L267.692-686.077l22-22L480-517l190.308-191.077 22 22L480-473.769Z"/></svg>
-    </div>
-    <div class="w-full bg-black px-[50px] pt-[80px] pb-[50px] text-center">
-      <span class="vp-eyebrow text-[#FBFBFB] pb-[10px]">{{ about_eyebrow }}</span>
-      <h2 class="font-serif mx-auto md:max-w-[74%] pb-5 text-[26px] md:text-[34px] font-bold leading-[1.1] tracking-[1px] text-white">{{ about_title }}</h2>
-      <span class="font-serif block text-[34px] font-bold leading-[1.1] text-white/[.16]" aria-hidden="true">|</span>
+<style>
+  .pb-about__image {
+    position: relative;
+    min-height: 85vh;
+    border-radius: 4px;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow: hidden;
+  }
+  .pb-about__image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(180deg, #02010100 0%, #000000 100%);
+  }
+  @media (min-width: 1367px) { .pb-about__image { background-attachment: fixed; } }
+  @media (max-width: 1024px)  { .pb-about__image { min-height: 55vh; } }
+</style>
+
+<section {{ section_attrs }} class="pb-about pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="pb-container pt-[100px] pb-[50px]">
+    <div class="flex flex-col lg:flex-row lg:items-end gap-8 lg:gap-10">
+      <div class="lg:flex-1">
+        {% include 'components/home-section-header',
+           eyebrow: s.eyebrow,
+           heading: s.title,
+           heading_highlight: s.title_highlight %}
+      </div>
+
+      {%- if s.description != blank %}
+      <div class="lg:max-w-[500px] lg:self-end">
+        <div class="pb-text">{{ s.description }}</div>
+      </div>
+      {%- endif %}
     </div>
   </div>
 
-  <!-- /Alto padrão -->
-  <div class="bg-white px-[5%]">
-    <div class="max-w-[1300px] mx-auto flex flex-col lg:flex-row pt-[50px] pb-[80px] gap-10 lg:gap-0">
-      <div class="w-full lg:w-1/2 lg:pr-[60px] flex flex-col justify-center">
-        <span class="vp-eyebrow text-[#646464] pb-[10px]">{{ about_sub_eyebrow }}</span>
-        <h2 class="font-serif text-[26px] md:text-[34px] font-medium leading-[1.1] tracking-[1px] text-black">{{ about_subtitle }}</h2>
-        <hr class="my-[30px] border-0 border-t border-black">
-        {%- if about.description != blank -%}
-        <div class="text-[15px] leading-[22px] text-black space-y-5 mb-10">{{ about.description }}</div>
-        {%- endif -%}
-        <div>
-          <a href="{{ about_cta_url }}" class="vp-btn bg-black text-white border-black hover:bg-[#181A20]">
-            <i class="ph ph-eye text-[16px]"></i>
-            {{ about_cta_text }}
-          </a>
-        </div>
-      </div>
-      <div class="w-full lg:w-1/2 flex items-center justify-center">
-        <img src="{{ about_image }}" alt="{{ workspace.name }}" class="w-full h-auto object-cover" loading="lazy">
-      </div>
-    </div>
+  {%- if s.image != blank %}
+  <div class="pb-container pb-[20px]">
+    <div class="pb-about__image" style="background-image: url('{{ s.image }}');" role="img" aria-label="{{ workspace.name }}"></div>
   </div>
+  {%- endif %}
 </section>
 
 {% schema %}
 {
-  "name": "Sobre nós",
+  "name": "Sobre nós (home)",
   "location": "home",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Sobretítulo (faixa preta)", "default": "/ Quem somos" },
-    { "type": "textarea", "id": "title", "label": "Título (faixa preta)" },
-    { "type": "text", "id": "subtitle_eyebrow", "label": "Sobretítulo do bloco", "default": "/Alto padrão" },
-    { "type": "textarea", "id": "subtitle", "label": "Título do bloco" },
-    { "type": "richtext", "id": "description", "label": "Descrição" },
-    { "type": "text", "id": "cta_text", "label": "Texto do botão", "default": "Conheça nossa história" },
-    { "type": "url", "id": "cta_url", "label": "Link do botão" },
-    { "type": "image_picker", "id": "image", "label": "Imagem" }
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "sobre nós" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Mais que uma imobiliária," },
+    { "type": "text", "id": "title_highlight", "label": "Título — trecho em destaque" },
+    { "type": "richtext", "id": "description", "label": "Texto" },
+    { "type": "image_picker", "id": "image", "label": "Foto da faixa" }
   ]
 }
 {% endschema %}

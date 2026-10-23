@@ -2,5 +2,13 @@
 {% block content %}
   {% section 'careers/main' %}
   {% section 'careers/benefits' %}
-  {% section 'home/promotion' %}
+  {% section 'home/contact-section' %}
 {% endblock %}
+
+{% schema %}
+{
+  "name": "Trabalhe conosco",
+  "location": "careers",
+  "settings": []
+}
+{% endschema %}

@@ -1,93 +1,187 @@
-<!-- Contato (Elegance): cabeçalho com linha divisória + 2 colunas
-     (canais de atendimento à esquerda, formulário à direita) -->
-{%- assign cm = sections['contact/main'] -%}
-{%- assign cm_eyebrow = cm.eyebrow | default: '/ Fale conosco' -%}
-{%- assign cm_title = cm.title | default: 'Conte com nossa equipe especializada para descobrir a propriedade dos seus sonhos e potencializar o anúncio do seu imóvel.' -%}
+{%- comment -%}
+  Página de contato.
 
-<section {{ section_attrs }} class="vp-section vp-contact-main w-full bg-white px-[5%]{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="max-w-[1300px] mx-auto pt-[90px] pb-[100px]">
-    <!-- Cabeçalho -->
-    <div class="border-b border-[#181A20] pb-[45px]">
-      <span class="vp-eyebrow text-[#717171] mb-[40px]">{{ cm_eyebrow }}</span>
-      <h1 class="font-serif max-w-[780px] text-[28px] md:text-[36px] font-normal leading-[1.1] tracking-[1px] text-black">{{ cm_title }}</h1>
-    </div>
+  Duas faixas em duas colunas, como no original: "Canais de atendimento" à
+  esquerda e a missão + dados à direita; depois "Envie-nos uma mensagem" à
+  esquerda e o formulário à direita. No topo, o banner da cidade; no pé, o mapa.
+{%- endcomment -%}
+{%- assign s = sections['contact/main'] -%}
+{%- assign _wa = theme_settings.contact.whatsapp_link -%}
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-[50px] pt-[70px]">
-      <!-- Canais de atendimento -->
-      <div class="space-y-[50px] text-[15px] leading-[1.8] tracking-[1px] text-black">
-        {%- if theme_settings.contact.phone != blank or theme_settings.contact.email != blank -%}
+<style>
+  .pb-contact__heading {
+    font-family: var(--font-heading);
+    font-size: 30px;
+    font-weight: 300;
+    line-height: 1.2em;
+    color: #181A20;
+  }
+  .pb-contact__lead {
+    font-family: var(--font-heading);
+    font-size: 30px;
+    font-weight: 300;
+    line-height: 1.3em;
+    color: #181A20;
+  }
+  .pb-contact__lead i { font-style: italic; }
+  @media (max-width: 767px) {
+    .pb-contact__heading, .pb-contact__lead { font-size: 24px; }
+  }
+  .pb-contact__sub {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1.2em;
+    color: #181A20;
+    margin-bottom: 14px;
+  }
+  .pb-contact__social {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: #181A20;
+    color: #fff;
+    transition: opacity .2s;
+  }
+  .pb-contact__social:hover { opacity: .8; }
+  .pb-contact__social svg { width: 15px; height: 15px; fill: currentColor; }
+  .pb-contact__banner {
+    min-height: 320px;
+    border-radius: 4px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+</style>
+
+<section {{ section_attrs }} class="pb-contact pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
+  {%- if s.image != blank %}
+  <div class="pb-container pt-[150px]">
+    <div class="pb-contact__banner" style="background-image: url('{{ s.image }}');" role="img" aria-label="{{ workspace.name }}"></div>
+  </div>
+  {%- endif %}
+
+  {%- comment -%} Bloco 1: canais de atendimento {%- endcomment -%}
+  <div class="pb-container grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 pt-[80px] pb-[60px]">
+    <h1 class="pb-contact__heading">{{ s.eyebrow | default: 'Canais de atendimento' }}</h1>
+
+    <div>
+      {%- if s.title != blank or s.title_italic != blank %}
+      <p class="pb-contact__lead">
+        {%- if s.title_italic != blank %}<i>{{ s.title_italic }}</i> {% endif %}{{ s.title -}}
+      </p>
+      {%- endif %}
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-10 mt-[50px]">
         <div>
-          <h2 class="font-serif text-[24px] font-normal leading-[1.2] tracking-[.5px] text-black mb-5">{{ cm.service_title | default: 'Atendimento' }}</h2>
-          {%- if theme_settings.contact.phone != blank -%}
-          <p><a href="tel:{{ theme_settings.contact.phone | remove: '-' | remove: '(' | remove: ')' | remove: ' ' }}" class="hover:underline">{{ theme_settings.contact.phone }}</a></p>
-          {%- endif -%}
-          {%- if theme_settings.contact.email != blank -%}
-          <p><a href="mailto:{{ theme_settings.contact.email }}" class="hover:underline">{{ theme_settings.contact.email }}</a></p>
-          {%- endif -%}
-        </div>
-        {%- endif -%}
+          <h2 class="pb-contact__sub">{{ s.service_title | default: 'Entre em contato' }}</h2>
+          <ul class="pb-text flex flex-col gap-3">
+            {%- if theme_settings.contact.whatsapp != blank %}
+            <li><a href="{{ _wa | default: '#' }}" target="_blank" rel="noopener" class="hover:text-[#181A20]">{{ theme_settings.contact.whatsapp }}</a></li>
+            {%- endif %}
+            {%- if theme_settings.contact.email != blank %}
+            <li><a href="mailto:{{ theme_settings.contact.email }}" class="hover:text-[#181A20]">{{ theme_settings.contact.email }}</a></li>
+            {%- endif %}
+          </ul>
 
-        {%- if theme_settings.contact.address != blank -%}
-        <div>
-          <h2 class="font-serif text-[24px] font-normal leading-[1.2] tracking-[.5px] text-black mb-5">{{ cm.location_title | default: 'Localização' }}</h2>
-          <p>{{ theme_settings.contact.address }}</p>
-        </div>
-        {%- endif -%}
-
-        {%- if theme_settings.contact.hours != blank -%}
-        <div>
-          <h2 class="font-serif text-[24px] font-normal leading-[1.2] tracking-[.5px] text-black mb-5">{{ cm.hours_title | default: 'Horário de atendimento' }}</h2>
-          <p>{{ theme_settings.contact.hours }}</p>
-        </div>
-        {%- endif -%}
-      </div>
-
-      <!-- Formulário -->
-      <div class="vp-form">
-        {% form 'contact', name: 'Contato' %}
-          {% if form.posted_successfully %}
-            <p class="mb-6 border border-green-200 bg-green-50 p-4 text-green-800 font-medium">{{ form.success }}</p>
-          {% endif %}
-          {% if form.errors %}
-            <p class="mb-6 border border-red-200 bg-red-50 p-4 text-red-800 font-medium">{{ form.errors | first }}</p>
-          {% endif %}
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-[10px] gap-y-[30px]">
-            <div>
-              <label for="cm-name">Nome</label>
-              <input id="cm-name" type="text" name="contact[name]" required placeholder="Nome completo" class="vp-form__input">
-            </div>
-            <div>
-              <label for="cm-email">E-mail</label>
-              <input id="cm-email" type="email" name="contact[email]" required placeholder="Seu melhor e-mail" class="vp-form__input">
-            </div>
-            <div>
-              <label>Telefone com DDD</label>
-              {% include 'components/global/form/phone-input', name: 'contact[phone]', placeholder: '(99) 99999-9999', input_class: 'vp-form__input', id: 'cm-phone' %}
-            </div>
-            <div>
-              <label for="cm-method">Selecione a forma de contato desejada</label>
-              <select id="cm-method" name="contact[contact_method]" class="vp-form__input cursor-pointer">
-                <option value="phone">Telefone</option>
-                <option value="whatsapp">Whatsapp</option>
-              </select>
-            </div>
-            <div class="md:col-span-2">
-              <label for="cm-message">Possui alguma informação adicional?</label>
-              <textarea id="cm-message" name="contact[message]" rows="4" placeholder="Escreva aqui sua mensagem" class="vp-form__input"></textarea>
-            </div>
-
-            {% if workspace.settings.turnstile.enabled %}
-              <div class="md:col-span-2 cf-turnstile" data-sitekey="{{ workspace.settings.turnstile.site_key }}"></div>
-            {% endif %}
-
-            <div class="md:col-span-2 pt-[10px]">
-              <button type="submit" class="vp-form__submit md:!w-[418px] max-w-full">Enviar</button>
-            </div>
+          <div class="flex items-center gap-2.5 mt-6">
+            {%- if theme_settings.contact.facebook != blank %}
+            <a href="{{ theme_settings.contact.facebook }}" target="_blank" rel="noopener" class="pb-contact__social" aria-label="Facebook">
+              <svg viewBox="0 0 320 512"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg>
+            </a>
+            {%- endif %}
+            {%- if theme_settings.contact.instagram != blank %}
+            <a href="{{ theme_settings.contact.instagram }}" target="_blank" rel="noopener" class="pb-contact__social" aria-label="Instagram">
+              <svg viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg>
+            </a>
+            {%- endif %}
+            {%- if theme_settings.contact.linkedin != blank %}
+            <a href="{{ theme_settings.contact.linkedin }}" target="_blank" rel="noopener" class="pb-contact__social" aria-label="LinkedIn">
+              <svg viewBox="0 0 448 512"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"/></svg>
+            </a>
+            {%- endif %}
+            {%- if theme_settings.contact.youtube != blank %}
+            <a href="{{ theme_settings.contact.youtube }}" target="_blank" rel="noopener" class="pb-contact__social" aria-label="YouTube">
+              <svg viewBox="0 0 576 512"><path d="M549.655 124.083c-6.281-23.65-24.787-42.276-48.284-48.597C458.781 64 288 64 288 64S117.22 64 74.629 75.486c-23.497 6.322-42.003 24.947-48.284 48.597-11.412 42.867-11.412 132.305-11.412 132.305s0 89.438 11.412 132.305c6.281 23.65 24.787 41.5 48.284 47.821C117.22 448 288 448 288 448s170.78 0 213.371-11.486c23.497-6.321 42.003-24.171 48.284-47.821 11.412-42.867 11.412-132.305 11.412-132.305s0-89.438-11.412-132.305zm-317.51 213.508V175.185l142.739 81.205-142.739 81.201z"/></svg>
+            </a>
+            {%- endif %}
           </div>
-        {% endform %}
+        </div>
+
+        <div>
+          <h2 class="pb-contact__sub">{{ s.location_title | default: 'Conheça nosso espaço' }}</h2>
+          <ul class="pb-text flex flex-col gap-4">
+            {%- if theme_settings.contact.address != blank %}<li>{{ theme_settings.contact.address }}</li>{% endif %}
+            {%- if theme_settings.contact.hours != blank %}<li>{{ theme_settings.contact.hours }}</li>{% endif %}
+          </ul>
+        </div>
       </div>
     </div>
   </div>
+
+  {%- comment -%} Bloco 2: formulário {%- endcomment -%}
+  <div class="pb-container border-t border-[#E7E0D2] pt-[60px] pb-[90px] grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
+    <h2 class="pb-contact__heading">{{ s.form_eyebrow | default: 'Envie-nos uma mensagem' }}</h2>
+
+    <div>
+      {%- if s.form_title != blank or s.form_title_italic != blank %}
+      <p class="pb-contact__lead mb-8">
+        {%- if s.form_title_italic != blank %}<i>{{ s.form_title_italic }}</i> {% endif %}{{ s.form_title -}}
+      </p>
+      {%- endif %}
+
+      {% form 'contact', name: 'Contato' %}
+        {% if form.posted_successfully %}
+        <p class="pb-form__notice mb-6 border border-green-200 bg-green-50 text-green-800">{{ form.success }}</p>
+        {% endif %}
+        {% if form.errors %}
+        <p class="pb-form__notice mb-6 border border-red-200 bg-red-50 text-red-800">{{ form.errors | first }}</p>
+        {% endif %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5">
+          <div>
+            <input type="text" name="contact[name]" placeholder="Nome completo" class="pb-form__field" aria-label="Nome completo">
+          </div>
+          <div>
+            {% include 'components/global/form/phone-input', name: 'contact[phone]', placeholder: 'Telefone', input_class: 'pb-form__field', id: 'pb-contact-phone' %}
+          </div>
+          <div>
+            <input type="email" name="contact[email]" required placeholder="E-mail" class="pb-form__field" aria-label="E-mail">
+          </div>
+          <div>
+            <input type="text" name="contact[subject]" placeholder="Assunto" class="pb-form__field" aria-label="Assunto">
+          </div>
+          <div class="md:col-span-2">
+            <textarea name="contact[message]" rows="6" placeholder="Mensagem" class="pb-form__field" aria-label="Mensagem"></textarea>
+          </div>
+
+          {% if workspace.settings.turnstile.enabled %}
+          <div class="md:col-span-2 cf-turnstile" data-sitekey="{{ workspace.settings.turnstile.site_key }}"></div>
+          {% endif %}
+
+          <div class="pt-2">
+            <button type="submit" class="pb-form__submit">{{ s.submit_text | default: 'Enviar mensagem' }}</button>
+          </div>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+
+  {%- comment -%} Mapa do endereço, igual ao rodapé da página original {%- endcomment -%}
+  {%- if theme_settings.contact.address != blank %}
+  <div class="w-full">
+    <iframe
+      src="https://www.google.com/maps?q={{ theme_settings.contact.address | url_encode }}&output=embed"
+      class="w-full h-[400px] border-0"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      title="Localização de {{ workspace.name }}"
+    ></iframe>
+  </div>
+  {%- endif %}
 </section>
 
 {% schema %}
@@ -95,11 +189,16 @@
   "name": "Contato",
   "location": "contact",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/ Fale conosco" },
-    { "type": "textarea", "id": "title", "label": "Título" },
-    { "type": "text", "id": "service_title", "label": "Título — atendimento", "default": "Atendimento" },
-    { "type": "text", "id": "location_title", "label": "Título — localização", "default": "Localização" },
-    { "type": "text", "id": "hours_title", "label": "Título — horário", "default": "Horário de atendimento" }
+    { "type": "text", "id": "eyebrow", "label": "Título da esquerda", "default": "Canais de atendimento" },
+    { "type": "text", "id": "title_italic", "label": "Chamada — trecho em itálico", "default": "Nossa missão" },
+    { "type": "textarea", "id": "title", "label": "Chamada" },
+    { "type": "image_picker", "id": "image", "label": "Banner do topo" },
+    { "type": "text", "id": "service_title", "label": "Título — contato", "default": "Entre em contato" },
+    { "type": "text", "id": "location_title", "label": "Título — endereço", "default": "Conheça nosso espaço" },
+    { "type": "text", "id": "form_eyebrow", "label": "Título do formulário", "default": "Envie-nos uma mensagem" },
+    { "type": "text", "id": "form_title_italic", "label": "Chamada do formulário — itálico", "default": "Preencha o formulário abaixo" },
+    { "type": "textarea", "id": "form_title", "label": "Chamada do formulário" },
+    { "type": "text", "id": "submit_text", "label": "Texto do botão", "default": "Enviar mensagem" }
   ]
 }
 {% endschema %}

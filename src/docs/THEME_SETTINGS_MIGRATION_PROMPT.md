@@ -1,10 +1,10 @@
-# Migração de site imobiliário para os valores do tema (veploy-theme-pro)
+# Migração de site imobiliário para os valores do tema (veploy-theme-pro / custom)
 
-Use este documento ao migrar um site WordPress + Elementor para o tema **veploy-theme-pro**.
+Use este documento ao migrar um site WordPress + Elementor para o tema **veploy-theme-custom da IMOVEISPB url do site: **https://www.imoveispb.com.br/** **.
 
 ## O arquivo que você vai produzir
 
-`src/config/settings_data.json`, no formato do modelo Shopify:
+`src/config/settings_data.json`, no formato do modelo Shopify, esse arquivo não deve por hipótese nenhuma ir ao git, confirme antes de tudo que ele esteja no .gitignore:
 
 ```json
 { "base_version": "<hash do valor que está no ar>", "current": { "colors": {}, "header": {} } }

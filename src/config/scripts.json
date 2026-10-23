@@ -19,5 +19,8 @@
   ],
   "page:favorites": [
     "favorites-page.js"
+  ],
+  "home": [
+    "scroll-overlay.js"
   ]
 }

@@ -1,7 +1,7 @@
 {% layout 'base' %}
 {% block content %}
   {% section 'contact/main' %}
-  {% section 'home/promotion' %}
+  {% section 'home/contact-section' %}
 
 {%- comment -%} ======= JSON-LD: ContactPage ======= {%- endcomment -%}
 {%- assign _url_parts = canonical_url | split: '/' -%}
@@ -18,3 +18,11 @@
 }
 </script>
 {% endblock %}
+
+{% schema %}
+{
+  "name": "Contato",
+  "location": "contact",
+  "settings": []
+}
+{% endschema %}

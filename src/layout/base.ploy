@@ -163,12 +163,7 @@
       {%- endif -%}
     {%- endfor -%}
 
-    {%- comment -%} Nunito: links do rodapé (igual ao site original) {%- endcomment -%}
-    {%- if fonts_url == '' -%}
-      {%- assign fonts_url = 'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600' -%}
-    {%- else -%}
-      {%- assign fonts_url = fonts_url | append: '&family=Nunito:wght@400;600' -%}
-    {%- endif -%}
+    
 
     {%- if fonts_url != '' -%}
     {%- assign fonts_url = fonts_url | append: '&display=swap' -%}
@@ -375,12 +370,16 @@
     {%- endif -%}
     <div class="page-loading-bar" id="pageLoadingBar" style="background: {% if is_dark_header %}#fff{% else %}rgb(var(--color-primary)){% endif %};"></div>
     {%- comment -%}
-      Home: header transparente sobre o hero, com a barra de anúncio no topo
-      (igual ao site original). Demais páginas: header sólido.
+      Páginas com hero próprio (home, sobre nós, contato, anuncie): o header
+      fica absoluto sobre a imagem, em degradê — igual ao site original.
+      Demais páginas (listagem, imóvel, favoritos): barra sólida no fluxo.
     {%- endcomment -%}
-    {%- assign _is_home = false -%}
-    {%- if current_path == '' or current_path == '/' -%}{%- assign _is_home = true -%}{%- endif -%}
-    {% if _is_home %}
+    {%- assign _header_overlay = false -%}
+    {%- if current_path == '' or current_path == '/' -%}{%- assign _header_overlay = true -%}{%- endif -%}
+    {%- if route_key == 'home' or route_key == 'page:about-us' or route_key == 'page:contact' or route_key == 'page:advertise' -%}
+      {%- assign _header_overlay = true -%}
+    {%- endif -%}
+    {% if _header_overlay %}
       {% include 'components/global/header', overlay: true %}
     {% else %}
       {% include 'components/global/header' %}

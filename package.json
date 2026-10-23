@@ -1,8 +1,8 @@
 {
-  "name": "veploy-theme-elegance",
+  "name": "veploy-theme-imoveispb",
   "version": "1.0.0",
   "private": true,
-  "description": "Veploy customized theme — Elegance",
+  "description": "Veploy customized theme — Passos & Buytendorp Imóveis",
   "scripts": {
     "dev": "veploy dev",
     "push": "veploy push",

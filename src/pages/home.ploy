@@ -3,11 +3,20 @@
 {% block content %}
   {% section 'home/hero-carousel' %}
   {% section 'home/shortcuts-grid' %}
-  {% section 'home/highlights' %}
-  {% section 'home/featured-properties' %}
   {% section 'home/about-section' %}
+  {%- comment -%}
+    As duas seções andam juntas por causa da sobreposição de rolagem: a
+    "Destaques" é `position: sticky; bottom: 0` e a "Nosso time" sobe por cima.
+    O wrapper é obrigatório e delimita até onde o sticky pode deslocar a seção.
+    Sem ele o contenedor seria o <main> inteiro, e a Destaques apareceria
+    colada no pé da tela já no topo da página, por cima do banner.
+  {%- endcomment -%}
+  <div class="pb-overlay-stack">
+    {% section 'home/featured-properties' %}
+    {% section 'home/team' %}
+  </div>
+  {% section 'home/highlights' %}
   {% section 'home/contact-section' %}
-  {% section 'home/promotion' %}
 {% endblock %}
 
 {% block body_assets %}

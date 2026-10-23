@@ -1,43 +1,81 @@
-<!-- Imóveis em destaque (Elegance): cabeçalho "/Coleção" + grade 3 colunas.
-     `.properties` é preenchido pelo engine a partir do property_picker `featured_skus`
-     declarado no bloco schema abaixo (depende do config/schemas.json gerado no servidor). -->
-{%- assign fp = sections['home/featured-properties'] -%}
-{%- assign fp_props = fp.properties -%}
-{%- assign fp_eyebrow = fp.eyebrow | default: '/Coleção' -%}
-{%- assign fp_title = fp.title | default: 'Conheça nossa seleção com os imóveis mais buscados.' -%}
-{%- assign fp_cta_text = fp.cta_text | default: 'Ver todos os imóveis' -%}
-{%- assign fp_cta_url = fp.cta_url | default: routes.properties -%}
+{%- comment -%}
+  "Destaques": cabeçalho centralizado, linha com o link "Ver mais imóveis" e
+  grade de 3 colunas com até 6 imóveis.
 
-{% if fp_props and fp_props.size > 0 %}
-<section {{ section_attrs }} class="vp-section vp-home-properties w-full bg-white px-[5%]{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="max-w-[1300px] mx-auto py-[60px]">
-    {% include 'components/home-section-header', eyebrow: fp_eyebrow, title: fp_title, cta_text: fp_cta_text, cta_url: fp_cta_url %}
+  `.properties` é preenchido pelo engine a partir do `property_picker`
+  declarado no schema abaixo.
+{%- endcomment -%}
+{%- assign s = sections['home/featured-properties'] -%}
+{%- assign props = s.properties -%}
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[30px] mt-[30px] mb-[40px]">
-      {% for property in fp_props limit: 6 %}
+{%- if props and props.size > 0 %}
+<style>
+  .pb-featured { position: relative; z-index: 1; width: 100%; }
+
+  /* A seção é segurada no pé da tela por um translateY contínuo, aplicado pelo
+     scroll-overlay.js. Ela permanece no fluxo — o transform não mexe em
+     layout —, então "Nosso time" é posicionada logo depois e sobe por cima,
+     amparada pelo z-index maior e pelo fundo opaco dela.
+     O quanto pode descer é limitado pelo wrapper .pb-overlay-stack, definido
+     na home.ploy. */
+  .pb-featured { will-change: transform; }
+
+  /* Folga até "Nosso time". É ela que a cobertura percorre antes de parar na
+     marca [data-scroll-keep], então é o que define a DURAÇÃO do efeito.
+     Fica aqui, e não no padding da seção, de propósito: margem não entra na
+     altura da seção, e a altura é o que precisa caber na tela para a seção
+     ficar inteira enquanto é segurada. */
+  .pb-featured { margin-bottom: 160px; }
+</style>
+
+<section {{ section_attrs }} data-scroll-pinned class="pb-featured pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
+  {%- comment -%}
+    Padding desbalanceado de propósito: mais embaixo que em cima, para sobrar
+    respiro abaixo dos cards. O TOTAL (cima + baixo) é o que precisa ficar
+    contido — a seção tem que caber na altura da tela, senão o efeito de
+    sobreposição troca a âncora do pé para o topo. Por isso o que cresce
+    embaixo foi tirado de cima, em vez de somado.
+  {%- endcomment -%}
+  {%- comment -%}
+    O respiro de baixo é maior no mobile (150px) que no desktop (120px): lá os
+    cards ficam empilhados, então o último encosta na borda da seção e precisa
+    de mais folga antes de "Nosso time" começar a subir.
+  {%- endcomment -%}
+  <div class="pb-container pt-[50px] pb-[150px] lg:pt-[60px] lg:pb-[120px]">
+    {% include 'components/home-section-header',
+       eyebrow: s.eyebrow,
+       heading: s.title,
+       heading_highlight: s.title_highlight,
+       cta_text: s.cta_text,
+       cta_url: s.cta_url,
+       align: 'center' %}
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[30px] mt-10">
+      {%- for property in props limit: 6 -%}
         {% include 'components/elegance-property-card' %}
-      {% endfor %}
+      {%- endfor -%}
     </div>
   </div>
 </section>
-{% endif %}
+{%- endif %}
 
 {% schema %}
 {
   "name": "Imóveis em destaque",
   "location": "home",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/Coleção" },
-    { "type": "text", "id": "title", "label": "Título da seção", "default": "Conheça nossa seleção com os imóveis mais buscados." },
-    { "type": "text", "id": "cta_text", "label": "Texto do botão", "default": "Ver todos os imóveis" },
-    { "type": "url", "id": "cta_url", "label": "Link do botão", "default": "/imoveis" },
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "destaques" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Os imóveis mais buscados de" },
+    { "type": "text", "id": "title_highlight", "label": "Título — trecho em destaque", "default": "Campo Grande e região." },
+    { "type": "text", "id": "cta_text", "label": "Texto do link", "default": "Ver mais imóveis" },
+    { "type": "url", "id": "cta_url", "label": "Link", "default": "/imoveis" },
     {
       "type": "property_picker",
       "id": "featured_skus",
-      "label": "Imóveis em Destaque",
+      "label": "Imóveis em destaque",
       "limit": 6,
       "autofill": {
-        "enabled": false,
+        "enabled": true,
         "source": "recent",
         "sources": [
           { "value": "recent", "label": "Mais recentes" },

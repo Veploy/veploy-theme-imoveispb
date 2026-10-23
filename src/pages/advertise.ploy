@@ -1,5 +1,14 @@
 {% layout 'base' %}
 {% block content %}
+  {% section 'advertise/hero' %}
   {% section 'advertise/form' %}
-  {% section 'home/promotion' %}
+  {% section 'home/contact-section' %}
 {% endblock %}
+
+{% schema %}
+{
+  "name": "Anuncie seu imóvel",
+  "location": "advertise",
+  "settings": []
+}
+{% endschema %}

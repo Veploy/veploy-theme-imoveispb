@@ -1,47 +1,98 @@
 {
   "fonts": {
-    "body": "Inter",
-    "header": "Inter",
-    "buttons": "Inter",
-    "heading": "Cormorant Garamond",
-    "custom_font": false
+    "body": "Geist",
+    "heading": "Reckless Neue",
+    "header": "Geist",
+    "buttons": "Geist",
+    "custom_font": true,
+    "custom_fonts": [
+      "Reckless Neue"
+    ]
   },
   "colors": {
-    "primary": "#111111",
-    "secondary": "#C9A063",
-    "accent": "#CC0E3B"
+    "primary": "#181A20",
+    "secondary": "#E4BC78",
+    "accent": "#D9B16E",
+    "background": "#FFFFFF",
+    "text": "#717171"
   },
   "header": {
-    "bg_color": "#000000",
+    "bg_color": "#181A20",
     "text_color": "#FFFFFF",
-    "button_bg_color": "#F5EFE3",
+    "button_bg_color": "#E7E0D2",
     "button_text_color": "#181A20",
-    "button_hover_bg_color": "#E5D9BF"
+    "button_hover_bg_color": "#F0EBE2"
+  },
+  "footer": {
+    "bg_color": "#181A20",
+    "text_color": "#FFFFFF",
+    "accent_color": "#E7E0D2",
+    "tagline": "Conectamos pessoas e imóveis, promovendo negócios com eficiência e confiança.",
+    "institucional_title": "Institucional",
+    "institucional_list": [
+      {
+        "url": "/",
+        "label": "Home"
+      },
+      {
+        "url": "{{routes.about-us}}",
+        "label": "Sobre nós"
+      },
+      {
+        "url": "{{routes.contact}}",
+        "label": "Contato"
+      },
+      {
+        "url": "{{routes.advertise}}",
+        "label": "Anuncie seu imóvel"
+      }
+    ],
+    "useful_title": "Links úteis",
+    "useful_list": [
+      {
+        "url": "{{routes.properties}}{{routes.operation_sale}}",
+        "label": "Venda"
+      },
+      {
+        "url": "{{routes.properties}}{{routes.operation_rent}}",
+        "label": "Locação"
+      },
+      {
+        "url": "{{routes.contact}}",
+        "label": "Contato"
+      }
+    ]
   },
   "buttons": {
-    "primary_bg": "#111111",
+    "primary_bg": "#181A20",
     "primary_text": "#FFFFFF",
-    "secondary_bg": "#C9A063",
-    "secondary_text": "#FFFFFF"
+    "primary_hover_bg": "#373630",
+    "secondary_bg": "#E7E0D2",
+    "secondary_text": "#181A20",
+    "secondary_hover_bg": "#F0EBE2",
+    "secondary_border": "#FDFBF7"
   },
   "brand_identity": {
-    "logo": "https://www.lopeselegance.com.br/wp-content/uploads/2024/05/Logo-lopes-Elegance-horizontal-negativa.png",
-    "favicon": "https://www.lopeselegance.com.br/wp-content/uploads/2025/06/cropped-favicon-lopes-192x192.png"
+    "logo": "https://www.imoveispb.com.br/wp-content/uploads/2024/05/Nova-logo-pantanal-imoveis.png",
+    "logo_negative": "https://www.imoveispb.com.br/wp-content/uploads/2024/05/Nova-logo-pantanal-imoveis-branca.png",
+    "favicon": "https://www.imoveispb.com.br/wp-content/uploads/2024/05/Favicon-pantanl-imoveis-250x250.png"
   },
   "contact": {
-    "phone": "(19) 3490-0249",
-    "whatsapp": "(19) 3490-0249",
-    "whatsapp_link": "https://wa.me/551934900249",
-    "email": "atendimento@lopeselegance.com.br",
-    "address": "Avenida Itália, n° 300, Cidade Jardim, Piracicaba-SP, CEP 13416-490",
-    "hours": "Segunda à sexta-feira das 08h às 18h | Sábado das 09h às 13h",
-    "creci": "CRECI: 040399-J",
-    "instagram": "https://www.instagram.com/lopeselegance/",
-    "facebook": "https://www.facebook.com/lopeselegancepiracicaba",
+    "phone": "(67) 3028-7474",
+    "whatsapp": "(67) 3028-7474",
+    "whatsapp_link": "https://wa.me/556730287474",
+    "email": "contato@imoveispb.com.br",
+    "address": "Rua Manoel Inácio de Souza, 2.050, Bairro Vivendas do Bosque - Campo Grande / MS, CEP: 79021-190",
+    "hours": "Segunda à Sexta - Das 08:00 às 18:00 | Sábado - Das 08:00 às 12:00.",
+    "creci": "CRECI/MS: 13156 J",
+    "cnpj": "36.684.757/0001-99",
+    "country_code": "55",
+    "instagram": "https://www.instagram.com/pantanalimoveis_ms/",
+    "facebook": "https://www.facebook.com/profile.php?id=61556518116594",
     "tiktok": "",
-    "linkedin": "https://www.linkedin.com/in/lopes-elegance-056362245/",
+    "linkedin": "https://www.linkedin.com/company/lopes-pantanal-im%C3%B3veis/",
     "pinterest": "",
-    "youtube": "https://www.youtube.com/@lopeselegance6106"
+    "youtube": "https://www.youtube.com/@lopespantanal"
   },
   "features": {
     "header_sticky": true,
@@ -53,139 +104,360 @@
     "default_sort": "recent",
     "show_properties_count": true
   },
+  "property_detail": {
+    "address_display": "hide_number"
+  },
   "navigation": {
     "main_menu": [
-      { "url": "{{routes.properties}}{{routes.operation_sale}}", "label": "Venda" },
-      { "url": "{{routes.properties}}{{routes.operation_rent}}", "label": "Locação" },
-      { "url": "{{routes.properties}}/lancamentos", "label": "Lançamentos" }
+      {
+        "url": "{{routes.properties}}{{routes.operation_sale}}",
+        "label": "Venda"
+      },
+      {
+        "url": "{{routes.properties}}{{routes.operation_rent}}",
+        "label": "Locação"
+      },
+      {
+        "url": "{{routes.contact}}",
+        "label": "Contato"
+      }
     ],
-    "side_menu": [],
+    "side_menu": [
+      {
+        "url": "{{routes.favorites}}",
+        "label": "Favoritos",
+        "icon": "heart",
+        "dynamic_count": "favorites"
+      },
+      {
+        "url": "{{routes.advertise}}",
+        "label": "Anuncie seu imóvel",
+        "variant": "secondary"
+      }
+    ],
     "mobile_menu": [
-      { "url": "{{routes.properties}}{{routes.operation_sale}}", "label": "Venda" },
-      { "url": "{{routes.properties}}{{routes.operation_rent}}", "label": "Locação" },
-      { "url": "{{routes.properties}}/lancamentos", "label": "Lançamentos" },
-      { "url": "{{routes.contact}}", "label": "Fale conosco" },
-      { "url": "{{routes.advertise}}", "label": "Anuncie seu imóvel" },
-      { "url": "{{routes.careers}}", "label": "Trabalhe conosco" },
-      { "url": "{{routes.privacy-policy}}", "label": "Política de Privacidade" },
-      { "url": "{{routes.favorites}}", "label": "Favoritos" }
+      {
+        "url": "{{routes.properties}}{{routes.operation_sale}}",
+        "label": "Venda"
+      },
+      {
+        "url": "{{routes.properties}}{{routes.operation_rent}}",
+        "label": "Locação"
+      },
+      {
+        "url": "{{routes.contact}}",
+        "label": "Contato"
+      },
+      {
+        "url": "{{routes.advertise}}",
+        "label": "Anuncie seu imóvel"
+      },
+      {
+        "url": "{{routes.about-us}}",
+        "label": "Sobre nós"
+      },
+      {
+        "url": "{{routes.favorites}}",
+        "label": "Favoritos"
+      }
     ]
   },
   "sections": {
-    "home_hero": {
-      "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/Banner-home-Lopes-Elegance-comprimido.webp",
-      "title_line_1": "Explore um universo",
-      "title_line_2": "de sofisticação em",
-      "title_script": "cada detalhe",
-      "top_bar": "Compre seu imóvel em até 18 anos sem juros. Fale conosco e saiba mais."
+    "home/hero-carousel": {
+      "title": "Conectamos você ao",
+      "title_italic": "imóvel ideal",
+      "title_after": "em Campo Grande e região.",
+      "overlay_color": "#02010133",
+      "slides": {
+        "items": [
+          {
+            "image_desktop": "https://www.imoveispb.com.br/wp-content/uploads/2025/01/Video-banner-home-lopes-pantanal2-Cover.jpg",
+            "image_mobile": "https://www.imoveispb.com.br/wp-content/uploads/2025/01/Video-banner-home-lopes-pantanal2-Cover.jpg",
+            "video_desktop": "https://pantanalimoveis.ploymob.com/wp-content/uploads/2025/01/Video-banner-home-lopes-pantanal-3.mp4",
+            "redirect_url": ""
+          }
+        ]
+      }
     },
-    "shortcuts-grid": {
-      "title": "Conheça nossa seleção com os imóveis mais buscados.",
-      "description": "",
+    "home/shortcuts-grid": {
+      "eyebrow": "mais buscados",
+      "title": "Os empreendimentos e bairros mais buscados de",
+      "title_highlight": "Campo Grande e região.",
+      "cta_text": "Ver mais imóveis",
+      "cta_url": "/imoveis/venda/",
       "shortcuts": {
         "items": [
           {
-            "url": "{{routes.properties}}{{routes.operation_sale}}/tipo/casa-em-condominio",
-            "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/1.webp",
-            "title": "Casas em condomínio"
+            "title": "Royal Park",
+            "image": "https://www.imoveispb.com.br/wp-content/uploads/2024/12/grid-lopes-pantanal-royal-park.jpg",
+            "url": "/imoveis/venda/?location[0]=royal-park"
           },
           {
-            "url": "{{routes.properties}}{{routes.operation_sale}}/tipo/apartamento",
-            "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/2_11zon.webp",
-            "title": "Apartamentos"
+            "title": "Villas Damha",
+            "image": "https://www.imoveispb.com.br/wp-content/uploads/2024/12/grid-lopes-pantanal-villas-damha.jpg",
+            "url": "/imoveis/venda/?location[0]=villas-damha"
           },
           {
-            "url": "{{routes.properties}}{{routes.operation_sale}}",
-            "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/3_11zon.webp",
-            "title": "Permuta"
-          },
-          {
-            "url": "{{routes.properties}}{{routes.operation_sale}}/comercial",
-            "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/6_11zon.webp",
-            "title": "Comerciais"
+            "title": "Jardim dos Estados",
+            "image": "https://www.imoveispb.com.br/wp-content/uploads/2025/01/card-grid-Jardim-dos-estados-2.png",
+            "url": "/imoveis/venda/?location[0]=jardim-dos-estados"
           }
         ]
       }
     },
-    "featured-properties": {
+    "home/about-section": {
+      "eyebrow": "sobre nós",
+      "title": "Mais que uma imobiliária,",
+      "title_highlight": "realizamos negócios que transformam vidas.",
+      "description": "Na Passos & Buytendorp Imóveis acreditamos que cada imóvel é mais do que uma transação – é um passo importante na vida de nossos clientes. Fundada por corretores que conhecem o mercado de dentro para fora, nossa missão é oferecer um atendimento próximo, ágil e transparente. Com mais de 21 anos de experiência, ajudamos você a comprar, vender ou alugar com confiança. Seja para encontrar o lar dos sonhos, investir ou expandir seus negócios, estamos prontos para tornar sua experiência imobiliária única e inesquecível.",
+      "image": "https://www.imoveispb.com.br/wp-content/uploads/2025/01/Campo-Grande-1-3840-x-2160-scaled.jpg"
+    },
+    "home/featured-properties": {
+      "eyebrow": "destaques",
+      "title": "Os imóveis mais buscados de",
+      "title_highlight": "Campo Grande e região.",
+      "cta_text": "Ver mais imóveis",
+      "cta_url": "/imoveis/venda/",
       "featured_skus": {
         "value": [
-          "REM21959",
-          "REM20626",
-          "REM20594",
-          "REM20371",
-          "REM20638",
-          "REM21389"
+          "53496",
+          "55126",
+          "55222",
+          "55290",
+          "57939",
+          "52374"
         ],
         "autofill_enabled": true,
-        "autofill_source": "price_above",
+        "autofill_source": "recent",
         "price_threshold": 1000000
       }
     },
-    "promo-banners": {
-      "banners": {
+    "home/team": {
+      "eyebrow": "Nosso time",
+      "title": "A Passos & Buytendorp Imóveis une experiência, credibilidade e transparência à essência do Pantanal,",
+      "title_highlight": "conectando você ao futuro imobiliário.",
+      "cta_text": "Conheça nossa história",
+      "cta_url": "{{routes.about-us}}",
+      "members": {
         "items": [
           {
-            "url": "/imovel/REM24361/view-residence/",
-            "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/VIEW-RESIDENCE-Lopes-Elegance.png",
-            "title": "View Residence",
-            "description": "Inspirado pelos baixos do alto e projetado por grandes nomes da arquitetura, o empreendimento oferece um estilo de vida única e inesquecível. O View Residence se ergue como um símbolo de sofisticação que harmoniza design contemporâneo e uma vista que a tempo não apaga."
+            "name": "André Passos",
+            "role": "Sócio diretor",
+            "image": "https://www.imoveispb.com.br/wp-content/uploads/2026/01/Andre-Novas-fotos-socios-pantanal-imoveis.png"
+          },
+          {
+            "name": "Dilson Buytendorp",
+            "role": "Sócio diretor",
+            "image": "https://www.imoveispb.com.br/wp-content/uploads/2026/01/Dylson-Novas-fotos-socios-pantanal-imoveis.png"
           }
         ]
       }
     },
-    "about-section": {
-      "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/Banner-home-sobre-nos.png",
-      "title": "Descubra a chave do seu novo lar com a imobiliária que transforma sonhos em endereços!",
-      "subtitle": "Assistência completa para venda, compra, locação e financiamento de imóveis.",
-      "description": "A Lopes Elegance Piracicaba, imobiliária premium do Grupo Lopes, destaca-se por ser especialista em imóveis de alto padrão, proporcionando um atendimento exclusivo no coração da cidade. Com ampla expertise nas questões jurídicas e burocráticas, nossa maior conquista é oferecer aos clientes a segurança jurídica necessária para negócios sólidos, superando expectativas e realizando sonhos. Possuímos uma equipe de corretores especializados em entender as demandas dos clientes, conectando desejos e necessidades de forma personalizada. A Lopes Elegance é a escolha ideal para aqueles que buscam qualidade, confiança e excelência no mercado imobiliário.",
+    "home/highlights": {
+      "title": "Imóveis em destaque",
+      "title_highlight": "em Campo Grande e região.",
+      "slides": {
+        "items": [
+          {
+            "image": "https://www.imoveispb.com.br/wp-content/uploads/2026/07/WhatsApp-Image-2026-07-08-at-12.51.08-scaled.jpeg",
+            "title": "Apartamento em Vila Rica, Campo Grande",
+            "subtitle": "",
+            "description": "Apartamento à venda em Vila Rica, com 124 m², 3 quartos, sendo 1 suíte, 1 banheiro e 2 vagas.",
+            "cta_text": "Ver detalhes",
+            "cta_url": "https://www.imoveispb.com.br/imovel/52604/apartamento-a-venda-com-3-quartos-sendo-1-suite-em-vila-rica-campo-grande-ms/"
+          }
+        ]
+      }
+    },
+    "home/contact-section": {
+      "title": "Conectamos você ao imóvel dos seus sonhos!",
+      "description": "Ainda não encontrou o imóvel ideal? Nós encontramos para você! Com as melhores oportunidades do mercado, nossa equipe de corretores capacitados oferece um atendimento personalizado, garantindo que você encontre o imóvel perfeito para morar, investir ou expandir seus negócios.",
+      "cta_text": "Fale conosco",
+      "cta_url": "{{routes.contact}}"
+    },
+    "about-us/hero": {
+      "title": "Conectamos pessoas e imóveis, promovendo negócios com",
+      "title_highlight": "eficiência e confiança.",
+      "signature": "Passos & Buytendorp Imóveis",
       "cta_text": "Conheça nossa história",
-      "bg_color": "#111111",
-      "text_color": "#FFFFFF"
+      "cta_url": "#nossa-historia",
+      "image": "https://www.imoveispb.com.br/wp-content/uploads/2026/01/Andre-Novas-fotos-socios-pantanal-imoveis.png",
+      "image2": "https://www.imoveispb.com.br/wp-content/uploads/2026/01/Dylson-Novas-fotos-socios-pantanal-imoveis.png"
     },
-    "promocao": {
-      "title": "Compre seu imóvel em até 18 anos sem juros.",
-      "description": "Na Lopes Elegance, entendemos que adquirir o imóvel dos seus sonhos é um passo importante na vida de qualquer pessoa. Por isso, oferecemos uma oportunidade única: você pode conquistar o seu lar com financiamento facilitado em até 18 anos sem juros. Essa é uma oportunidade exclusiva para quem busca realizar o sonho da casa própria sem se preocupar com altas taxas de juros e parcelas extensas. Com a Lopes Elegance, você terá o suporte de profissionais qualificados e um atendimento personalizado para encontrar o imóvel ideal para você e sua família.",
-      "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/banner-home-18-anos-sem-juros.jpg"
-    },
-    "about": {
-      "bg_color": "#FFFFFF",
-      "text_color": "#181A20",
-      "hero_image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/Banner-home-Lopes-Elegance-comprimido.webp",
-      "hero_title": "Uma história de paixão pelo setor imobiliário, excelência e expertise.",
-      "hero_description": "A Lopes Elegance Piracicaba oferece segurança jurídica, negócios sólidos e realizações de sonhos aos clientes. Com ampla expertise legal e burocrática, proporcionamos atendimento diferenciado e exclusivo na cidade. Nossos especialistas conectam clientes, desejos e necessidades, tornando-nos a escolha perfeita para quem busca qualidade e excelência em Piracicaba. Seja bem-vindo à Lopes Elegance!"
-    },
-    "blog-section": {
-      "posts": {
-        "value": [],
-        "autofill_enabled": true,
-        "autofill_source": "recent",
-        "limit": 3
+    "about-us/story": {
+      "quote": "\"Começamos como corretores autônomos, e hoje somos a",
+      "quote_highlight": "Passos & Buytendorp Imóveis",
+      "quote_after": "- referência em agilidade, transparência e conhecimento do mercado de Campo Grande\".",
+      "image": "https://www.imoveispb.com.br/wp-content/uploads/2025/01/Foto-Lopes-Pantanal-Sobre-no%CC%81s.jpg",
+      "title": "Credibilidade e visão local",
+      "title_highlight": "para quem busca o imóvel certo.",
+      "description": "A Passos & Buytendorp Imóveis surgiu da vontade de montarmos uma estrutura imobiliária diferente do que hoje está no mercado. A operação horizontal, vai de encontro à premissa que esta Imobiliária é de Corretores para Corretores e de todos os Clientes. A credibilidade e a eficiência, além de um atendimento de qualidade, onde buscamos nunca fazer apenas um negócio com um cliente uma só vez, é o lema desta empresa. Nossa missão é ajudar as pessoas/clientes, nosso maior patrimônio, a realizar sempre os melhores negócios imobiliários.",
+      "cta_text": "Anuncie seu imóvel",
+      "cta_url": "{{routes.advertise}}",
+      "services": {
+        "items": [
+          {
+            "title": "Intermediação de negócios imobiliários",
+            "description": "Conectamos compradores, vendedores e locatários, oferecendo soluções seguras e eficientes para atender às suas necessidades imobiliárias."
+          },
+          {
+            "title": "Gestão Completa de Locação",
+            "description": "Cuidamos de todo o processo de locação, garantindo tranquilidade para proprietários e segurança para inquilinos com administração especializada."
+          },
+          {
+            "title": "Avaliação Precisa de Imóveis",
+            "description": "Oferecemos laudos precisos e confiáveis, com base no mercado local, para determinar o valor justo do seu imóvel com total credibilidade."
+          },
+          {
+            "title": "Financiamentos Imobiliários",
+            "description": "Apoiamos você na busca pelo financiamento ideal, simplificando o processo para tornar a aquisição do seu imóvel ainda mais acessível."
+          }
+        ]
       }
     },
-    "careers": {
-      "image": "https://www.lopeselegance.com.br/wp-content/uploads/2025/08/Banner-pag-trabalhe-conosco-lopes-elegance-v2.png",
+    "about-us/team": {
+      "eyebrow": "nosso time",
+      "title": "Conheça os especialistas",
+      "title_highlight": "que fazem a Passos & Buytendorp Imóveis crescer, inovar e conectar pessoas ao imóvel ideal",
+      "description": "Nossa equipe dedicada combina experiência, credibilidade e atendimento humanizado para oferecer soluções completas em compra, venda, locação e administração de imóveis. Com profissionalismo e compromisso, ajudamos você a realizar os melhores negócios.",
+      "members": {
+        "items": [
+          {
+            "name": "André Passos",
+            "image": "https://www.imoveispb.com.br/wp-content/uploads/2025/01/Andre%CC%81-Fotos-socios-Lopes-Pantanal-sobre-no%CC%81s-page.jpg",
+            "bio": "<p>Sou André Passos, corretor de imóveis há 21 anos no mercado imobiliário do Mato Grosso do Sul. Formado em Administração de Empresas, encontrei minha vocação como consultor de negócios imobiliários. Percebi que esse mercado exige conhecimento amplo em diversas áreas, como economia, psicologia, relações humanas e, claro, construção civil.</p><p>Iniciei minha carreira em uma grande construtora, adquirindo expertise em lançamentos e imóveis “na planta”. Hoje, além das vendas, atuo na análise de produtos para incorporadores, estudo de viabilidade de negócios (Business Plan) e avaliação de imóveis, empresas e áreas.</p><p>Acredito que a profissão de vendedor é uma das mais justas, pois a recompensa reflete o esforço e a dedicação. Como disse Og Mandino em <em>O Maior Vendedor do Mundo</em>: <em>“A profissão de vendedor é a mais honesta de todas, pois seu recebimento é de acordo com seu esforço e capacidade.”</em></p><p>Vender vai além de números – é realizar sonhos. O brilho nos olhos de cada cliente é o que me motiva a fazer meu trabalho com paixão.</p>",
+            "facebook": "https://www.facebook.com/andre.passos.545",
+            "instagram": "https://www.instagram.com/passosandreluis/",
+            "linkedin": "https://www.linkedin.com/in/andr%C3%A9-passos-229498248/"
+          },
+          {
+            "name": "Dilson Buytendorp",
+            "image": "https://www.imoveispb.com.br/wp-content/uploads/2025/01/Lucas.jpg",
+            "bio": "<p>Sou Dilson Buytendorp, corretor de imóveis e atuo no mercado há 40 anos, sempre motivado pela paixão de conectar pessoas ao imóvel ideal. Acredito que dedicação, transparência e atenção aos detalhes são essenciais para oferecer um atendimento de qualidade.</p><p>Atualmente, dedico-me integralmente à venda e locação de imóveis residenciais, comerciais e rurais, sempre acompanhando as tendências e atualizações do mercado imobiliário. Meu compromisso é proporcionar uma experiência tranquila e segura em todas as etapas da negociação, garantindo que cada cliente alcance seus objetivos com confiança.</p><p>Estou à disposição para ajudá-lo a encontrar a melhor oportunidade, seja para morar, investir ou expandir seus negócios. Conte comigo para tornar sua experiência imobiliária mais segura e satisfatória.</p>",
+            "facebook": "https://www.facebook.com/dilson.buytendorp",
+            "instagram": "https://www.instagram.com/dilsonbuytendorp/",
+            "linkedin": "https://www.linkedin.com/in/dilson-buytendorp-04b3b7277/"
+          }
+        ]
+      }
+    },
+    "about-us/values": {
+      "eyebrow": "Diferenciais",
+      "title": "Diferenciais que trazem",
+      "title_highlight": "segurança e os melhores resultados",
+      "title_after": "para você.",
+      "description": "Na Passos & Buytendorp Imóveis, tornamos a compra, venda e locação de imóveis mais simples e eficazes. Oferecemos suporte completo, atendimento especializado e soluções estratégicas para garantir as melhores oportunidades e uma experiência segura em cada negociação.",
+      "items": [
+        {
+          "title": "Amplo Portfólio de Imóveis",
+          "description": "Ampla oferta de imóveis em Campo Grande e região para morar, investir ou alugar."
+        },
+        {
+          "title": "Os Melhores Lançamentos",
+          "description": "Oferecemos os melhores lançamentos imobiliários de Campo Grande, representando todas as construtoras da região."
+        },
+        {
+          "title": "Financiamento Imobiliário",
+          "description": "Facilitamos o financiamento do seu imóvel com condições especiais e aprovação rápida."
+        },
+        {
+          "title": "Corretores Capacitados",
+          "description": "Contamos com os profissionais mais qualificados, atualizados e prontos para oferecer o melhor atendimento do mercado."
+        }
+      ]
+    },
+    "contact/main": {
+      "eyebrow": "Canais de atendimento",
+      "title_italic": "Nossa missão",
+      "title": "é ajudar nossos clientes a realizar os melhores negócios imobiliários, com credibilidade, eficiência e a paixão de quem transforma sonhos em realidade.",
+      "image": "https://www.imoveispb.com.br/wp-content/uploads/2025/07/Banner-pag-contato-e1753913728259.png",
+      "service_title": "Entre em contato",
+      "location_title": "Conheça nosso espaço",
+      "form_eyebrow": "Envie-nos uma mensagem",
+      "form_title_italic": "Preencha o formulário abaixo",
+      "form_title": "e um de nossos consultores entrará em contato.",
+      "submit_text": "Enviar mensagem"
+    },
+    "advertise/hero": {
+      "eyebrow": "Anuncie seu imóvel",
+      "title": "Anuncie com quem",
+      "title_highlight": "conecta seu imóvel",
+      "title_middle": "aos",
+      "title_highlight2": "melhores compradores",
+      "description": "Na <strong>Passos &amp; Buytendorp Imóveis</strong>, seu imóvel recebe a visibilidade que merece. Com experiência de mercado e uma equipe especializada, garantimos que sua propriedade alcance compradores qualificados de forma ágil e eficiente. Anuncie conosco e transforme sua oportunidade em um grande negócio!",
+      "cta_text": "Cadastrar agora",
+      "cta_url": "#secao-form-anuncie",
+      "image": "https://www.imoveispb.com.br/wp-content/uploads/2025/01/image_fx_-28.png"
+    },
+    "advertise/benefits": {
+      "eyebrow": "Benefícios",
+      "title": "Conheça as vantagens de",
+      "title_highlight": "anunciar seu imóvel",
+      "title_after": "com a Passos & Buytendorp Imóveis.",
+      "description": "Dê ao seu imóvel a visibilidade que ele merece! Com estratégias de marketing eficientes, atendimento exclusivo e avaliações precisas, garantimos que você alcance as melhores oportunidades no mercado.",
+      "cta_text": "Falar com um corretor",
+      "cta_url": "https://wa.me/556730287474",
       "benefits": {
-        "items": []
+        "items": [
+          {
+            "title": "Máxima exposição para o seu imóvel",
+            "description": "Anuncie com a Passos & Buytendorp Imóveis e alcance milhares de compradores e locatários qualificados, aumentando suas chances de venda ou locação com rapidez e eficiência."
+          },
+          {
+            "title": "Atendimento personalizado",
+            "description": "Conte com um suporte dedicado em todas as etapas do processo, garantindo um atendimento ágil, transparente e alinhado às suas necessidades."
+          },
+          {
+            "title": "Marketing estratégico para mais resultados",
+            "description": "Utilizamos estratégias modernas de divulgação, incluindo campanhas digitais, redes sociais e parcerias estratégicas, para garantir que seu imóvel tenha a visibilidade que merece."
+          }
+        ]
+      },
+      "highlight_title": "Somos referência em",
+      "highlight_title_highlight": "conectar e vender",
+      "highlight_title_after": "com segurança, em Campo Grande e região.",
+      "highlight_description": "Descubra como nossa experiência e conhecimento do mercado de Campo Grande podem ajudar a valorizar e vender seu imóvel com eficiência e segurança.",
+      "highlight_image": "https://www.imoveispb.com.br/wp-content/uploads/2024/05/Favicon-pantanl-imoveis.png"
+    },
+    "advertise/process": {
+      "eyebrow": "Como Anunciar",
+      "title": "Anuncie seu imóvel",
+      "title_highlight": "de forma simples e segura",
+      "title_after": ", com a Passos & Buytendorp Imóveis.",
+      "description": "Preencha o formulário, receba uma avaliação profissional, tenha seu imóvel divulgado para milhares de compradores e finalize sua negociação com o suporte da Passos & Buytendorp Imóveis.",
+      "cta_text": "Anuncie agora",
+      "cta_url": "https://wa.me/556730287474",
+      "process": {
+        "items": [
+          {
+            "title": "1. Cadastro rápido",
+            "description": "Preencha nosso formulário online e um de nossos especialistas entrará em contato para entender os detalhes do seu imóvel."
+          },
+          {
+            "title": "2. Anúncio e divulgação",
+            "description": "Seu imóvel será promovido em nosso site, redes sociais e nos principais portais imobiliários, com campanhas de marketing personalizadas para ampliar sua visibilidade."
+          },
+          {
+            "title": "3. Negociação e conclusão",
+            "description": "Acompanhamos visitas, auxiliamos na negociação e garantimos que todo o processo de venda ou locação ocorra com transparência e agilidade."
+          }
+        ]
       }
+    },
+    "advertise/form": {
+      "eyebrow": "Anuncie conosco",
+      "title": "Preencha o formulário e fale conosco.",
+      "submit_text": "Anunciar imóvel"
+    },
+    "archive:property": {
+      "default_sort": "recent",
+      "default_view": "grid",
+      "show_properties_count": true
+    },
+    "single:property": {
+      "address_display": "hide_number",
+      "show_map": true,
+      "show_share_buttons": true
     }
-  },
-  "footer": {
-    "bg_color": "#000000",
-    "text_color": "#FFFFFF",
-    "accent_color": "#C9A063",
-    "types_list": [
-      { "url": "/imoveis/venda/tipo/casa", "label": "Casas à venda" },
-      { "url": "/imoveis/venda/?location=Vila+Sonia", "label": "Vila Sonia" },
-      { "url": "/imoveis/venda/tipo/apartamento", "label": "Apartamentos à venda" },
-      { "url": "/imoveis/venda/tipo/apartamento-em-condominio", "label": "Apartamentos à venda em condomínios" },
-      { "url": "/imoveis/venda/comercial", "label": "Imóveis comerciais à venda" }
-    ],
-    "neighborhoods_list": [
-      { "url": "/imoveis/?location=Jardim+Caxambu", "label": "Jardim Caxambu" },
-      { "url": "/imoveis/?location=Vila+Sonia", "label": "Vila Sônia" },
-      { "url": "/imoveis/?location=Jardim+Parque+Jupia", "label": "Jardim Parque Jupiá" },
-      { "url": "/imoveis/?location=Sao+Dimas", "label": "São Dimas" }
-    ]
   }
 }

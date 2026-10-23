@@ -1,0 +1,75 @@
+{%- comment -%}
+  Abertura do "Anuncie seu imóvel": foto de fundo ocupando a faixa inteira,
+  conteúdo alinhado à esquerda com sobretítulo, título grande em Reckless Neue,
+  texto e o botão escuro que leva ao formulário.
+{%- endcomment -%}
+{%- assign s = sections['advertise/hero'] -%}
+
+<style>
+  .pb-adhero {
+    position: relative;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  .pb-adhero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgb(0 0 0 / .45) 0%, rgb(0 0 0 / .1) 70%);
+  }
+  .pb-adhero__title {
+    font-family: var(--font-heading);
+    font-size: 48px;
+    font-weight: 300;
+    line-height: 1.15;
+    color: #fff;
+    max-width: 640px;
+    text-shadow: 0 0 20px rgb(0 0 0 / .45);
+  }
+  .pb-adhero__title span { font-weight: 600; }
+  @media (max-width: 1024px) { .pb-adhero__title { font-size: 36px; } }
+  @media (max-width: 767px)  { .pb-adhero__title { font-size: 28px; } }
+  .pb-adhero__text { color: #F0EEE9; max-width: 560px; }
+  .pb-adhero__text strong { font-weight: 600; color: #fff; }
+</style>
+
+<section {{ section_attrs }} class="pb-adhero pb-section{% if section_class %} {{ section_class }}{% endif %}"{% if s.image != blank %} style="background-image: url('{{ s.image }}');"{% endif %}>
+  <div class="pb-container relative z-10 flex min-h-[760px] flex-col justify-center pt-[200px] pb-[80px]">
+    {%- if s.eyebrow != blank %}
+    <span class="pb-eyebrow pb-eyebrow--light block mb-3">{{ s.eyebrow }}</span>
+    {%- endif %}
+
+    <h1 class="pb-adhero__title">
+      {{- s.title }}{% if s.title_highlight != blank %} <span>{{ s.title_highlight }}</span>{% endif %}{% if s.title_middle != blank %} {{ s.title_middle }}{% endif %}{% if s.title_highlight2 != blank %} <span>{{ s.title_highlight2 }}</span>{% endif -%}
+    </h1>
+
+    {%- if s.description != blank %}
+    <div class="pb-text pb-adhero__text mt-6">{{ s.description }}</div>
+    {%- endif %}
+
+    {%- if s.cta_text != blank %}
+    <div class="mt-7">
+      <a href="{{ s.cta_url | default: '#anunciar-form' }}" class="pb-btn">{{ s.cta_text }}</a>
+    </div>
+    {%- endif %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Anuncie — abertura",
+  "location": "advertise",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "Anuncie seu imóvel" },
+    { "type": "text", "id": "title", "label": "Título — início" },
+    { "type": "text", "id": "title_highlight", "label": "Título — 1º destaque" },
+    { "type": "text", "id": "title_middle", "label": "Título — meio" },
+    { "type": "text", "id": "title_highlight2", "label": "Título — 2º destaque" },
+    { "type": "richtext", "id": "description", "label": "Texto" },
+    { "type": "text", "id": "cta_text", "label": "Texto do botão", "default": "Cadastrar agora" },
+    { "type": "url", "id": "cta_url", "label": "Link do botão", "default": "#anunciar-form" },
+    { "type": "image_picker", "id": "image", "label": "Foto de fundo" }
+  ]
+}
+{% endschema %}

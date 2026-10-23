@@ -1,24 +1,56 @@
-<!-- Sobre nós — abertura (Elegance): fundo preto, título centralizado com destaque manuscrito,
-     texto e foto institucional que avança sobre a seção seguinte (branca) -->
-{%- assign ah = sections['about-us/hero'] -%}
-{%- assign ah_title = ah.title | default: 'Uma história de paixão pelo setor imobiliário,' -%}
-{%- assign ah_title_script = ah.title_script | default: 'excelência e expertise.' -%}
-{%- assign ah_script_color = ah.title_script_color | default: '#E4234F' -%}
-{%- assign ah_image = ah.image | default: 'https://www.lopeselegance.com.br/wp-content/uploads/2025/08/banner-institucional-lopes-elegance-v3-1.png' -%}
+{%- comment -%}
+  Abertura do "Sobre nós": bloco escuro de 90vh com o título centralizado em
+  Reckless Neue 55/300, o link "Conheça nossa história ↓" no canto inferior
+  direito e, logo abaixo, a faixa de 460px com as duas fotos dos sócios.
+{%- endcomment -%}
+{%- assign s = sections['about-us/hero'] -%}
 
-<section {{ section_attrs }} class="vp-section vp-about-hero relative z-[2] w-full bg-black px-[5%]{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="max-w-[1300px] mx-auto flex flex-col items-center text-center">
-    <h1 class="font-serif max-w-[693px] pt-[70px] text-[42px] md:text-[70px] font-normal leading-[1.1] text-white">{{ ah_title }}</h1>
-    {%- if ah_title_script != blank -%}
-    <span class="font-script block mt-[5px] pb-[50px] text-[40px] md:text-[55px] leading-[1.1] tracking-[1px] [text-shadow:0_0_10px_rgb(0_0_0/.3)]" style="color: {{ ah_script_color }};">{{ ah_title_script }}</span>
-    {%- endif -%}
-    {%- if ah.description != blank -%}
-    <p class="md:max-w-[55%] pb-10 text-[15px] leading-[22px] text-[#FCFCFC]">{{ ah.description }}</p>
-    {%- endif -%}
-    {%- if ah_image != blank -%}
-    <img src="{{ ah_image }}" alt="{{ workspace.name }}" class="relative w-full max-w-[600px] md:max-w-[1100px] h-auto -mb-[50px]" fetchpriority="high">
-    {%- endif -%}
+<style>
+  .pb-abouthero { background-color: #181A20; }
+  .pb-abouthero__title {
+    font-family: var(--font-heading);
+    font-size: 55px;
+    font-weight: 300;
+    line-height: 1.2em;
+    color: #FDFBF7;
+    max-width: 830px;
+  }
+  @media (max-width: 1024px) { .pb-abouthero__title { font-size: 42px; } }
+  @media (max-width: 767px)  { .pb-abouthero__title { font-size: 30px; } }
+  .pb-abouthero__photos { display: flex; min-height: 460px; }
+  .pb-abouthero__photo {
+    flex: 1 1 50%;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  @media (max-width: 767px) { .pb-abouthero__photos { min-height: 280px; } }
+</style>
+
+<section {{ section_attrs }} class="pb-abouthero{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="pb-section flex min-h-[90vh] flex-col justify-between pt-[220px] pb-[60px]">
+    <div class="pb-container flex flex-1 items-center justify-center">
+      <h1 class="pb-abouthero__title text-center">
+        {{- s.title }}{% if s.title_highlight != blank %} {{ s.title_highlight }}{% endif -%}
+      </h1>
+    </div>
+
+    {%- if s.cta_text != blank %}
+    <div class="pb-container flex justify-end">
+      <a href="{{ s.cta_url | default: '#nossa-historia' }}" class="pb-link" style="color: #F8F8F8; flex-direction: row;">
+        <span>{{ s.cta_text }}</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor" class="w-[13px] h-[13px]" aria-hidden="true"><path d="M168.5 440.6c13.2 13.2 34.6 13.2 47.8 0l154-154c13.2-13.2 13.2-34.6 0-47.8s-34.6-13.2-47.8 0L226 319.2V72c0-18.7-15.2-33.9-33.9-33.9S158.2 53.3 158.2 72v247.2L62.3 238.8c-13.2-13.2-34.6-13.2-47.8 0s-13.2 34.6 0 47.8l154 154z"/></svg>
+      </a>
+    </div>
+    {%- endif %}
   </div>
+
+  {%- if s.image != blank or s.image2 != blank %}
+  <div class="pb-abouthero__photos">
+    {%- if s.image != blank %}<div class="pb-abouthero__photo" style="background-image: url('{{ s.image }}');" role="img" aria-label="{{ workspace.name }}"></div>{% endif %}
+    {%- if s.image2 != blank %}<div class="pb-abouthero__photo" style="background-image: url('{{ s.image2 }}');" role="img" aria-label="{{ workspace.name }}"></div>{% endif %}
+  </div>
+  {%- endif %}
 </section>
 
 {% schema %}
@@ -26,11 +58,13 @@
   "name": "Sobre nós — abertura",
   "location": "about-us",
   "settings": [
-    { "type": "text", "id": "title", "label": "Título", "default": "Uma história de paixão pelo setor imobiliário," },
-    { "type": "text", "id": "title_script", "label": "Destaque manuscrito", "default": "excelência e expertise." },
-    { "type": "color", "id": "title_script_color", "label": "Cor do destaque manuscrito", "default": "#E4234F" },
-    { "type": "textarea", "id": "description", "label": "Texto" },
-    { "type": "image_picker", "id": "image", "label": "Foto institucional" }
+    { "type": "textarea", "id": "title", "label": "Título" },
+    { "type": "text", "id": "title_highlight", "label": "Título — segunda parte" },
+    { "type": "text", "id": "signature", "label": "Assinatura" },
+    { "type": "text", "id": "cta_text", "label": "Texto do link", "default": "Conheça nossa história" },
+    { "type": "url", "id": "cta_url", "label": "Link", "default": "#nossa-historia" },
+    { "type": "image_picker", "id": "image", "label": "Foto 1" },
+    { "type": "image_picker", "id": "image2", "label": "Foto 2" }
   ]
 }
 {% endschema %}

@@ -1,56 +1,126 @@
-<!-- Destaque (Elegance): imagem 60% à esquerda + painel preto 40% com texto e CTA -->
-{%- assign hl = sections['home/highlights'] -%}
-{%- assign hl_eyebrow = hl.eyebrow | default: '/ Destaque' -%}
-{%- assign hl_items = hl.slides.items -%}
+{%- comment -%}
+  "Imóveis em destaque": carrossel de banners altos (650px) com véu em degradê
+  e o texto encostado no canto inferior esquerdo — o widget "slides" do original.
+{%- endcomment -%}
+{%- assign s = sections['home/highlights'] -%}
+{%- assign slides = s.slides.items | default: empty -%}
 
-{% if hl_items and hl_items.size > 0 %}
-<section {{ section_attrs }} class="vp-section vp-home-highlights w-full bg-white{% if section_class %} {{ section_class }}{% endif %}">
-  {% for slide in hl_items %}
-    {% if slide.title != blank or slide.image != blank %}
-    <div class="flex flex-col md:flex-row gap-5 md:gap-5">
-      <a href="{{ slide.cta_url | default: '#' }}" class="block w-full md:w-[60%] min-h-[320px] md:min-h-[520px] bg-cover bg-center" style="background-image: url('{{ slide.image }}');" aria-label="{{ slide.title }}"></a>
+{%- if slides != empty and slides.size > 0 %}
+<style>
+  /* Vem depois de "Nosso time", que recebe z-index na sobreposição de rolagem */
+  .pb-highlights { position: relative; z-index: 3; }
+  .pb-highlights__slide {
+    position: relative;
+    height: 650px;
+    border-radius: 4px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+  }
+  /* Véu que escurece só a parte de baixo, como no original */
+  .pb-highlights__slide::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(180deg, #FFFFFF00 55%, #00000070 100%);
+  }
+  .pb-highlights__content {
+    position: absolute;
+    left: 0;
+    bottom: 60px;
+    z-index: 2;
+    max-width: 500px;
+    padding-inline: 40px;
+    color: #fff;
+  }
+  .pb-highlights__heading {
+    font-family: var(--font-heading);
+    font-size: 34px;
+    font-weight: 400;
+    line-height: 1.15;
+  }
+  .pb-highlights__desc {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-top: 12px;
+  }
+  .pb-highlights__btn {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 22px;
+    padding: 12px 24px;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: .2px;
+    text-transform: uppercase;
+    color: #fff;
+    transition: background-color .2s, color .2s;
+  }
+  .pb-highlights__btn:hover { background: #fff; color: #181A20; }
+  @media (max-width: 767px) {
+    .pb-highlights__slide { height: 480px; }
+    .pb-highlights__content { padding-inline: 24px; bottom: 32px; }
+    .pb-highlights__heading { font-size: 26px; }
+  }
+</style>
 
-      <div class="w-full md:w-[40%] bg-black px-[5%] py-[50px] md:p-[50px] flex flex-col justify-center text-white">
-        {%- if hl_eyebrow != blank -%}
-        <span class="vp-eyebrow text-white pb-[10px]">{{ hl_eyebrow }}</span>
-        {%- endif -%}
-        <h2 class="font-serif text-[32px] md:text-[42px] font-semibold leading-[1.1] tracking-[1px] text-white mb-5">{{ slide.title }}</h2>
-        {%- if slide.subtitle != blank -%}
-        <p class="text-[15px] text-white/80 mb-3">{{ slide.subtitle }}</p>
-        {%- endif -%}
-        <div class="text-[15px] leading-[22px] text-white space-y-5 mb-10">{{ slide.description }}</div>
-        {%- if slide.cta_text != blank -%}
-        <div>
-          <a href="{{ slide.cta_url }}" class="vp-btn border-white text-white bg-transparent hover:bg-white hover:text-black">
-            <i class="ph ph-eye text-[16px]"></i>
-            {{ slide.cta_text }}
-          </a>
-        </div>
-        {%- endif -%}
-      </div>
+<section {{ section_attrs }} class="pb-highlights pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
+  <div class="pb-container pt-[80px] pb-[90px]">
+    <h2 class="pb-title">
+      {{- s.title }}{% if s.title_highlight != blank %}<br><span class="font-normal italic">{{ s.title_highlight }}</span>{% endif -%}
+    </h2>
+    <div class="flex items-center mt-2 mb-8">
+      <span class="pb-divider"></span>
     </div>
-    {% endif %}
-  {% endfor %}
+
+    <div class="swiper pb-highlights__swiper" data-pb-highlights>
+      <div class="swiper-wrapper">
+        {%- for slide in slides -%}
+        <div class="swiper-slide">
+          <div class="pb-highlights__slide" style="background-image: url('{{ slide.image }}');">
+            <div class="pb-highlights__content">
+              {%- if slide.subtitle != blank %}<span class="pb-eyebrow pb-eyebrow--light block mb-2">{{ slide.subtitle }}</span>{% endif %}
+              {%- if slide.title != blank %}<h3 class="pb-highlights__heading">{{ slide.title }}</h3>{% endif %}
+              {%- if slide.description != blank %}<div class="pb-highlights__desc">{{ slide.description }}</div>{% endif %}
+              {%- if slide.cta_text != blank %}
+              <a href="{{ slide.cta_url }}" class="pb-highlights__btn">{{ slide.cta_text }}</a>
+              {%- endif %}
+            </div>
+          </div>
+        </div>
+        {%- endfor -%}
+      </div>
+      {%- if slides.size > 1 %}
+      <div class="swiper-button-prev !text-white"></div>
+      <div class="swiper-button-next !text-white"></div>
+      {%- endif %}
+    </div>
+  </div>
 </section>
-{% endif %}
+{%- endif %}
 
 {% schema %}
 {
-  "name": "Destaque",
+  "name": "Imóveis em destaque (carrossel)",
   "location": "home",
   "settings": [
-    { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "/ Destaque" },
+    { "type": "text", "id": "title", "label": "Título", "default": "Imóveis em destaque" },
+    { "type": "text", "id": "title_highlight", "label": "Segunda linha (itálico)", "default": "em Campo Grande e região." },
     {
       "type": "repeater",
       "id": "slides",
       "label": "Destaques",
-      "max_items": 3,
+      "max_items": 5,
       "settings": [
         { "type": "image_picker", "id": "image", "label": "Imagem" },
         { "type": "text", "id": "title", "label": "Título" },
-        { "type": "text", "id": "subtitle", "label": "Subtítulo" },
+        { "type": "text", "id": "subtitle", "label": "Sobretítulo" },
         { "type": "richtext", "id": "description", "label": "Descrição" },
-        { "type": "text", "id": "cta_text", "label": "Texto do botão", "default": "Ver imóvel" },
+        { "type": "text", "id": "cta_text", "label": "Texto do botão", "default": "Ver detalhes" },
         { "type": "url", "id": "cta_url", "label": "Link do botão" }
       ]
     }
