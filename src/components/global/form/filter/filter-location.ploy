@@ -12,9 +12,9 @@
   @click.outside="if (open) close()"
   x-data='locationFilter({
     searchApi: "/api/locations/search",
-    placeholder: "{{ location_placeholder | escape }}",
-    initSelected: "{{ init_selected | escape }}",
-    initLabels: {% if resolved_locations %}{{ resolved_locations | json }}{% else %}[]{% endif %}
+    placeholder: {{ location_placeholder | json | escape }},
+    initSelected: {{ init_selected | default: '' | json | escape }},
+    initLabels: {% if resolved_locations %}{{ resolved_locations | json | escape }}{% else %}[]{% endif %}
   })'
 >
   {% if location_label != blank %}

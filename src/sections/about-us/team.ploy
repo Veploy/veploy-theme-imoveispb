@@ -1,7 +1,8 @@
 {%- comment -%}
-  "Nosso time" da página Sobre nós: cabeçalho com linha, e cada sócio numa faixa
-  com foto e biografia alternando de lado. O nome usa a Aurantiaca, como no
-  original.
+  "Nosso time" da página Sobre nós: cabeçalho e texto, e cada sócio numa faixa
+  com foto (600×630) e biografia alternando de lado. O nome usa a Aurantiaca,
+  como no original. O título segue o padrão da doc, com dois destaques:
+  title + title_highlight + title_middle + title_highlight2 + title_after.
 {%- endcomment -%}
 {%- assign s = sections['about-us/team'] -%}
 {%- assign members = s.members.items | default: empty -%}
@@ -11,61 +12,67 @@
     font-family: 'Aurantiaca', var(--font-heading);
     font-size: 55px;
     font-weight: 300;
-    line-height: 55px;
+    line-height: 45px;
     color: #181A20;
     text-shadow: 0 0 10px rgba(255, 255, 255, .82);
   }
-  @media (max-width: 767px) { .pb-member__name { font-size: 40px; line-height: 42px; } }
-  .pb-member__bio p + p { margin-top: 1em; }
+  @media (max-width: 767px) { .pb-member__name { font-size: 40px; line-height: 45px; } }
+  .pb-member__bio p + p { margin-top: 20px; }
+  /* Redes: só o ícone, em cinza, como no original */
   .pb-member__social {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 34px;
-    height: 34px;
-    border-radius: 4px;
-    background: #181A20;
-    color: #fff;
-    transition: opacity .2s;
+    width: 18px;
+    height: 18px;
+    color: #666158;
+    transition: color .2s;
   }
-  .pb-member__social:hover { opacity: .8; }
-  .pb-member__social svg { width: 16px; height: 16px; fill: currentColor; }
+  .pb-member__social:hover { color: #181A20; }
+  .pb-member__social svg { width: 18px; height: 18px; fill: currentColor; }
+  .pb-aboutteam .pb-section-header__eyebrow { margin-bottom: 20px; }
+  .pb-aboutteam .pb-title { max-width: 850px; }
+  @media (min-width: 1025px) {
+    .pb-member { grid-template-columns: 600px minmax(0, 1fr); gap: 58px; }
+    .pb-member--reverse { grid-template-columns: minmax(0, 1fr) 600px; }
+    .pb-member__text { padding-top: 60px; }
+  }
 </style>
 
 <section {{ section_attrs }} class="pb-aboutteam pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="pb-container pt-[80px] pb-[60px]">
+  <div class="pb-container !mb-0 pt-[60px] md:pt-[80px] pb-[80px]">
     {% include 'components/home-section-header',
        eyebrow: s.eyebrow,
        heading: s.title,
-       heading_highlight: s.title_highlight %}
+       heading_highlight: s.title_highlight,
+       heading_middle: s.title_middle,
+       heading_highlight2: s.title_highlight2,
+       heading_after: s.title_after,
+       soft: true %}
 
     {%- if s.description != blank %}
     <div class="pb-text max-w-[850px] mt-5">{{ s.description }}</div>
     {%- endif %}
 
-    <div class="flex items-center mt-6">
-      <span class="pb-divider"></span>
-    </div>
-
     {%- if members != empty and members.size > 0 %}
-    <div class="flex flex-col gap-[70px] mt-[60px]">
+    <div class="flex flex-col gap-[80px] lg:gap-[100px] mt-[150px]">
       {%- for m in members -%}
       {%- assign _odd = forloop.index | modulo: 2 -%}
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+      <div class="pb-member{% if _odd == 0 %} pb-member--reverse{% endif %} grid grid-cols-1 gap-[60px] items-start">
         {%- comment -%} Ímpares: foto à esquerda. Pares: foto à direita. {%- endcomment -%}
         {%- if m.image != blank %}
-        <div class="overflow-hidden rounded-[4px]{% if _odd == 0 %} lg:order-2{% endif %}">
-          <img src="{{ m.image }}" alt="{{ m.name }}" class="w-full h-auto object-cover" loading="lazy" width="1200" height="1260">
+        <div class="overflow-hidden rounded-[4px] order-2{% if _odd == 1 %} lg:order-none{% endif %}">
+          <img src="{{ m.image }}" alt="{{ m.name }}" class="w-full aspect-[600/630] object-cover" loading="lazy" width="1200" height="1260">
         </div>
         {%- endif %}
 
-        <div{% if _odd == 0 %} class="lg:order-1"{% endif %}>
+        <div class="pb-member__text{% if _odd == 0 %} lg:order-1{% endif %}">
           <h3 class="pb-member__name">{{ m.name }}</h3>
           {%- if m.bio != blank %}
-          <div class="pb-member__bio pb-text mt-6">{{ m.bio }}</div>
+          <div class="pb-member__bio pb-text mt-[30px] lg:mt-[69px]">{{ m.bio }}</div>
           {%- endif %}
 
-          <div class="flex items-center gap-2.5 mt-6{% if _odd == 1 %} lg:justify-end{% endif %}">
+          <div class="flex items-center gap-[28px] mt-[30px]{% if _odd == 1 %} lg:justify-end{% endif %}">
             {%- if m.facebook != blank %}
             <a href="{{ m.facebook }}" target="_blank" rel="noopener" class="pb-member__social" aria-label="Facebook de {{ m.name }}">
               <svg viewBox="0 0 320 512"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg>
@@ -98,6 +105,9 @@
     { "type": "text", "id": "eyebrow", "label": "Sobretítulo", "default": "nosso time" },
     { "type": "text", "id": "title", "label": "Título" },
     { "type": "textarea", "id": "title_highlight", "label": "Título — trecho em destaque" },
+    { "type": "text", "id": "title_middle", "label": "Título — entre os destaques" },
+    { "type": "text", "id": "title_highlight2", "label": "Título — segundo destaque" },
+    { "type": "text", "id": "title_after", "label": "Título — depois do destaque" },
     { "type": "textarea", "id": "description", "label": "Texto" },
     {
       "type": "repeater",

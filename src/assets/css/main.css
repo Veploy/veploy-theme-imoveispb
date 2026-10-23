@@ -111,10 +111,26 @@
   max-width: 710px;
 }
 .pb-title span { font-weight: 600; }
+/* Páginas internas: o trecho destacado do Elementor é um <b> de peso 400 */
+.pb-title--soft span { font-weight: 400; }
 .pb-title--italic { font-style: italic; }
 .pb-title--light { color: #FDFBF7; }
 @media (max-width: 1024px) { .pb-title { font-size: 34px; } }
-@media (max-width: 767px)  { .pb-title { font-size: 28px; } }
+@media (max-width: 767px)  { .pb-title { font-size: 30px; line-height: 1.3em; } }
+
+/* Cabeçalho de seção (components/home-section-header) */
+.pb-section-header__eyebrow { display: block; margin-bottom: 5px; }
+/* A linha fica a 20px do título: 13px de margem + metade da altura (14px) do link */
+.pb-section-header__rule { display: flex; align-items: center; gap: 20px; min-height: 14px; margin-top: 13px; }
+.pb-section-header__rule .pb-divider { margin-block: 0; }
+.pb-section-header--center { text-align: center; }
+.pb-section-header--center .pb-section-header__title { margin-inline: auto; }
+@media (max-width: 767px) {
+  .pb-section-header--center-mobile { text-align: center; }
+  .pb-section-header--center-mobile .pb-section-header__title { margin-inline: auto; }
+  /* No celular o original esconde o link e deixa só a linha */
+  .pb-section-header__rule .pb-link { display: none; }
+}
 
 /* Linha fina que divide o título do botão "Ver mais imóveis" */
 .pb-divider {
@@ -136,6 +152,7 @@
   font-weight: 500;
   text-transform: uppercase;
   color: #877B66;
+  line-height: 14px;
   white-space: nowrap;
   transition: color .2s;
 }
@@ -173,7 +190,7 @@
   font-family: var(--font-body);
   font-size: 15px;
   font-weight: 400;
-  line-height: 1.7;
+  line-height: 22px;
   color: #717171;
 }
 .pb-text p + p { margin-top: 1em; }
@@ -256,56 +273,80 @@
     transition: background-color .2s, color .2s, border-color .2s;
   }
 
-  /* Detalhe do imóvel — ações (Fotos / Mapa / Plantas) */
+  /* Detalhe do imóvel — ações (Fotos / Mapa / Plantas): borda #DDD, 4px de canto */
   .vp-prop-action {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    height: 36px;
-    padding: 0 15px;
-    border: 1px solid #000;
+    padding: 10px 15px;
+    border: 1px solid #DDDDDD;
+    border-radius: 4px;
     font-size: 14px;
+    font-weight: 500;
     line-height: 1;
-    text-transform: uppercase;
-    color: #000;
-    background: #fff;
-    transition: background-color .2s, color .2s;
+    color: #666158;
+    background: transparent;
+    transition: background-color .2s, color .2s, border-color .2s;
   }
-  .vp-prop-action i { font-size: 17px; }
-  .vp-prop-action:hover { background: #000; color: #fff; }
+  .vp-prop-action i { font-size: 16px; }
+  .vp-prop-action:hover { border-color: #666158; color: #181A20; }
 
-  /* Detalhe do imóvel — títulos de seção ("Sobre o imóvel", "Plantas"...) */
+  /* Detalhe do imóvel — títulos de seção ("Características do imóvel", "Localização"...) */
   .vp-prop-title {
     margin-bottom: 20px;
     font-family: var(--font-heading);
-    font-size: 22px;
-    font-weight: 500;
+    font-size: 30px;
+    font-weight: 400;
     line-height: 1.2;
-    color: #000;
+    color: #181A20;
   }
+  @media (max-width: 767px) { .vp-prop-title { font-size: 25px; } }
 
   /* Características separadas por linhas verticais */
-  .vp-prop-features li { margin-right: 20px; padding-right: 20px; border-right: 1px solid #000; }
-  @media (max-width: 767px) { .vp-prop-features li { margin-right: 12px; padding-right: 12px; } }
+  .vp-prop-features li { margin-right: 20px; padding-right: 20px; border-right: 1px solid #373630; }
+  @media (max-width: 767px) { .vp-prop-features li { margin-right: 20px; padding-right: 20px; } }
 
   .vp-prop-description p + p { margin-top: 1em; }
 
-  /* Card "Gostou deste imóvel?" — campos compactos */
+  /* Lista "Características do imóvel": check em círculo bege */
+  .vp-prop-amenities li { display: flex; align-items: center; gap: 10px; font-size: 14px; line-height: 30px; color: #333; }
+  .vp-prop-amenities li::before {
+    content: "";
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #E7E0D2 url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 512 512%27%3E%3Cpath fill=%27%23666158%27 d=%27M173.9 439.4l-166.4-166.4c-10-10-10-26.2 0-36.2l36.2-36.2c10-10 26.2-10 36.2 0L192 312.7 432.1 72.6c10-10 26.2-10 36.2 0l36.2 36.2c10 10 10 26.2 0 36.2L210.1 439.4c-10 10-26.2 10-36.2 0z%27/%3E%3C/svg%3E") center / 9px no-repeat;
+  }
+
+  /* Card "Gostou deste imóvel?" — campos só com a linha de baixo */
   .vp-prop-lead__input {
     width: 100%;
     height: 42px;
-    padding: 0 15px;
-    border: 1px solid #DDDDDD;
+    min-height: 42px;
+    padding: 5px 14px;
+    border: 0;
+    border-bottom: 1px solid #666158;
     border-radius: 0;
-    background-color: #fff;
+    background-color: transparent;
     font-size: 15px;
     color: #000;
     outline: none;
     transition: border-color .2s;
   }
-  .vp-prop-lead__input::placeholder { color: #717171; }
-  .vp-prop-lead__input:focus { border-color: #000; }
-  select.vp-prop-lead__input { font-size: 14px; }
+  /* Mesma especificidade da regra base `input:not(...)` (que pintaria a borda
+     de #eee) e declarada depois dela, então vence. */
+  .vp-prop-lead input.vp-prop-lead__input,
+  .vp-prop-lead select.vp-prop-lead__input { border-color: transparent transparent #666158; }
+  .vp-prop-lead input.vp-prop-lead__input:focus,
+  .vp-prop-lead select.vp-prop-lead__input:focus { border-bottom-color: #181A20; }
+  .vp-prop-lead__input::placeholder { color: #666158; opacity: 1; }
+  select.vp-prop-lead__input {
+    appearance: none;
+    font-size: 14px;
+    padding-right: 30px;
+    background: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 320 512%27%3E%3Cpath d=%27M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z%27/%3E%3C/svg%3E") right 14px center / 10px no-repeat;
+  }
 
   /* Hero Swiper */
   .hero-swiper .swiper-button-prev,
@@ -819,21 +860,28 @@
    ============================================ */
 .pb-form__field {
   width: 100%;
-  min-height: 48px;
+  min-height: 42px;
   background: transparent;
   border: 0;
   border-bottom: 1px solid #E7E0D2;
   border-radius: 0;
-  padding: 12px 12px 12px 14px;
+  padding: 5px 14px;
   font-family: var(--font-body);
   font-size: 15px;
-  color: #181A20;
+  color: #666158;
   outline: none;
   transition: border-color .2s;
 }
-.pb-form__field::placeholder { color: #9A958C; opacity: 1; }
-.pb-form__field:focus { border-bottom-color: #181A20; }
-textarea.pb-form__field { min-height: 130px; resize: vertical; }
+.pb-form__field::placeholder { color: #666158; opacity: 1; }
+/* Mesma especificidade+1 da regra base `input:not(...)`, que pintaria a borda
+   inteira de #eee: no original o campo só tem a linha bege de baixo. */
+input.pb-form__field:not([type='checkbox']):not([type='radio']),
+select.pb-form__field,
+textarea.pb-form__field { border-color: transparent transparent #E7E0D2; border-radius: 0; }
+input.pb-form__field:not([type='checkbox']):not([type='radio']):focus,
+select.pb-form__field:focus,
+textarea.pb-form__field:focus { border-bottom-color: #181A20; }
+textarea.pb-form__field { min-height: 137px; resize: vertical; }
 select.pb-form__field { cursor: pointer; }
 
 .pb-form__label {
@@ -847,15 +895,387 @@ select.pb-form__field { cursor: pointer; }
 
 .pb-form__submit {
   width: 100%;
-  min-height: 50px;
+  min-height: 40px;
   background: var(--btn-primary-bg, #181A20);
   color: var(--btn-primary-text, #fff);
   font-family: var(--font-body);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   border-radius: 4px;
   transition: background-color .2s;
 }
 .pb-form__submit:hover { background: var(--btn-primary-hover, #373630); }
 
 .pb-form__notice { border-radius: 4px; padding: 14px; font-size: 14px; }
+
+/* ============================================
+   PASSOS & BUYTENDORP — FILTROS DA LISTAGEM
+   Medidas do "vertical-filters" do original (tema ploymob + child).
+   ============================================ */
+.pb-filters {
+  border: 1px solid #E7E0D2;
+  border-radius: 4px;
+  padding: 25px;
+  background: #fff;
+  font-family: var(--font-body);
+}
+.pb-filters__field { padding: 5px 0 10px; }
+.pb-filters__label,
+.pb-filters .location-filter > label,
+.pb-filters .select-component > label,
+.pb-filters .currency-input > label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  color: #000;
+  margin: 0;
+  padding: 0 0 5px;
+}
+.pb-filters .pb-filters__input,
+.pb-filters input[type='text'],
+.pb-filters .dropdown-trigger,
+.pb-filters .location-filter [x-ref='wrapper'] > div {
+  width: 100%;
+  height: 45px;
+  min-height: 45px;
+  padding: 0 15px;
+  border: 1px solid #EDEDED;
+  border-radius: 5px;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #444;
+  box-shadow: none;
+  outline: none;
+}
+.pb-filters input[type='text']::placeholder { color: #444; opacity: .85; }
+.pb-filters .currency-input input { font-size: 14px; }
+.pb-filters input[type='text']:focus,
+.pb-filters .dropdown-trigger:focus,
+.pb-filters .dropdown-trigger:focus-within { border-color: #181A20; --tw-ring-shadow: 0 0 #0000; }
+
+/* Quartos / Suítes / Vagas */
+.pb-filters__num {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+.pb-filters__num .pb-filters__label { padding: 0; }
+.pb-filters__num-opts { display: flex; gap: 4px; }
+.pb-filters__num-opts label { position: relative; cursor: pointer; }
+.pb-filters__num-opts span {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  background: #F3F3F3;
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  transition: all .2s ease;
+}
+.pb-filters__num-opts label:hover span { background: #DBDBDB; }
+.pb-filters__num-opts input:checked + span { background: rgb(var(--color-secondary, 228 188 120)); color: #fff; }
+/* Selo com "×" no canto do número escolhido */
+.pb-filters__num-opts input:checked + span::before {
+  content: '×';
+  position: absolute;
+  top: -8px;
+  right: -5px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 100%;
+  border: 1px solid #000;
+  background: #fff;
+  color: #000;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+.pb-filters__num-opts input:focus-visible + span { outline: 2px solid #181A20; outline-offset: 1px; }
+
+/* Lista de características: caixa com rolagem própria */
+.pb-filters__amenities {
+  margin-top: 15px;
+  height: 200px;
+  overflow-y: auto;
+  padding: 15px;
+  border: 1px solid #F0F0F0;
+  border-radius: 10px;
+}
+.pb-filters__amenities .pb-check { margin-bottom: 5px; }
+
+.pb-filters__submit {
+  width: 100%;
+  height: 42px;
+  margin-top: 10px;
+  padding: 0 15px;
+  border-radius: 4px;
+  background: #181A20;
+  color: #F0EBE2;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  text-transform: capitalize;
+  transition: background-color .2s;
+}
+.pb-filters__submit:hover { background: #373630; }
+
+/* Checkbox quadrado de 20px com o "check" na cor de destaque */
+.pb-check {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 20px;
+  padding-left: 30px;
+  cursor: pointer;
+  user-select: none;
+}
+.pb-check input { position: absolute; opacity: 0; width: 0; height: 0; }
+.pb-check__box {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: -10px;
+  border: 1px solid #ADADAD;
+  background: #fff;
+}
+.pb-check__box::after {
+  content: '';
+  position: absolute;
+  display: none;
+  left: 50%;
+  top: 50%;
+  width: 5px;
+  height: 10px;
+  margin-left: -2px;
+  margin-top: -6px;
+  border: solid #181A20;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg);
+}
+/* Marcado: check preto e borda escura, como nos filtros do original */
+.pb-check input:checked ~ .pb-check__box { border-color: #181A20; }
+.pb-check input:checked ~ .pb-check__box::after { display: block; }
+.pb-check input:focus-visible ~ .pb-check__box { outline: 2px solid #181A20; outline-offset: 1px; }
+.pb-check__label { font-size: 14px; line-height: 1; color: #000; }
+.pb-filters__code-toggle { margin-bottom: 15px; }
+.pb-filters__code-toggle .pb-check__label { line-height: 22px; color: #434343; }
+
+/* ============================================
+   PASSOS & BUYTENDORP — LISTAGEM
+   ============================================ */
+.pb-listing__title {
+  font-family: var(--font-heading);
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #181A20;
+}
+.pb-listing__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px 20px;
+  margin-top: 18px;
+  border-bottom: 1px solid #DDDDDD;
+}
+.pb-listing__tabs { display: flex; }
+.pb-listing__tab {
+  position: relative;
+  padding: 15px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 22px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #333;
+}
+.pb-listing__tab.is-active { font-weight: 600; }
+.pb-listing__tab.is-active::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 3px;
+  margin-bottom: -1.5px;
+  background: #000;
+}
+.pb-listing__sort {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 5px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #333;
+}
+.pb-listing__sort select {
+  height: 42px;
+  min-height: 42px;
+  padding: 0 10px;
+  border: 1px solid #EEEEEE;
+  border-radius: 0;
+  background-color: transparent;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #000;
+  cursor: pointer;
+}
+.pb-listing__count {
+  margin: 20px 0 30px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 30px;
+  letter-spacing: .28px;
+  color: #333;
+}
+.pb-listing__grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 30px;
+}
+@media (min-width: 768px) {
+  .pb-listing__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 767px) {
+  .pb-listing__title { font-size: 19px; }
+  .pb-listing__bar { border-bottom: 0; }
+  .pb-listing__tabs { width: 100%; border-bottom: 1px solid #DDDDDD; }
+  /* O select mostra o texto inteiro ("Ordenação padrão (recentes)"); em telas
+     muito estreitas ele passa da borda, como no original */
+  .pb-listing__sort { gap: 25px; max-width: 100%; overflow: hidden; padding: 10px 0 0; white-space: nowrap; }
+  .pb-listing__sort select { flex: none; width: auto; padding: 0 14px; font-size: 14px; }
+}
+
+/* "Carregar mais": botão escuro centrado, 30px abaixo dos cards */
+.pb-load-more { display: flex; justify-content: center; margin-top: 30px; }
+.pb-load-more__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 143px;
+  padding: 12px 24px;
+  border-radius: 3px;
+  background: #181A20;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 14px;
+  color: #fff;
+  transition: background-color .2s;
+}
+.pb-load-more__btn:hover { background: #373630; }
+.pb-load-more__btn.is-loading { opacity: .7; pointer-events: none; }
+
+/* Na listagem, nos similares e nos favoritos a foto do card é mais baixa
+   que na home: 456×250 no original (a home usa 412×290). */
+.pb-card-grid .pb-card__media .swiper-slide > a,
+.pb-card-grid .pb-card__media .swiper-slide > div { aspect-ratio: 456 / 250; }
+/* No celular a foto tem altura fixa (~190px) e o título cai para 15px */
+@media (max-width: 767px) {
+  .pb-card-grid .pb-card__media .swiper-slide > a,
+  .pb-card-grid .pb-card__media .swiper-slide > div { aspect-ratio: auto; height: 190px; }
+  .pb-card-grid .pb-card__title { font-size: 15px; line-height: 21px; }
+  .pb-card-grid .pb-card__sku { font-size: 13px; }
+}
+
+/* Filtros: o select pesquisável tem um input interno e a seta — no original o
+   campo é liso, só com o texto "Mostrar todos". */
+.pb-filters .dropdown-trigger input[type='text'] {
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+.pb-filters .dropdown-trigger > svg { display: none; }
+.pb-filters .currency-symbol { display: none; }
+
+/* Botão "Filtrar imóveis" fixo no pé da tela (celular), como no original */
+.pb-filter-fab {
+  position: fixed;
+  left: 50%;
+  bottom: 36px;
+  z-index: 1100;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 45px;
+  padding: 0 18px;
+  transform: translateX(-50%);
+  border-radius: 4px;
+  background: #181A20;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
+  box-shadow: 0 4px 14px rgb(0 0 0 / .15);
+}
+.pb-filter-fab svg { width: 15px; height: 15px; }
+/* Painel de filtros do celular: branco, tela cheia, rolagem própria */
+.pb-filter-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  overflow-y: auto;
+  padding: 15px 25px 80px;
+  background: #fff;
+}
+.pb-filter-panel__close {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: #333;
+}
+.pb-filter-panel .pb-filters { border: 0; border-radius: 0; padding: 0; }
+.pb-filters__hint { display: block; margin-top: 8px; font-size: 13px; line-height: 1.4; color: #717171; }
+
+/* Aviso "Ver imóveis favoritos": entra pela direita a 30px do topo */
+.pb-fav-toast {
+  position: fixed;
+  top: 30px;
+  right: -320px;
+  z-index: 10000;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  background: #181A20;
+  box-shadow: 0 4px 8px rgb(0 0 0 / .1);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 22px;
+  color: #fff;
+  visibility: hidden;
+  transition: right .2s ease-in-out, visibility .2s;
+}
+.pb-fav-toast.is-visible { right: 30px; visibility: visible; }
+.pb-fav-toast svg { width: 14px; height: 14px; }
+@media (max-width: 767px) { .pb-fav-toast.is-visible { right: 20px; } }
+
+/* Ícones de compartilhar do imóvel (components/property-share) */
+.pb-share__icon { display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; color: #666158; transition: color .2s; }
+.pb-share__icon:hover { color: #181A20; }
+.pb-share__icon svg { width: 16px; height: 16px; fill: currentColor; }

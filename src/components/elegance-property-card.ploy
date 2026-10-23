@@ -23,7 +23,7 @@
           <div class="swiper-slide">
             <a href="{{ _url }}" class="block aspect-[412/290] overflow-hidden bg-[#F0EEE9]">
               <img
-                src="{{ image.url | default: image | img_resize: 640, 0, false, 'webp' }}"
+                src="{{ image.url | default: image | img_resize: 960, 0, false, 'webp' }}"
                 alt="{{ property.formatted_title | default: property.title | escape }}"
                 class="h-full w-full object-cover"
                 width="412" height="290" loading="lazy" decoding="async"

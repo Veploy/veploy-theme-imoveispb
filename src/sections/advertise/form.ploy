@@ -13,74 +13,75 @@
 {%- assign steps = p.process.items | default: empty -%}
 
 <style>
-  .pb-ad__card {
+  /* Cartões de benefícios e etapas: borda bege, 30px de respiro, título 20/24 */
+  .pb-ad__card,
+  .pb-ad__step {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
     padding: 30px;
     border: 1px solid #E7E0D2;
     border-radius: 4px;
   }
-  .pb-ad__card h3 {
-    font-family: var(--font-heading);
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 1.2em;
-    color: #181A20;
-  }
-  .pb-ad__step {
-    padding: 20px 15px 20px 30px;
-    border-left: 1px solid #E7E0D2;
-  }
+  /* Etapas: sem borda, só o texto — como no original */
+  .pb-ad__step { gap: 14px; padding: 30px; border: 0; }
+  .pb-ad__card h3,
   .pb-ad__step h3 {
     font-family: var(--font-heading);
     font-size: 20px;
     font-weight: 400;
     line-height: 1.2em;
     color: #181A20;
-    margin-bottom: 15px;
   }
   .pb-ad__panel {
     background: #F8F8F8;
     border-radius: 4px;
-    padding: 70px 40px;
+    padding: 115px 40px 112px;
     text-align: center;
   }
   .pb-ad__panel h2 {
     font-family: var(--font-heading);
-    font-size: 40px;
+    font-size: 45px;
     font-weight: 300;
-    line-height: 1.2em;
+    line-height: 54px;
     color: #181A20;
-    max-width: 620px;
+    max-width: 650px;
     margin-inline: auto;
   }
-  .pb-ad__panel h2 span { font-weight: 600; }
-  @media (max-width: 767px) { .pb-ad__panel { padding: 40px 20px; } .pb-ad__panel h2 { font-size: 26px; } }
+  .pb-ad__panel h2 span { font-weight: 400; }
+  @media (max-width: 767px) { .pb-ad__panel { padding: 60px 30px; } .pb-ad__panel h2 { font-size: 25px; line-height: 32.5px; } }
+  /* No celular o original esconde os links ao lado da linha */
+  @media (max-width: 767px) { .pb-ad__rule .pb-link { display: none; } }
 
   .pb-ad__form {
     background: #fff;
     border: 1px solid #E7E0D2;
     border-radius: 4px;
-    padding: 30px;
+    padding: 20px;
   }
   .pb-ad__form-title {
     font-family: var(--font-heading);
-    font-size: 26px;
+    font-size: 25px;
     font-weight: 400;
-    line-height: 1.2em;
+    line-height: 24px;
     color: #181A20;
   }
+  .pb-ad__form-sub { margin: 10px 0 20px; font-family: var(--font-body); font-size: 15px; line-height: 17px; color: #666158; }
+  /* Campos com a linha de baixo #666158, como no card do original */
+  .pb-ad__form input.pb-form__field:not([type='checkbox']):not([type='radio']),
+  .pb-ad__form select.pb-form__field { border-bottom-color: #666158; }
   @media (min-width: 1025px) {
+    /* O card sobe 39px por cima da foto do topo e acompanha a rolagem */
+    .pb-ad__aside { position: relative; z-index: 20; margin-top: -139px; }
     .pb-ad__sticky { position: sticky; top: 120px; }
   }
 </style>
 
 <section {{ section_attrs }} class="pb-ad pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="pb-container grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-10 lg:gap-14 pt-[90px] pb-[90px]">
+  <div class="pb-container !mb-0 grid grid-cols-1 min-[1025px]:grid-cols-[minmax(0,1fr)_331px] gap-10 min-[1025px]:gap-[71px] pt-[60px] min-[1025px]:pt-[100px] pb-[90px]">
 
     {%- comment -%} Coluna da esquerda {%- endcomment -%}
-    <div class="flex flex-col gap-[80px]">
+    <div class="flex flex-col gap-[100px]">
 
       {%- comment -%} Benefícios {%- endcomment -%}
       <div>
@@ -88,13 +89,16 @@
            eyebrow: b.eyebrow,
            heading: b.title,
            heading_highlight: b.title_highlight,
-           heading_after: b.title_after %}
+           heading_middle: b.title_middle,
+           heading_highlight2: b.title_highlight2,
+           heading_after: b.title_after,
+           soft: true %}
         {%- if b.description != blank %}
-        <div class="pb-text max-w-[710px] mt-4">{{ b.description }}</div>
+        <div class="pb-text max-w-[710px] mt-[5px]">{{ b.description }}</div>
         {%- endif %}
         {%- if b.cta_text != blank %}
-        <div class="flex items-center gap-6 mt-4">
-          <span class="pb-divider"></span>
+        <div class="pb-ad__rule flex items-center gap-5 min-h-[14px] mt-[27px]">
+          <span class="pb-divider !my-0"></span>
           <a href="{{ b.cta_url }}"{% if b.cta_url contains '://' %} target="_blank" rel="noopener"{% endif %} class="pb-link">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"/></svg>
             <span>{{ b.cta_text }}</span>
@@ -103,7 +107,7 @@
         {%- endif %}
 
         {%- if benefits != empty and benefits.size > 0 %}
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mt-10">
+        <div class="grid grid-cols-1 min-[1025px]:grid-cols-3 gap-5 mt-[60px] min-[1025px]:mt-[75px]">
           {%- for item in benefits -%}
           <div class="pb-ad__card">
             <h3>{{ item.title }}</h3>
@@ -121,10 +125,10 @@
           {{- b.highlight_title }}{% if b.highlight_title_highlight != blank %} <span>{{ b.highlight_title_highlight }}</span>{% endif %}{% if b.highlight_title_after != blank %} {{ b.highlight_title_after }}{% endif -%}
         </h2>
         {%- if b.highlight_description != blank %}
-        <div class="pb-text max-w-[620px] mx-auto mt-5">{{ b.highlight_description }}</div>
+        <div class="pb-text max-w-[710px] mx-auto mt-5">{{ b.highlight_description }}</div>
         {%- endif %}
         {%- if b.highlight_image != blank %}
-        <img src="{{ b.highlight_image }}" alt="{{ workspace.name }}" class="mx-auto mt-10 w-[80px] h-auto object-contain" loading="lazy" width="80" height="80">
+        <img src="{{ b.highlight_image }}" alt="{{ workspace.name }}" class="mx-auto mt-10 w-[85px] h-auto object-contain" loading="lazy" width="85" height="85">
         {%- endif %}
       </div>
       {%- endif %}
@@ -135,13 +139,16 @@
            eyebrow: p.eyebrow,
            heading: p.title,
            heading_highlight: p.title_highlight,
-           heading_after: p.title_after %}
+           heading_middle: p.title_middle,
+           heading_highlight2: p.title_highlight2,
+           heading_after: p.title_after,
+           soft: true %}
         {%- if p.description != blank %}
-        <div class="pb-text max-w-[710px] mt-4">{{ p.description }}</div>
+        <div class="pb-text max-w-[710px] mt-[5px]">{{ p.description }}</div>
         {%- endif %}
         {%- if p.cta_text != blank %}
-        <div class="flex items-center gap-6 mt-4">
-          <span class="pb-divider"></span>
+        <div class="pb-ad__rule flex items-center gap-5 min-h-[14px] mt-[27px]">
+          <span class="pb-divider !my-0"></span>
           <a href="{{ p.cta_url }}"{% if p.cta_url contains '://' %} target="_blank" rel="noopener"{% endif %} class="pb-link">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"/></svg>
             <span>{{ p.cta_text }}</span>
@@ -150,7 +157,7 @@
         {%- endif %}
 
         {%- if steps != empty and steps.size > 0 %}
-        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 mt-10">
+        <div class="grid grid-cols-1 min-[1025px]:grid-cols-3 gap-5 mt-[60px] min-[1025px]:mt-[75px]">
           {%- for item in steps -%}
           <div class="pb-ad__step">
             <h3>{{ item.title }}</h3>
@@ -163,12 +170,12 @@
     </div>
 
     {%- comment -%} Coluna da direita: formulário que acompanha a rolagem {%- endcomment -%}
-    <div>
+    <div class="pb-ad__aside">
       <div id="anunciar-form" class="pb-ad__sticky">
         <div class="pb-ad__form">
           <h2 class="pb-ad__form-title">{{ f.eyebrow | default: 'Anuncie conosco' }}</h2>
           {%- if f.title != blank %}
-          <p class="pb-text mt-2 mb-6">{{ f.title }}</p>
+          <p class="pb-ad__form-sub">{{ f.title }}</p>
           {%- endif %}
 
           {% form 'contact', name: 'Anuncie seu imóvel' %}
@@ -179,7 +186,7 @@
             <p class="pb-form__notice mb-5 border border-red-200 bg-red-50 text-red-800">{{ form.errors | first }}</p>
             {% endif %}
 
-            <div class="flex flex-col gap-4">
+            <div class="flex flex-col gap-[10px]">
               <input type="text" name="contact[name]" required placeholder="Nome" class="pb-form__field" aria-label="Nome">
               <input type="email" name="contact[email]" required placeholder="E-mail" class="pb-form__field" aria-label="E-mail">
               {% include 'components/global/form/phone-input', name: 'contact[phone]', placeholder: 'Telefone', input_class: 'pb-form__field', id: 'pb-ad-phone' %}

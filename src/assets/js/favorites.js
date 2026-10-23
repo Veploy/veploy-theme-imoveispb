@@ -80,9 +80,12 @@
         sku = sanitizeSku(sku);
         if (!sku) return;
         var i = this.list.indexOf(sku);
+        var added = false;
         if (i >= 0) this.list.splice(i, 1);
-        else if (this.list.length < 200) this.list.push(sku);
+        else if (this.list.length < 200) { this.list.push(sku); added = true; }
         persist(this.list);
+        // Avisa a página para mostrar o "Ver imóveis favoritos" por alguns segundos
+        if (added) window.dispatchEvent(new CustomEvent('favorites-added', { detail: { sku: sku } }));
       },
       remove: function (sku) {
         sku = sanitizeSku(sku);

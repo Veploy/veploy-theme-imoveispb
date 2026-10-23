@@ -18,7 +18,6 @@
 {% section 'about-us/story' %}
 {% section 'about-us/team' %}
 {% section 'about-us/values' %}
-{% section 'home/contact-section' %}
 {% endblock %}
 
 {% schema %}

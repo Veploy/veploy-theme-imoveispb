@@ -13,7 +13,7 @@
 {% assign inp_id = id | default: 'curr' | append: name %}
 {% assign inp_class = input_class | default: '' %}
 
-<div class="currency-input" x-data="currencyInput" data-currency="{{ curr }}" data-init="{{ init }}">
+<div class="currency-input" x-data="currencyInput" data-currency="{{ curr }}" data-init="{{ init | escape }}">
   {% if label != blank %}
   <label for="{{ inp_id }}" class="block text-base font-semibold text-gray-900 mb-2">{{ label }}</label>
   {% endif %}

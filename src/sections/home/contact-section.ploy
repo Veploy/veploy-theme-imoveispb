@@ -2,7 +2,9 @@
   Faixa final da home ("Conectamos você ao imóvel dos seus sonhos!").
 
   No original é um bloco branco de 60vh, conteúdo travado em 800px e centralizado:
-  título em Reckless Neue 55px, texto e o botão escuro "Fale conosco".
+  título em Reckless Neue 55px, texto e o botão escuro "Fale conosco" — 20px do
+  título ao texto e 40px do texto ao botão. No celular e no tablet a altura
+  mínima some e ficam só 40px em cima e embaixo.
 {%- endcomment -%}
 {%- assign s = sections['home/contact-section'] -%}
 {%- assign _cta = s.cta_url | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.advertise}}', routes.advertise -%}
@@ -21,19 +23,35 @@
     max-width: 600px;
   }
   @media (max-width: 1024px) { .pb-cta__title { font-size: 45px; max-width: 550px; } }
-  @media (max-width: 767px)  { .pb-cta__title { font-size: 30px; letter-spacing: -.5px; } }
+  @media (max-width: 767px)  { .pb-cta__title { font-size: 30px; line-height: 36px; letter-spacing: -1.5px; } }
+  .pb-cta__text { font-family: var(--font-body); font-size: 14px; line-height: 22px; color: #717171; }
+  .pb-cta__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    border-radius: 3px;
+    background: var(--btn-primary-bg, #181A20);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 14px;
+    color: var(--btn-primary-text, #fff);
+    transition: background-color .2s;
+  }
+  .pb-cta__btn:hover { background: var(--btn-primary-hover, #373630); }
 </style>
 
 <section {{ section_attrs }} class="pb-cta pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="mx-auto flex min-h-[60vh] max-w-[800px] flex-col items-center justify-center gap-5 py-[40px] text-center">
+  <div class="mx-auto flex max-w-[800px] flex-col items-center justify-center py-[40px] text-center md:min-h-[60vh]">
     {%- if s.title != blank %}
     <h2 class="pb-cta__title">{{ s.title }}</h2>
     {%- endif %}
     {%- if s.description != blank %}
-    <div class="pb-text">{{ s.description }}</div>
+    <div class="pb-cta__text mt-[20px]">{{ s.description }}</div>
     {%- endif %}
     {%- if s.cta_text != blank %}
-    <a href="{% unless _cta contains '://' %}{{ locale_prefix }}{% endunless %}{{ _cta }}" class="pb-btn mt-2">{{ s.cta_text }}</a>
+    <a href="{% unless _cta contains '://' %}{{ locale_prefix }}{% endunless %}{{ _cta }}" class="pb-cta__btn mt-[40px]">{{ s.cta_text }}</a>
     {%- endif %}
   </div>
 </section>

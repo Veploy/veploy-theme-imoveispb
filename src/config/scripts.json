@@ -21,6 +21,7 @@
     "favorites-page.js"
   ],
   "home": [
+    "pb-selectable.js",
     "scroll-overlay.js"
   ]
 }

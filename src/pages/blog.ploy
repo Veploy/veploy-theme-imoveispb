@@ -5,7 +5,7 @@
   <div class="max-w-screen-xl mx-auto px-4 lg:px-8">
     <div class="text-center max-w-3xl mx-auto">
       <h1 class="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
-        {% if filters.category_name != '' %}{{ filters.category_name }}{% elsif filters.category != '' %}{{ filters.category }}{% else %}{{ t.blog_page.title }}{% endif %}
+        {% if filters.category_name != '' %}{{ filters.category_name | escape }}{% elsif filters.category != '' %}{{ filters.category | escape }}{% else %}{{ t.blog_page.title }}{% endif %}
       </h1>
       <p class="text-gray-600 text-lg">
         {{ t.blog_page.subtitle }}
@@ -94,7 +94,7 @@
           href="{{ locale_prefix }}{{ routes.blog }}{% if filters.search != '' %}?search={{ filters.search | url_encode }}{% endif %}"
           class="inline-flex items-center gap-1 px-3 py-1 bg-primary/10 text-primary text-sm rounded-full hover:bg-primary/20 transition-colors"
         >
-          {{ filters.category_name | default: filters.category }}
+          {{ filters.category_name | default: filters.category | escape }}
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>

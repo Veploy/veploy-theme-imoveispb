@@ -2,6 +2,8 @@
   Abertura do "Sobre nós": bloco escuro de 90vh com o título centralizado em
   Reckless Neue 55/300, o link "Conheça nossa história ↓" no canto inferior
   direito e, logo abaixo, a faixa de 460px com as duas fotos dos sócios.
+  No celular (até 767px) o original mostra só o bloco escuro de 765px, com o
+  título centralizado e o link logo abaixo dele — sem as fotos.
 {%- endcomment -%}
 {%- assign s = sections['about-us/hero'] -%}
 
@@ -16,7 +18,13 @@
     max-width: 830px;
   }
   @media (max-width: 1024px) { .pb-abouthero__title { font-size: 42px; } }
-  @media (max-width: 767px)  { .pb-abouthero__title { font-size: 30px; } }
+  @media (max-width: 767px)  { .pb-abouthero__title { font-size: 30px; line-height: 39px; } }
+  .pb-abouthero__title span { font-weight: 400; }
+  @media (max-width: 767px) {
+    .pb-abouthero__inner { min-height: 765px; justify-content: center; padding: 0 10px; }
+    .pb-abouthero__inner > .pb-container { flex: 0 0 auto; margin-bottom: 0; }
+    .pb-abouthero__cta { justify-content: center; margin-top: 35px; }
+  }
   .pb-abouthero__photos { display: flex; min-height: 460px; }
   .pb-abouthero__photo {
     flex: 1 1 50%;
@@ -24,19 +32,20 @@
     background-repeat: no-repeat;
     background-size: cover;
   }
-  @media (max-width: 767px) { .pb-abouthero__photos { min-height: 280px; } }
+  /* No celular o original não mostra as fotos dos sócios no topo */
+  @media (max-width: 767px) { .pb-abouthero__photos { display: none; } }
 </style>
 
 <section {{ section_attrs }} class="pb-abouthero{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="pb-section flex min-h-[90vh] flex-col justify-between pt-[220px] pb-[60px]">
+  <div class="pb-abouthero__inner pb-section flex min-h-[90vh] flex-col justify-between pt-[220px] pb-[60px]">
     <div class="pb-container flex flex-1 items-center justify-center">
       <h1 class="pb-abouthero__title text-center">
-        {{- s.title }}{% if s.title_highlight != blank %} {{ s.title_highlight }}{% endif -%}
+        {{- s.title }}{% if s.title_highlight != blank %} <span>{{ s.title_highlight }}</span>{% endif -%}
       </h1>
     </div>
 
     {%- if s.cta_text != blank %}
-    <div class="pb-container flex justify-end">
+    <div class="pb-container pb-abouthero__cta flex justify-end">
       <a href="{{ s.cta_url | default: '#nossa-historia' }}" class="pb-link" style="color: #F8F8F8; flex-direction: row;">
         <span>{{ s.cta_text }}</span>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" fill="currentColor" class="w-[13px] h-[13px]" aria-hidden="true"><path d="M168.5 440.6c13.2 13.2 34.6 13.2 47.8 0l154-154c13.2-13.2 13.2-34.6 0-47.8s-34.6-13.2-47.8 0L226 319.2V72c0-18.7-15.2-33.9-33.9-33.9S158.2 53.3 158.2 72v247.2L62.3 238.8c-13.2-13.2-34.6-13.2-47.8 0s-13.2 34.6 0 47.8l154 154z"/></svg>

@@ -1,10 +1,19 @@
 {%- comment -%}
   Banner principal.
 
-  No original é um container de 100vh com vídeo de fundo (`background_video_link`),
-  véu `#02010133` por cima, título centralizado em Reckless Neue 58px — com o
-  trecho do meio em itálico — e, encostada embaixo, a barra de busca horizontal
-  em campos transparentes com borda só embaixo.
+  No original é um container com vídeo de fundo, véu `#02010133`, título
+  centralizado em Reckless Neue — com o trecho do meio em itálico — e, encostada
+  embaixo, a busca num painel preto translúcido.
+
+  Medidas do Elementor em produção:
+  - altura mínima de 900px (765px abaixo de 768px), conteúdo no pé, 8% de
+    respiro embaixo e 10px nas laterais até 1024px;
+  - título 58px (60px no tablet, 35px no celular), 30px acima do painel;
+  - painel de 950px: Operação 190 · Tipo 190 · Localização 333 · Buscar 150,
+    com 15px entre eles; no celular, Operação e Tipo lado a lado e o resto em
+    linha inteira;
+  - Tipo e Localização abrem a lista com checkboxes (pb-selectable.js): para
+    cima no desktop, para baixo e na largura do painel no celular.
 {%- endcomment -%}
 {%- assign hero = sections['home/hero-carousel'] -%}
 {%- assign slide = hero.slides.items[0] -%}
@@ -12,86 +21,234 @@
 {%- assign hero_image_mobile = slide.image_mobile | default: hero_image -%}
 {%- assign hero_overlay = hero.overlay_color | default: '#02010133' -%}
 
+{%- comment -%} Opções do Tipo e sugestões da Localização, em JSON para o Alpine {%- endcomment -%}
+{%- capture _type_options -%}[{%- for type in workspace.property_types -%}{"value":{{ type.slug | json }},"label":{{ type.label | default: type.name | json }}}{% unless forloop.last %},{% endunless %}{%- endfor -%}]{%- endcapture -%}
+{%- capture _loc_suggestions -%}[{%- for s in hero.location_suggestions.items -%}{"value":{{ s.value | json }},"label":{{ s.label | json }}}{% unless forloop.last %},{% endunless %}{%- endfor -%}]{%- endcapture -%}
+
 <style>
+  .pb-hero__inner {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 900px;
+    padding: 160px 0 8%;
+  }
+  @media (max-width: 1024px) { .pb-hero__inner { padding-left: 10px; padding-right: 10px; } }
+  @media (max-width: 767px)  { .pb-hero__inner { min-height: 765px; } }
+
   .pb-hero__title {
+    max-width: 820px;
+    margin: 0 auto 30px;
     font-family: var(--font-heading);
     font-size: 58px;
     font-weight: 400;
     line-height: 1;
     letter-spacing: -1.3px;
+    text-align: center;
     color: #fff;
     text-shadow: 0 0 22px rgba(0, 0, 0, .65);
-    max-width: 820px;
   }
   .pb-hero__title i, .pb-hero__title em { font-style: italic; }
-  @media (max-width: 1024px) { .pb-hero__title { font-size: 44px; } }
-  @media (max-width: 767px)  { .pb-hero__title { font-size: 32px; letter-spacing: -.5px; } }
+  @media (max-width: 1024px) { .pb-hero__title { max-width: 690px; font-size: 60px; } }
+  @media (max-width: 767px)  { .pb-hero__title { max-width: 550px; margin-bottom: 25px; font-size: 35px; } }
+
+  /* Painel: preto a 60%, 4px de canto */
+  .pb-hero__panel {
+    position: relative;
+    width: 100%;
+    max-width: 950px;
+    margin: 0 auto;
+    padding: 20px 20px 28px;
+    background-color: rgba(0, 0, 0, .6);
+    border: 1px solid rgba(0, 0, 0, .3);
+    border-radius: 4px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, .1);
+  }
+  @media (max-width: 767px) { .pb-hero__panel { margin-bottom: 10px; padding: 20px 20px 6px; } }
+  @media (min-width: 481px) and (max-width: 767px) { .pb-hero__panel { padding-bottom: 11px; } }
+
+  .pb-hero__form {
+    display: grid;
+    grid-template-columns: 190px 190px minmax(0, 1fr) 150px;
+    gap: 15px;
+    align-items: end;
+  }
+  @media (max-width: 767px) {
+    .pb-hero__form { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .pb-hero__form > .pb-hero__wide { grid-column: 1 / -1; }
+  }
 
   .pb-hero__label {
     display: block;
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 600;
-    color: #fff;
-    margin-bottom: 6px;
-  }
-  /* Campos sem caixa: só a linha de baixo, como no original */
-  .pb-hero__field {
-    width: 100%;
-    min-height: 42px;
-    background: transparent;
-    border: 0;
-    border-bottom: 1px solid rgba(255, 255, 255, .7);
-    border-radius: 0;
-    color: #fff;
-    font-size: 15px;
-    padding: 8px 2px;
-    outline: none;
-    transition: border-color .2s;
-  }
-  .pb-hero__field::placeholder { color: rgba(255, 255, 255, .85); opacity: 1; }
-  .pb-hero__field:focus { border-bottom-color: #fff; }
-  /* O campo é branco sobre o vídeo, mas a lista aberta é fundo claro:
-     a opção precisa da cor escura explícita (ver também a regra global
-     de `select` em main.css). */
-  .pb-hero__field { color-scheme: light; }
-  .pb-hero__field option { color: #181A20; background-color: #fff; }
-
-  .pb-hero__submit {
-    width: 100%;
-    min-height: 50px;
-    max-height: 60px;
-    height: 50px;
-    background: {{ theme_settings.header.button_bg_color | default: '#E7E0D2' }};
-    color: #181A20;
+    margin-bottom: 5px;
     font-family: var(--font-body);
     font-size: 14px;
     font-weight: 500;
-    letter-spacing: .2px;
-    text-transform: uppercase;
+    line-height: 22px;
+    color: #fff;
+  }
+  /* Campos sem caixa: só a linha de baixo, branca a 20% */
+  .pb-hero__field,
+  .pb-hero input.pb-hero__field {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+    padding: 5px;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 0;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    outline: none;
+    cursor: pointer;
+  }
+  .pb-hero__field::placeholder { color: rgba(255, 255, 255, .6); opacity: 1; }
+  .pb-hero__field:focus { border-bottom-color: rgba(255, 255, 255, .6); }
+  @media (max-width: 767px) { .pb-hero__field, .pb-hero input.pb-hero__field { padding: 0 10px; font-size: 14px; } }
+  /* Operação: select nativo com a seta branca */
+  select.pb-hero__field {
+    appearance: none;
+    padding-right: 26px;
+    background: url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27white%27 stroke-width=%272.5%27%3E%3Cpath d=%27M6 9l6 6 6-6%27/%3E%3C/svg%3E") right 6px center / 12px no-repeat;
+    color-scheme: light;
+  }
+  select.pb-hero__field option { color: #181A20; background-color: #fff; }
+  .pb-hero__placeholder { color: rgba(255, 255, 255, .6); }
+  .pb-hero__counter {
+    flex: none;
+    margin-left: 6px;
+    padding: 1px 8px;
+    background: #F7F7F7;
+    font-size: 13px;
+    font-weight: 700;
+    color: #E0B570;
+  }
+
+  /* Lista aberta: painel branco, borda #E6E6E6, 15px de respiro.
+     Desktop: abre para cima, encostada no campo. Celular: abre para baixo,
+     na largura do painel. */
+  .pb-hero__dd { position: relative; }
+  .pb-hero__results {
+    position: absolute;
+    left: 0;
+    bottom: calc(100% + 6px);
+    z-index: 60;
+    width: 270px;
+    max-height: 440px;
+    overflow-y: auto;
+    padding: 15px;
+    background: #fff;
+    border: 1px solid #E6E6E6;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: #333;
+  }
+  .pb-hero__dd--location .pb-hero__results { width: 400px; }
+  @media (max-width: 767px) {
+    .pb-hero__dd { position: static; }
+    .pb-hero__results,
+    .pb-hero__dd--location .pb-hero__results {
+      top: auto;
+      bottom: auto;
+      left: 20px;
+      right: 20px;
+      width: auto;
+      max-height: 220px;
+      margin-top: 0;
+    }
+  }
+  .pb-hero__results-title { margin-bottom: 8px; font-size: 14px; font-weight: 600; color: #000; }
+  .pb-hero__opt {
+    position: relative;
+    display: block;
+    padding: 6px 6px 6px 35px;
+    font-size: 14px;
+    line-height: 19.6px;
+    color: #000;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color .15s;
+  }
+  .pb-hero__opt:hover { background: #F7F7F7; }
+  .pb-hero__opt input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .pb-hero__opt .pb-check__box { left: 6px; }
+  .pb-hero__opt input:checked ~ .pb-check__box,
+  .pb-hero__opt .pb-check__box.is-checked { border-color: rgb(var(--color-secondary, 228 188 120)); }
+  .pb-hero__opt input:checked ~ .pb-check__box::after,
+  .pb-hero__opt .pb-check__box.is-checked::after { display: block; }
+  .pb-hero__empty { padding: 6px; color: #717171; }
+  .pb-hero__clear { font-size: 13px; color: #877C67; text-decoration: underline; }
+
+  .pb-hero__submit {
+    width: 100%;
+    height: 50px;
+    margin-top: 5px;
+    padding: 1px 6px;
+    background: #fff;
     border: 0;
     border-radius: 4px;
+    box-shadow: 1px 1px 10px 1px rgba(0, 0, 0, .03);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+    text-transform: uppercase;
+    color: #000;
     transition: background-color .2s;
   }
-  .pb-hero__submit:hover { background: {{ theme_settings.header.button_hover_bg_color | default: '#F0EBE2' }}; }
+  .pb-hero__submit:hover { background: #F0EBE2; }
+  @media (max-width: 767px) { .pb-hero__submit { height: 40px; } }
 
-  .pb-hero__sku-label { color: #fff; font-size: 14px; font-weight: 400; }
-
-  /* Painel atrás da busca: preto translúcido, deixa o vídeo aparecer por baixo */
-  .pb-hero__panel {
-    background-color: rgb(2 1 1 / .42);
-    -webkit-backdrop-filter: blur(3px);
-    backdrop-filter: blur(3px);
-    border: 1px solid rgb(255 255 255 / .12);
-    border-radius: 8px;
-    padding: 22px 24px 20px;
+  /* "Buscar pelo código": fora do painel no desktop, dentro no celular */
+  .pb-hero__sku {
+    position: absolute;
+    left: 21px;
+    top: calc(100% + 7px);
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 22px;
+    color: rgba(255, 255, 255, .7);
+    cursor: pointer;
   }
+  .pb-hero__sku input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .pb-hero__sku-box {
+    position: relative;
+    flex: none;
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(255, 255, 255, .4);
+    border-radius: 4px;
+  }
+  .pb-hero__sku input:checked + .pb-hero__sku-box { background: #fff; border-color: #fff; }
+  .pb-hero__sku input:checked + .pb-hero__sku-box::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 11px;
+    border: solid #181A20;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .pb-hero__sku:hover { color: #fff; }
   @media (max-width: 767px) {
-    .pb-hero__panel { padding: 18px 16px 16px; }
+    .pb-hero__sku { position: static; width: fit-content; margin-top: 20px; gap: 7px; }
+    .pb-hero__sku-box { width: 16px; height: 16px; }
+    .pb-hero__sku input:checked + .pb-hero__sku-box::after { left: 4px; top: 1px; width: 5px; height: 9px; }
   }
-
-  @media (min-width: 1025px) {
-    .pb-hero__form { display: grid; grid-template-columns: .8fr .8fr 1.4fr 150px; gap: 15px; align-items: end; }
+  @media (min-width: 481px) and (max-width: 767px) {
+    .pb-hero__sku { margin-top: 35px; }
   }
 </style>
 
@@ -111,64 +268,120 @@
     <div class="absolute inset-0" style="background-color: {{ hero_overlay }};"></div>
   </div>
 
-  <div class="relative z-10 flex min-h-[640px] h-[100svh] flex-col justify-end px-[5%] pb-[8%] pt-[160px]">
+  <div class="pb-hero__inner">
     {%- if hero.title != blank or hero.title_italic != blank %}
-    <h1 class="pb-hero__title mx-auto text-center pb-[50px]">
+    <h1 class="pb-hero__title">
       {{- hero.title }}{% if hero.title_italic != blank %} <i>{{ hero.title_italic }}</i>{% endif %}{% if hero.title_after != blank %} {{ hero.title_after }}{% endif -%}
     </h1>
     {%- endif %}
 
-    {%- comment -%} Barra de busca: mesma ação e nomes de campo da listagem {%- endcomment -%}
-    <form
-      method="GET"
-      action="{{ locale_prefix }}{{ routes.properties }}"
-      class="pb-hero__panel w-full max-w-[950px] mx-auto"
-      x-data="{ byCode: false }"
-    >
-      <div class="pb-hero__form flex flex-col gap-4">
-        <div x-show="!byCode">
+    <div class="pb-hero__panel" x-data="{ byCode: false }">
+      {%- comment -%} Busca por código: formulário próprio, como no original {%- endcomment -%}
+      <form method="GET" action="{{ locale_prefix }}{{ routes.properties }}" class="pb-hero__form" x-show="byCode" x-cloak>
+        <div class="pb-hero__wide" style="grid-column: 1 / 4;">
+          <label class="pb-hero__label" for="pb-hero-code">Código do imóvel</label>
+          <input id="pb-hero-code" type="text" name="code" placeholder="Ex: 418382, 928492" class="pb-hero__field" style="cursor: text;">
+          <span class="mt-[5px] block text-[12px] leading-[1.3] text-white/70">Para buscar múltiplos imóveis, digite os códigos separados por vírgula.</span>
+        </div>
+        <div class="pb-hero__wide self-start" style="padding-top: 22px;">
+          <button type="submit" class="pb-hero__submit">Buscar</button>
+        </div>
+      </form>
+
+      {%- comment -%} Busca padrão: mesmos nomes de campo da listagem {%- endcomment -%}
+      <form method="GET" action="{{ locale_prefix }}{{ routes.properties }}" class="pb-hero__form" x-show="!byCode">
+        <div>
           <label class="pb-hero__label" for="pb-hero-operation">Operação</label>
-          <select id="pb-hero-operation" name="operation" class="pb-hero__field cursor-pointer">
+          <select id="pb-hero-operation" name="operation" class="pb-hero__field">
             <option value="sale">Comprar</option>
             <option value="rent">Alugar</option>
           </select>
         </div>
 
-        <div x-show="!byCode">
-          <label class="pb-hero__label" for="pb-hero-type">Tipo do imóvel</label>
-          <select id="pb-hero-type" name="type" class="pb-hero__field cursor-pointer">
-            <option value="">Mostrar todos</option>
-            {%- for type in property_types %}
-            <option value="{{ type.slug }}">{{ type.name }}</option>
-            {%- endfor %}
-          </select>
+        <div
+          class="pb-hero__dd"
+          x-data='pbSelectable({ name: "type[]", options: {{ _type_options | strip | escape }} })'
+          @click.outside="close()"
+          @keydown.escape="close()"
+        >
+          <span class="pb-hero__label">Tipo do imóvel</span>
+          <button type="button" class="pb-hero__field text-left" @click="open ? close() : openPanel()" :aria-expanded="open">
+            <span class="truncate flex-1" :class="selected.length ? '' : 'pb-hero__placeholder'" x-text="selected.length ? display : 'Mostrar todos'">Mostrar todos</span>
+            <span class="pb-hero__counter" x-show="selected.length > 1" x-text="selected.length" x-cloak></span>
+          </button>
+          <template x-for="item in selected" :key="'t' + item.value"><input type="hidden" :name="name" :value="item.value"></template>
+          <div class="pb-hero__results" x-show="open" x-cloak x-transition.opacity.duration.150ms>
+            <template x-for="item in list" :key="item.value">
+              <label class="pb-hero__opt">
+                <input type="checkbox" :checked="isSelected(item.value)" @change="toggle(item)">
+                <span class="pb-check__box" aria-hidden="true" :class="isSelected(item.value) && 'is-checked'"></span>
+                <span x-text="item.label"></span>
+              </label>
+            </template>
+          </div>
         </div>
 
-        <div x-show="!byCode">
+        <div
+          class="pb-hero__dd pb-hero__dd--location pb-hero__wide"
+          x-data='pbSelectable({ name: "location[]", searchApi: "/api/locations/search", suggestions: {{ _loc_suggestions | strip | escape }} })'
+          @click.outside="close()"
+          @keydown.escape="close()"
+        >
           <label class="pb-hero__label" for="pb-hero-location">Localização ou empreendimento</label>
-          <input id="pb-hero-location" type="text" name="location" placeholder="Faça a sua busca..." class="pb-hero__field">
+          <div class="relative">
+            <input
+              id="pb-hero-location"
+              type="text"
+              x-ref="input"
+              x-model="query"
+              @focus="open = true"
+              @input="onInput()"
+              :placeholder="selected.length ? display : 'Faça a sua busca...'"
+              autocomplete="off"
+              class="pb-hero__field"
+              style="cursor: text;"
+            >
+            <span class="pb-hero__counter absolute right-[6px] top-1/2 -translate-y-1/2" x-show="selected.length > 0" x-text="selected.length" x-cloak></span>
+          </div>
+          <template x-for="item in selected" :key="'l' + item.value"><input type="hidden" :name="name" :value="item.value"></template>
+          <div class="pb-hero__results" x-show="open" x-cloak x-transition.opacity.duration.150ms>
+            <template x-if="selected.length > 0">
+              <div class="mb-2 flex items-center justify-between">
+                <span class="pb-hero__results-title !mb-0">Selecionados</span>
+                <a href="javascript:void(0)" class="pb-hero__clear" @click="clear()">Limpar</a>
+              </div>
+            </template>
+            <template x-for="item in selected" :key="'s' + item.value">
+              <label class="pb-hero__opt">
+                <input type="checkbox" checked @change="toggle(item)">
+                <span class="pb-check__box is-checked" aria-hidden="true"></span>
+                <span x-text="item.label"></span>
+              </label>
+            </template>
+            <p class="pb-hero__results-title" :class="selected.length && 'mt-3'" x-show="showSuggestionsTitle">Sugestões</p>
+            <div x-show="loading" class="pb-hero__empty">Buscando…</div>
+            <template x-for="item in list.filter(i => !isSelected(i.value))" :key="item.value">
+              <label class="pb-hero__opt">
+                <input type="checkbox" @change="toggle(item)">
+                <span class="pb-check__box" aria-hidden="true"></span>
+                <span x-text="item.label"></span>
+              </label>
+            </template>
+            <div x-show="!loading && searched && query.trim().length >= 2 && results.length === 0" class="pb-hero__empty">Nenhum resultado encontrado</div>
+          </div>
         </div>
 
-        <div class="lg:col-span-3" x-show="byCode" x-cloak>
-          <label class="pb-hero__label" for="pb-hero-sku">Código do imóvel</label>
-          <input id="pb-hero-sku" type="text" name="sku" placeholder="Ex: 418382, 928492" class="pb-hero__field">
-          <span class="block mt-1.5 text-[12px] leading-[1.3] text-white/70">Para buscar múltiplos imóveis, digite os códigos separados por vírgula.</span>
-        </div>
-
-        <div>
+        <div class="pb-hero__wide">
           <button type="submit" class="pb-hero__submit">Buscar</button>
         </div>
-      </div>
+      </form>
 
-      {%- comment -%} Caixa "Buscar pelo código": quadrado branco que vira escuro ao marcar {%- endcomment -%}
-      <label class="group mt-3 flex items-center gap-2 cursor-pointer w-fit">
-        <span class="relative inline-flex">
-          <input type="checkbox" x-model="byCode" class="peer h-5 w-5 appearance-none rounded-[3px] border border-white/80 bg-white cursor-pointer checked:bg-[#181A20] checked:border-white">
-          <svg class="pointer-events-none absolute inset-0 m-auto hidden h-3 w-3 text-white peer-checked:block" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5"/></svg>
-        </span>
-        <span class="pb-hero__sku-label transition-opacity group-hover:opacity-80">Buscar pelo código do imóvel</span>
+      <label class="pb-hero__sku">
+        <input type="checkbox" x-model="byCode">
+        <span class="pb-hero__sku-box" aria-hidden="true"></span>
+        <span>Buscar pelo código do imóvel</span>
       </label>
-    </form>
+    </div>
   </div>
 </section>
 
@@ -181,6 +394,16 @@
     { "type": "text", "id": "title_italic", "label": "Título — trecho em itálico", "default": "imóvel ideal" },
     { "type": "text", "id": "title_after", "label": "Título — depois do destaque", "default": "em Campo Grande e região." },
     { "type": "color", "id": "overlay_color", "label": "Véu sobre o vídeo/foto", "default": "#02010133" },
+    {
+      "type": "repeater",
+      "id": "location_suggestions",
+      "label": "Sugestões de localização (busca do banner)",
+      "max_items": 20,
+      "settings": [
+        { "type": "text", "id": "label", "label": "Texto", "default": "Centro, Campo Grande - MS" },
+        { "type": "text", "id": "value", "label": "Valor do filtro (slug)", "default": "centro-campo-grande" }
+      ]
+    },
     {
       "type": "repeater",
       "id": "slides",

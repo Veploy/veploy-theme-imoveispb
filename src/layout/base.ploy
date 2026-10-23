@@ -370,13 +370,14 @@
     {%- endif -%}
     <div class="page-loading-bar" id="pageLoadingBar" style="background: {% if is_dark_header %}#fff{% else %}rgb(var(--color-primary)){% endif %};"></div>
     {%- comment -%}
-      Páginas com hero próprio (home, sobre nós, contato, anuncie): o header
-      fica absoluto sobre a imagem, em degradê — igual ao site original.
-      Demais páginas (listagem, imóvel, favoritos): barra sólida no fluxo.
+      Páginas com hero próprio (home, sobre nós, anuncie): o header fica
+      absoluto sobre a imagem, em degradê — igual ao site original. As demais
+      (contato, listagem, imóvel, favoritos, política, 404) usam a barra branca
+      no fluxo, que é o outro header do original.
     {%- endcomment -%}
     {%- assign _header_overlay = false -%}
     {%- if current_path == '' or current_path == '/' -%}{%- assign _header_overlay = true -%}{%- endif -%}
-    {%- if route_key == 'home' or route_key == 'page:about-us' or route_key == 'page:contact' or route_key == 'page:advertise' -%}
+    {%- if route_key == 'home' or route_key == 'page:about-us' or route_key == 'page:advertise' -%}
       {%- assign _header_overlay = true -%}
     {%- endif -%}
     {% if _header_overlay %}
@@ -391,6 +392,22 @@
     </main>
 
    {% comment %}  {% include 'components/global/pre-footer' %} {% endcomment %}
+    {%- comment -%}
+      "Ver imóveis favoritos": aparece no canto de cima à direita por 2 segundos
+      quando um imóvel é salvo, como o aviso do plugin de favoritos do original.
+    {%- endcomment -%}
+    <a
+      href="{{ locale_prefix }}{{ routes.favorites }}"
+      class="pb-fav-toast"
+      x-data="{ show: false, t: null }"
+      @favorites-added.window="show = true; clearTimeout(t); t = setTimeout(() => show = false, 2000)"
+      :class="show && 'is-visible'"
+      :aria-hidden="!show"
+      :tabindex="show ? 0 : -1"
+    >
+      Ver imóveis favoritos
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M190.5 66.9l22.2-22.2c9.4-9.4 24.6-9.4 33.9 0L441 239c9.4 9.4 9.4 24.6 0 33.9L246.6 467.3c-9.4 9.4-24.6 9.4-33.9 0l-22.2-22.2c-9.5-9.5-9.3-25 .4-34.3L311.4 296H24c-13.3 0-24-10.7-24-24v-32c0-13.3 10.7-24 24-24h287.4L190.9 101.2c-9.8-9.3-10-24.8-.4-34.3z"/></svg>
+    </a>
     {% include 'components/global/footer' %}
 
     {%- assign _is_property_page = false -%}

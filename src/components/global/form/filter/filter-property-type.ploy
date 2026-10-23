@@ -3,9 +3,11 @@
   Props:
     - init_selected: pre-selected value(s), comma-separated
     - close_on_select: whether to close panel on select (default: true)
+    - placeholder: texto do campo vazio (default: "Todos")
 {% endcomment %}
 {% assign property_type_label = 'search.property_type' | t %}
 {% assign show_all_label = 'search.show_all' | t %}
+{% assign type_placeholder = placeholder | default: 'Todos' %}
 
 {% if workspace.property_types.size > 0 %}
   {% assign tipo_opts = workspace.property_types %}
@@ -24,7 +26,7 @@
   show_all_label: show_all_label,
   name: 'type[]',
   init_selected: init_selected,
-  placeholder: 'Todos',
+  placeholder: type_placeholder,
   label: property_type_label,
   multiple: true,
   close_on_select: close_on_select,

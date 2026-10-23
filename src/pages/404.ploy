@@ -1,15 +1,18 @@
 {% layout 'base' %}
 {% block content %}
-<section class="flex items-center justify-center py-24 px-[5%]">
-  <div class="text-center max-w-lg">
-    <p class="text-8xl font-bold text-primary/20">404</p>
-    <h1 class="mt-4 text-2xl font-semibold text-gray-800">{{ title }}</h1>
-    <p class="mt-2 text-gray-500">{{ message }}</p>
+{%- comment -%}
+  Página não encontrada — igual à do original: faixa cinza #F7F7F7 de 540px,
+  título 30/700 e o botão vermelho "Voltar para a página inicial".
+{%- endcomment -%}
+<section class="flex min-h-[540px] items-center justify-center bg-[#F7F7F7] px-[5%] py-16" style="font-family: Arial, Helvetica, sans-serif;">
+  <div class="max-w-[600px] text-center">
+    <h1 class="text-[20px] md:text-[30px] font-bold leading-[1] text-[#555]" style="font-family: inherit;">{{ title | default: 'Página não encontrada' }}</h1>
+    <p class="mt-[35px] text-[10px] md:text-[18px] leading-[22px] text-[#666]">{{ message | default: 'Desculpe, a página que você está procurando não foi encontrada.' }}</p>
     <a
-      href="{{ routes.home | default: '/' }}"
-      class="inline-block mt-8 px-6 py-3 bg-primary text-white rounded-lg hover:opacity-90 transition"
+      href="{{ locale_prefix }}{{ routes.home | default: '/' }}"
+      class="mt-[40px] inline-block rounded-[4px] bg-[#E0023A] px-5 py-[10px] text-[13px] font-bold leading-[22px] text-white transition-opacity hover:opacity-90"
     >
-      {{ back_label }}
+      {{ back_label | default: 'Voltar para a página inicial' }}
     </a>
   </div>
 </section>

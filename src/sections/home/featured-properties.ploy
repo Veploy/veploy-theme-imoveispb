@@ -6,6 +6,8 @@
   declarado no schema abaixo.
 {%- endcomment -%}
 {%- assign s = sections['home/featured-properties'] -%}
+{%- assign _cta_url = s.cta_url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.about-us}}', routes['about-us'] | replace: '{{routes.contact}}', routes.contact -%}
+{%- unless _cta_url contains '://' or _cta_url == blank -%}{%- assign _cta_url = locale_prefix | append: _cta_url -%}{%- endunless -%}
 {%- assign props = s.properties -%}
 
 {%- if props and props.size > 0 %}
@@ -25,7 +27,24 @@
      Fica aqui, e não no padding da seção, de propósito: margem não entra na
      altura da seção, e a altura é o que precisa caber na tela para a seção
      ficar inteira enquanto é segurada. */
-  .pb-featured { margin-bottom: 160px; }
+  .pb-featured { margin-bottom: 117px; }
+  /* No celular o original tem ~122px entre o último card e "Nosso time": parte
+     vira respiro da seção e parte fica como folga do efeito */
+  @media (max-width: 767px) { .pb-featured { margin-bottom: 67px; } }
+  @media (max-width: 480px) { .pb-featured { margin-bottom: 0; } }
+  /* "Campo Grande e região." sempre na linha de baixo, como no original */
+  .pb-featured .pb-section-header__title span { display: block; }
+  /* Cards da home: foto de 270px de altura (200px no celular), como no original */
+  .pb-featured .pb-card__media .swiper-slide > a,
+  .pb-featured .pb-card__media .swiper-slide > div { aspect-ratio: auto; height: 270px; }
+  @media (max-width: 767px) {
+    .pb-featured .pb-card__media .swiper-slide > a,
+    .pb-featured .pb-card__media .swiper-slide > div { height: 200px; }
+    .pb-featured .pb-card__title { font-size: 15px; line-height: 21px; }
+    /* No celular o texto não sobe sobre a foto: o código fica 9px abaixo dela */
+    .pb-featured .pb-card__body { margin-top: 0; padding-top: 9px; min-height: 166px; }
+    .pb-featured .pb-card__sku { font-size: 13px; }
+  }
 </style>
 
 <section {{ section_attrs }} data-scroll-pinned class="pb-featured pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
@@ -41,16 +60,16 @@
     cards ficam empilhados, então o último encosta na borda da seção e precisa
     de mais folga antes de "Nosso time" começar a subir.
   {%- endcomment -%}
-  <div class="pb-container pt-[50px] pb-[150px] lg:pt-[60px] lg:pb-[120px]">
+  <div class="pb-container !mb-0 pt-[60px] pb-[62px] md:pb-[150px] lg:pt-[100px] lg:pb-[120px]">
     {% include 'components/home-section-header',
        eyebrow: s.eyebrow,
        heading: s.title,
        heading_highlight: s.title_highlight,
        cta_text: s.cta_text,
-       cta_url: s.cta_url,
+       cta_url: _cta_url,
        align: 'center' %}
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[30px] mt-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-[30px] mt-[29px]">
       {%- for property in props limit: 6 -%}
         {% include 'components/elegance-property-card' %}
       {%- endfor -%}
