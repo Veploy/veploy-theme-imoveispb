@@ -56,10 +56,6 @@
       {
         "url": "{{routes.properties}}{{routes.operation_rent}}",
         "label": "Locação"
-      },
-      {
-        "url": "{{routes.contact}}",
-        "label": "Contato"
       }
     ]
   },
