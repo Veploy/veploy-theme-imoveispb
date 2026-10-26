@@ -63,11 +63,40 @@
   .pb-contact__social:hover { color: #181A20; }
   .pb-contact__social svg { width: 18px; height: 18px; fill: currentColor; }
   .pb-contact__banner {
+    position: relative;
     min-height: 305px;
     border-radius: 4px;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
+    overflow: hidden;
+  }
+  /* Véu escuro sobre o banner, conferido no Elementor de produção
+     (post-63.css, container 2139f65): degradê 180deg de #02010100 até
+     #000000E3 aplicado a 58% de opacidade (--overlay-opacity:0.58).
+     Faltava no tema — a foto entrava sem escurecimento nenhum. */
+  .pb-contact__banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: .58;
+    background-image: linear-gradient(180deg, #02010100 0%, #000000E3 100%);
+    pointer-events: none;
+  }
+
+  /* Em produção o mapa está num container de topo, na largura inteira da
+     página, com 1% de padding. Aqui ele nasce dentro do .pb-section, que já
+     aplica 5% de cada lado — somar o 1% deixava o mapa com 6% e estreito.
+     O `calc(50% - 50vw)` cancela o padding do pai e devolve a largura total
+     da viewport; o padding daqui fica sendo o único respiro.
+     O body tem overflow-x:hidden, então o 50vw não gera rolagem horizontal
+     quando existe barra de rolagem vertical.
+     O 1% de produção vale para cima e para baixo; nas laterais são 1.5%,
+     folga maior pedida no ajuste — é só esse segundo número que mexe na
+     margem esquerda/direita. */
+  .pb-contact__map {
+    margin-inline: calc(50% - 50vw);
+    padding: 1% 1.50%;
   }
 </style>
 
@@ -184,12 +213,19 @@
     </div>
   </div>
 
-  {%- comment -%} Mapa do endereço, igual ao rodapé da página original {%- endcomment -%}
+  {%- comment -%}
+    Mapa do endereço, no pé da página. Medidas do Elementor de produção
+    (post-63.css): o container 138fd7f tem 1% de padding nos quatro lados —
+    é ele que dá o respiro até o rodapé e afasta o mapa das bordas — e o
+    widget ce309b3 tem 4px de canto. A largura total vem do .pb-contact__map,
+    lá em cima. A altura fica em 400px, e não nos 350px de produção, porque
+    aqui o mapa ocupa a viewport inteira e 350px o deixava achatado.
+  {%- endcomment -%}
   {%- if theme_settings.contact.address != blank %}
-  <div class="w-full">
+  <div class="pb-contact__map">
     <iframe
       src="https://www.google.com/maps?q={{ theme_settings.contact.address | url_encode }}&output=embed"
-      class="w-full h-[400px] border-0"
+      class="w-full h-[400px] rounded-[4px] border-0"
       loading="lazy"
       referrerpolicy="no-referrer-when-downgrade"
       title="Localização de {{ workspace.name }}"
