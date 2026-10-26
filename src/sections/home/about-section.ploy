@@ -1,6 +1,6 @@
 {%- comment -%}
   "Sobre nós" da home: título à esquerda, texto numa coluna de 500px à direita
-  e, logo abaixo, uma foto de 85vh na largura do container — como no original.
+  e, logo abaixo, uma foto de altura de tela cheia na largura do container.
 
   Medidas do original: 100px no topo (60px no celular); sobretítulo e texto
   alinhados pelo topo; foto 70px abaixo do texto (40px no celular, com 400px de
@@ -8,9 +8,12 @@
 {%- endcomment -%}
 {%- assign s = sections['home/about-section'] -%}
 <style>
+  /* A faixa ocupa a tela inteira (era 85vh). O efeito de entrada é o mesmo:
+     o parallax do `background-attachment: fixed` logo abaixo. */
   .pb-about__image {
     position: relative;
-    height: 85vh;
+    height: 100vh;
+    height: 100svh;
     border-radius: 4px;
     background-position: center center;
     background-repeat: no-repeat;
@@ -26,7 +29,7 @@
   .pb-about__text { font-family: var(--font-body); font-size: 15px; line-height: 22px; color: #717171; }
   .pb-about__text p + p { margin-top: 1em; }
   @media (min-width: 1367px) { .pb-about__image { background-attachment: fixed; } }
-  @media (max-width: 1024px)  { .pb-about__image { height: 55vh; } }
+  @media (max-width: 1024px)  { .pb-about__image { height: 100vh; height: 100svh; } }
   @media (max-width: 767px)   { .pb-about__image { height: 400px; } }
 </style>
 

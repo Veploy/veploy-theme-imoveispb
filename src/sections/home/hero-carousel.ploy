@@ -6,8 +6,9 @@
   embaixo, a busca num painel preto translúcido.
 
   Medidas do Elementor em produção:
-  - altura mínima de 900px (765px abaixo de 768px), conteúdo no pé, 8% de
-    respiro embaixo e 10px nas laterais até 1024px;
+  - altura mínima de uma tela cheia (100vh em produção; em telas até 880px o
+    Elementor troca por 700px), conteúdo no pé, 8% de respiro embaixo e 10px
+    nas laterais até 1024px;
   - título 58px (60px no tablet, 35px no celular), 30px acima do painel;
   - painel de 950px: Operação 190 · Tipo 190 · Localização 333 · Buscar 150,
     com 15px entre eles; no celular, Operação e Tipo lado a lado e o resto em
@@ -26,17 +27,24 @@
 {%- capture _loc_suggestions -%}[{%- for s in hero.location_suggestions.items -%}{"value":{{ s.value | json }},"label":{{ s.label | json }}}{% unless forloop.last %},{% endunless %}{%- endfor -%}]{%- endcapture -%}
 
 <style>
+  /* Conferido no Elementor de produção (post-57.css, container 31cefef):
+     --min-height:100vh · --justify-content:flex-end · --padding-bottom:08%.
+     Os 900px que estavam aqui não existem em produção e eram o que estourava
+     a dobra. O conteúdo fica no PÉ, não centralizado: são os 8% de baixo que
+     dão o respiro do painel de busca.
+     `svh` é a altura visível real no celular — com `vh` o navegador desconta
+     a barra de endereço como se ela não existisse e a seção vaza. */
   .pb-hero__inner {
     position: relative;
     z-index: 10;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    min-height: 900px;
-    padding: 160px 0 8%;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 0 0 8%;
   }
   @media (max-width: 1024px) { .pb-hero__inner { padding-left: 10px; padding-right: 10px; } }
-  @media (max-width: 767px)  { .pb-hero__inner { min-height: 765px; } }
 
   .pb-hero__title {
     max-width: 820px;
