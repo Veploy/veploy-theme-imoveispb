@@ -53,12 +53,16 @@
 <section {{ section_attrs }} id="nossa-historia" class="pb-story pb-section{% if section_class %} {{ section_class }}{% endif %}">
   <div class="pb-container !mb-0 pt-[60px] lg:pt-[80px] pb-[80px]">
     {%- if s.quote != blank or s.quote_highlight != blank %}
-    <h2 class="pb-story__quote">
+    {%- comment -%}
+      Entrada, de produção (post-59.css): citação 015f5c7 fadeInLeft; bloco
+      foto + texto 15c02c1 fadeInUp; cartões de serviço fadeInLeft 150ms.
+    {%- endcomment -%}
+    <h2 class="pb-story__quote" data-reveal="left">
       {{- s.quote }}{% if s.quote_highlight != blank %} <span>{{ s.quote_highlight }}</span>{% endif %}{% if s.quote_after != blank %} {{ s.quote_after }}{% endif -%}
     </h2>
     {%- endif %}
 
-    <div class="grid grid-cols-1 lg:grid-cols-[627px_minmax(0,1fr)] gap-10 lg:gap-[80px] lg:items-center mt-[60px]">
+    <div class="grid grid-cols-1 lg:grid-cols-[627px_minmax(0,1fr)] gap-10 lg:gap-[80px] lg:items-center mt-[60px]" data-reveal="up">
       {%- if s.image != blank %}
       <div class="overflow-hidden rounded-[4px] order-2 lg:order-none">
         <img src="{{ s.image }}" alt="{{ workspace.name }}" class="w-full h-auto object-cover" loading="lazy" width="1214" height="1000">
@@ -84,7 +88,7 @@
     {%- if services != empty and services.size > 0 %}
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mt-[80px]">
       {%- for item in services -%}
-      <div class="pb-story__service">
+      <div class="pb-story__service" data-reveal="left" data-reveal-delay="150">
         <h3>{{ item.title }}</h3>
         <p class="pb-text">{{ item.description }}</p>
       </div>

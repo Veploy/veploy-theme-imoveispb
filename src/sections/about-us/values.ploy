@@ -22,6 +22,11 @@
 
 <section {{ section_attrs }} class="pb-values pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
   <div class="pb-container !mb-0 pt-[60px] pb-[90px]">
+    {%- comment -%}
+      Entrada, de produção (post-59.css): cabeçalho 2539ee2 fadeInUp; itens
+      fadeInRight com 0 / 200 / 300 / 300ms.
+    {%- endcomment -%}
+    <div data-reveal="up">
     {% include 'components/home-section-header',
        eyebrow: s.eyebrow,
        heading: s.title,
@@ -34,11 +39,15 @@
     <div class="flex items-center mt-[30px]">
       <span class="pb-divider !my-0"></span>
     </div>
+    </div>
 
     {%- if items != empty and items.size > 0 %}
     <div class="grid grid-cols-1 min-[1025px]:grid-cols-4 gap-x-5 gap-y-[60px] mt-[60px] lg:mt-[93px]">
       {%- for item in items -%}
-      <div class="pb-values__item">
+      {%- if forloop.index0 == 0 -%}{%- assign _delay = 0 -%}
+      {%- elsif forloop.index0 == 1 -%}{%- assign _delay = 200 -%}
+      {%- else -%}{%- assign _delay = 300 -%}{%- endif -%}
+      <div class="pb-values__item" data-reveal="right" data-reveal-delay="{{ _delay }}">
         <h3>{{ item.title }}</h3>
         <p class="pb-text">{{ item.description }}</p>
       </div>

@@ -41,6 +41,13 @@
 
 <section {{ section_attrs }} class="pb-aboutteam pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
   <div class="pb-container !mb-0 pt-[60px] md:pt-[80px] pb-[80px]">
+    {%- comment -%}
+      Entrada, de produção (post-59.css): título 7093e5c fadeInLeft; foto do
+      sócio fadeInLeft; nome, texto e redes fadeIn com 600ms. Em produção só
+      a foto do primeiro sócio anima — aqui cada foto vem do lado em que fica
+      (ímpares da esquerda, pares da direita).
+    {%- endcomment -%}
+    <div data-reveal="left">
     {% include 'components/home-section-header',
        eyebrow: s.eyebrow,
        heading: s.title,
@@ -49,6 +56,7 @@
        heading_highlight2: s.title_highlight2,
        heading_after: s.title_after,
        soft: true %}
+    </div>
 
     {%- if s.description != blank %}
     <div class="pb-text max-w-[850px] mt-5">{{ s.description }}</div>
@@ -61,12 +69,12 @@
       <div class="pb-member{% if _odd == 0 %} pb-member--reverse{% endif %} grid grid-cols-1 gap-[60px] items-start">
         {%- comment -%} Ímpares: foto à esquerda. Pares: foto à direita. {%- endcomment -%}
         {%- if m.image != blank %}
-        <div class="overflow-hidden rounded-[4px] order-2{% if _odd == 1 %} lg:order-none{% endif %}">
+        <div class="overflow-hidden rounded-[4px] order-2{% if _odd == 1 %} lg:order-none{% endif %}" data-reveal="{% if _odd == 1 %}left{% else %}right{% endif %}">
           <img src="{{ m.image }}" alt="{{ m.name }}" class="w-full aspect-[600/630] object-cover" loading="lazy" width="1200" height="1260">
         </div>
         {%- endif %}
 
-        <div class="pb-member__text{% if _odd == 0 %} lg:order-1{% endif %}">
+        <div class="pb-member__text{% if _odd == 0 %} lg:order-1{% endif %}" data-reveal="fade" data-reveal-delay="600">
           <h3 class="pb-member__name">{{ m.name }}</h3>
           {%- if m.bio != blank %}
           <div class="pb-member__bio pb-text mt-[30px] lg:mt-[69px]">{{ m.bio }}</div>

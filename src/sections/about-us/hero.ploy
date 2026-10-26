@@ -1,14 +1,97 @@
 {%- comment -%}
-  Abertura do "Sobre nós": bloco escuro de 90vh com o título centralizado em
-  Reckless Neue 55/300, o link "Conheça nossa história ↓" no canto inferior
-  direito e, logo abaixo, a faixa de 460px com as duas fotos dos sócios.
-  No celular (até 767px) o original mostra só o bloco escuro de 765px, com o
-  título centralizado e o link logo abaixo dele — sem as fotos.
+  Abertura do "Sobre nós": primeiro uma tela branca com o título e a
+  assinatura em texto escuro; em seguida o bloco escuro de tela cheia sobe por
+  cima dela, com o título centralizado em Reckless Neue 55/300, o link
+  "Conheça nossa história ↓" no canto inferior direito e, logo abaixo, a faixa
+  de 460px com as duas fotos dos sócios.
+  No celular (até 767px) o original mostra só o bloco escuro, com o título
+  centralizado e o link logo abaixo dele — sem as fotos.
 {%- endcomment -%}
 {%- assign s = sections['about-us/hero'] -%}
 
 <style>
-  .pb-abouthero { background-color: #181A20; }
+  .pb-abouthero { position: relative; z-index: 1; background-color: #181A20; }
+
+  /* Tela branca de abertura, de produção (post-59.css, container 919845f):
+     absoluta no topo da página, 100vh, degradê radial #FFFFFF → #F8F8F8, com
+     o título em Reckless 55/300 e a assinatura 25/500, ambos em #181A20
+     (20px/1.3 no celular). Ela fica ATRÁS do bloco escuro: é o fadeInUp dele
+     que a cobre, então o texto daqui "some" e dá lugar ao título branco.
+     É decorativa — o título real é o h1 do bloco escuro —, por isso vai com
+     aria-hidden e sem cliques. */
+  .pb-aboutintro {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    min-height: 100vh;
+    min-height: 100svh;
+    padding: 0 5%;
+    background-image: radial-gradient(at center center, #FFFFFF 0%, #F8F8F8 100%);
+    text-align: center;
+    pointer-events: none;
+  }
+  .pb-aboutintro__title {
+    max-width: 830px;
+    font-family: var(--font-heading);
+    font-size: 55px;
+    font-weight: 300;
+    line-height: 1.2em;
+    color: #181A20;
+  }
+  .pb-aboutintro__title span { font-weight: 400; }
+  .pb-aboutintro__signature {
+    max-width: 830px;
+    font-family: var(--font-heading);
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 1.2em;
+    color: #181A20;
+  }
+  @media (max-width: 1024px) { .pb-aboutintro__title { font-size: 42px; } }
+  @media (max-width: 767px) {
+    .pb-aboutintro__title,
+    .pb-aboutintro__signature { font-size: 20px; line-height: 1.3; }
+  }
+
+  /* Efeito de entrada, portado do Elementor de produção (post-59.css):
+     o container 649fed5 tem animation:fadeInUp com 600ms de atraso e a classe
+     `animated-slow`, que no Elementor vale 2s de duração; o título e60d0d0
+     tem fadeIn com 1600ms. Aqui vira CSS puro porque a seção é o topo da
+     página — não precisa de IntersectionObserver, já nasce na dobra.
+     O estado inicial vem do `both` (animation-fill-mode), que já aplica o
+     quadro inicial durante o atraso — por isso não há `opacity: 0` solto:
+     se a animação não rodar, o conteúdo aparece em vez de sumir. */
+  /* A opacidade fecha em 35% do tempo (≈0,7s dos 2s) e só o deslocamento segue
+     até o fim. Sem isso o fundo escuro ainda está semitransparente quando o
+     título branco começa a aparecer em 1,6s, e ele fica branco sobre o branco
+     da página — invisível até a seção ficar opaca. */
+  @keyframes pb-fade-in-up {
+    from { opacity: 0; transform: translate3d(0, 100%, 0); }
+    35%  { opacity: 1; }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes pb-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .pb-abouthero { animation: pb-fade-in-up 2s .6s both; }
+  .pb-abouthero__title { animation: pb-fade-in 2s 1.6s both; }
+  /* Cabeçalho só entra depois, como o template 603500c de produção (fadeIn,
+     1800ms): na tela branca de abertura ele não aparece. Esta folha só existe
+     nesta página, então o resto do site não é afetado. */
+  .pb-header { animation: pb-fade-in 2s 1.8s both; }
+  /* Quem pede menos movimento no sistema recebe só o fade, sem o deslocamento */
+  @media (prefers-reduced-motion: reduce) {
+    .pb-abouthero { animation-name: pb-fade-in; }
+    .pb-abouthero, .pb-abouthero__title, .pb-header { animation-duration: .01ms; animation-delay: 0s; }
+  }
   .pb-abouthero__title {
     font-family: var(--font-heading);
     font-size: 55px;
@@ -20,8 +103,11 @@
   @media (max-width: 1024px) { .pb-abouthero__title { font-size: 42px; } }
   @media (max-width: 767px)  { .pb-abouthero__title { font-size: 30px; line-height: 39px; } }
   .pb-abouthero__title span { font-weight: 400; }
+  /* Tela cheia (produção usa 90vh, 85vh no tablet). `svh` é a altura visível
+     real no celular: com `vh` a barra de endereço não é descontada e estoura. */
+  .pb-abouthero__inner { min-height: 100vh; min-height: 100svh; }
   @media (max-width: 767px) {
-    .pb-abouthero__inner { min-height: 765px; justify-content: center; padding: 0 10px; }
+    .pb-abouthero__inner { justify-content: center; padding: 0 10px; }
     .pb-abouthero__inner > .pb-container { flex: 0 0 auto; margin-bottom: 0; }
     .pb-abouthero__cta { justify-content: center; margin-top: 35px; }
   }
@@ -36,8 +122,18 @@
   @media (max-width: 767px) { .pb-abouthero__photos { display: none; } }
 </style>
 
+{%- comment -%} Tela branca de abertura: fica atrás do bloco escuro, que sobe e a cobre {%- endcomment -%}
+<div class="pb-aboutintro" aria-hidden="true">
+  <p class="pb-aboutintro__title">
+    {{- s.title }}{% if s.title_highlight != blank %} <span>{{ s.title_highlight }}</span>{% endif -%}
+  </p>
+  {%- if s.signature != blank %}
+  <p class="pb-aboutintro__signature">{{ s.signature }}</p>
+  {%- endif %}
+</div>
+
 <section {{ section_attrs }} class="pb-abouthero{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="pb-abouthero__inner pb-section flex min-h-[90vh] flex-col justify-between pt-[220px] pb-[60px]">
+  <div class="pb-abouthero__inner pb-section flex flex-col justify-between pt-[220px] pb-[60px]">
     <div class="pb-container flex flex-1 items-center justify-center">
       <h1 class="pb-abouthero__title text-center">
         {{- s.title }}{% if s.title_highlight != blank %} <span>{{ s.title_highlight }}</span>{% endif -%}
