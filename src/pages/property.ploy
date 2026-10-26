@@ -1,10 +1,11 @@
 {% layout 'base' %}
 {% block content %}
 {%- comment -%}
-  Detalhe do imóvel (Elegance) — igual ao site original:
-  galeria horizontal (3 fotos por vez) → ações (Fotos / Mapa / Plantas / Favoritos) →
-  informações + "Sobre o imóvel" + Plantas + Localização + Imóveis similares à esquerda,
-  card "Gostou deste imóvel?" sticky à direita → Condição Especial.
+  Detalhe do imóvel da Passos & Buytendorp — igual ao site original:
+  galeria horizontal (3 fotos por vez) → ações (Fotos / Mapa / Favoritos) →
+  código, título, endereço, preço, características e descrição → "Características
+  do imóvel" → Localização → Imóveis similares à esquerda; card "Gostou deste
+  imóvel?" sticky à direita. No mobile o card vem entre o mapa e os similares.
 {%- endcomment -%}
 {%- assign _has_images = false -%}
 {%- if property.images and property.images.size > 0 -%}{%- assign _has_images = true -%}{%- endif -%}
@@ -17,13 +18,13 @@
 
 <article class="vp-page vp-property-single bg-white">
 
-  <!-- Galeria principal -->
+  <!-- Galeria principal: 3 fotos por vez no desktop, 1 no mobile -->
   {% if _has_images %}
   <div class="vp-prop-gallery relative">
-    <div class="swiper vp-prop-gallery__swiper h-[280px] sm:h-[360px] md:h-[450px]">
+    <div class="swiper vp-prop-gallery__swiper h-[360px] min-[481px]:h-[450px]">
       <div class="swiper-wrapper">
         {% for image in property.images %}
-        <div class="swiper-slide vp-img-wrap cursor-pointer overflow-hidden bg-gray-100" onclick="openGalleryModal({{ forloop.index0 }})">
+        <div class="swiper-slide vp-img-wrap cursor-pointer overflow-hidden bg-[#F3F3F3]" onclick="openGalleryModal({{ forloop.index0 }})">
           <img
             src="{{ image.url | default: image | img_resize: 960, 0, false, 'webp' }}"
             alt="{{ _title | escape }} — foto {{ forloop.index }}"
@@ -36,23 +37,23 @@
       </div>
     </div>
     {% if property.images.size > 1 %}
-    <button type="button" class="vp-prop-gallery__prev absolute left-5 top-1/2 z-10 flex h-[50px] w-[50px] -translate-y-1/2 items-center justify-center rounded-full bg-white/60 text-[#333] transition-colors hover:bg-white" aria-label="Foto anterior"><i class="ph ph-caret-left text-[18px]"></i></button>
-    <button type="button" class="vp-prop-gallery__next absolute right-5 top-1/2 z-10 flex h-[50px] w-[50px] -translate-y-1/2 items-center justify-center rounded-full bg-white/60 text-[#333] transition-colors hover:bg-white" aria-label="Próxima foto"><i class="ph ph-caret-right text-[18px]"></i></button>
+    <button type="button" class="vp-prop-gallery__prev absolute left-5 top-1/2 z-10 flex h-[50px] w-[50px] -translate-y-1/2 items-center justify-center rounded-full bg-white text-[#333] shadow-[1px_1px_10px_1px_rgb(0_0_0/0.03)] transition-opacity hover:opacity-80 disabled:opacity-50" aria-label="Foto anterior"><i class="ph ph-caret-left text-[18px]"></i></button>
+    <button type="button" class="vp-prop-gallery__next absolute right-5 top-1/2 z-10 flex h-[50px] w-[50px] -translate-y-1/2 items-center justify-center rounded-full bg-white text-[#333] shadow-[1px_1px_10px_1px_rgb(0_0_0/0.03)] transition-opacity hover:opacity-80 disabled:opacity-50" aria-label="Próxima foto"><i class="ph ph-caret-right text-[18px]"></i></button>
     {% endif %}
   </div>
   {% else %}
-  <div class="flex h-[280px] md:h-[450px] w-full items-center justify-center bg-gray-100">
-    <i class="ph ph-image text-7xl text-gray-300"></i>
+  <div class="flex h-[360px] md:h-[450px] w-full items-center justify-center bg-[#F3F3F3]">
+    <i class="ph ph-image text-7xl text-[#C9C4BA]"></i>
   </div>
   {% endif %}
 
-  <div class="px-[5%]">
-    <div class="mx-auto grid max-w-[1300px] grid-cols-1 gap-x-10 lg:grid-cols-[minmax(0,1fr)_350px] lg:grid-rows-[auto_1fr]">
+  <div class="pb-section">
+    <div class="mx-auto grid max-w-[1300px] grid-cols-1 gap-x-10 lg:grid-cols-[minmax(0,1fr)_349px] lg:grid-rows-[auto_auto_1fr]">
 
-      <!-- Ações + informações principais -->
-      <div class="lg:col-start-1 lg:row-start-1">
-        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#E5E5E5] pt-[10px] pb-[10px]">
-          <div class="flex flex-wrap gap-[10px]">
+      <!-- Ações + informações principais + descrição -->
+      <div class="lg:col-start-1 lg:row-start-1 border-b border-[#DDDDDD] pb-[40px]">
+        <div class="flex flex-wrap items-center justify-between gap-4 border-b border-[#E7E0D2] py-[10px]">
+          <div class="hidden md:flex flex-wrap gap-[10px]">
             {% if _has_images %}
             <button type="button" onclick="openGalleryModal(0)" class="vp-prop-action"><i class="ph ph-images"></i>Fotos</button>
             {% endif %}
@@ -68,60 +69,59 @@
             x-data="{ sku: '{{ property.sku }}' }"
             data-property-sku="{{ property.sku }}"
             @click="toggleFavorite($el)"
-            class="inline-flex items-center gap-2 text-[15px] text-black transition-opacity hover:opacity-70"
+            class="inline-flex items-center gap-[6px] text-[15px] leading-[22px] text-[#666158] transition-opacity hover:opacity-70"
           >
-            <i class="text-[17px]" :class="$store.favorites.is(sku) ? 'ph-fill ph-heart' : 'ph ph-heart'"></i>
+            <i class="text-[16px]" :class="$store.favorites.is(sku) ? 'ph-fill ph-heart' : 'ph ph-heart'"></i>
             <span x-text="$store.favorites.is(sku) ? 'Adicionado aos favoritos' : 'Adicionar aos favoritos'">Adicionar aos favoritos</span>
           </button>
         </div>
 
-        <div class="border-b border-[#E5E5E5] pt-[45px] pb-[45px]">
-          <span class="block text-[12px] tracking-[.5px] text-[#717171]">{{ property.sku }}</span>
-          <h1 class="font-serif mt-2 text-[26px] md:text-[30px] font-semibold leading-[1.2] text-black">{{ _title }}</h1>
+        <div class="pt-[22px]">
+          <span class="block font-serif text-[16px] leading-[24px] text-[#666158]">{{ property.sku }}</span>
+          <h1 class="font-serif mt-[13px] text-[20px] md:text-[27px] font-normal leading-[1.2] text-[#181A20]">{{ _title }}</h1>
 
-          {% assign address_display = settings.property_detail.address_display | default: 'hide_number' %}
-          <p class="mt-3 text-[14px] leading-[1.5] text-black">
+          {% assign address_display = settings.property_detail.address_display | default: theme_settings.property_detail.address_display | default: 'hide_number' %}
+          <p class="mt-[10px] pb-[20px] text-[14px] md:text-[16px] leading-[1.2] text-[#666158]">
             {% case address_display %}
               {% when 'full' %}
-                {% if property.address %}{{ property.address }}{% if property.number %}, {{ property.number }}{% endif %} - {% endif %}{{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} - {{ property.state }}{% endif %}
+                {% if property.address %}{{ property.address }}{% if property.number %}, {{ property.number }}{% endif %}, {% endif %}{{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} – {{ property.state }}{% endif %}, Brasil
               {% when 'hide_address' %}
-                {{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} - {{ property.state }}{% endif %}
+                {{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} – {{ property.state }}{% endif %}, Brasil
               {% when 'hide_neighborhood' %}
-                {{ property.city }}{% if property.state %} - {{ property.state }}{% endif %}
+                {{ property.city }}{% if property.state %} – {{ property.state }}{% endif %}, Brasil
               {% else %}
-                {{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} - {{ property.state }}{% endif %}
+                {% if property.address %}{{ property.address }}, {% endif %}{{ property.neighborhood }}{% if property.city %}, {{ property.city }}{% endif %}{% if property.state %} – {{ property.state }}{% endif %}, Brasil
             {% endcase %}
           </p>
 
           <!-- Preço -->
-          <div class="mt-[35px] space-y-1 font-serif text-[20px] font-medium leading-[1.3] text-black">
+          <div class="space-y-1 font-serif text-[22px] font-semibold leading-[1.3] text-[#181A20]">
             {% if property.for_sale or property.for_rent != true %}
             <p>
-              Venda:
               {% if property.sale_price and property.sale_price != 'on_request' and property.sale_price != 'negotiable' and property.sale_price > 0 %}
                 {{ property.sale_price | money_format }}{% if property.sale_price_max and property.sale_price_max > property.sale_price %} a {{ property.sale_price_max | money_format }}{% endif %}
-              {% elsif property.sale_price == 'negotiable' %}a combinar{% else %}valor sob consulta{% endif %}
+              {% elsif property.sale_price == 'negotiable' %}A combinar{% else %}Consulte-nos{% endif %}
             </p>
             {% endif %}
             {% if property.for_rent %}
             <p>
-              Locação:
+              {% if property.for_sale %}<span class="text-[16px] font-normal text-[#666158]">Locação:</span> {% endif %}
               {% if property.rental_price and property.rental_price != 'on_request' and property.rental_price != 'negotiable' and property.rental_price > 0 %}
-                {{ property.rental_price | money_format }}{% if property.rental_price_max and property.rental_price_max > property.rental_price %} a {{ property.rental_price_max | money_format }}{% endif %}/mês
-              {% elsif property.rental_price == 'negotiable' %}a combinar{% else %}valor sob consulta{% endif %}
+                {{ property.rental_price | money_format }}{% if property.rental_price_max and property.rental_price_max > property.rental_price %} a {{ property.rental_price_max | money_format }}{% endif %}<span class="text-[16px] font-normal">/mês</span>
+              {% elsif property.rental_price == 'negotiable' %}A combinar{% else %}Consulte-nos{% endif %}
             </p>
             {% endif %}
           </div>
 
           {% if property.condo_fee or property.iptu_price %}
-          <p class="mt-3 flex flex-wrap gap-x-6 gap-y-1 text-[14px] text-[#717171]">
-            {% if property.condo_fee %}<span>Condomínio: {{ property.condo_fee | money_format }}</span>{% endif %}
-            {% if property.iptu_price %}<span>IPTU: {{ property.iptu_price | money_format }}</span>{% endif %}
+          <p class="mt-[6px] flex flex-wrap gap-x-6 gap-y-1 font-serif text-[15px] leading-[1.3] text-[#696969]">
+            {% if property.condo_fee %}<span><b>Condomínio:</b> {{ property.condo_fee | money_format }}</span>{% endif %}
+            {% if property.iptu_price %}<span><b>IPTU:</b> {{ property.iptu_price | money_format }}</span>{% endif %}
           </p>
           {% endif %}
 
-          <!-- Características: "2 a 3 quartos | 3 a 4 banheiros | ..." -->
-          <ul class="vp-prop-features mt-[35px] flex flex-wrap gap-y-3 font-serif text-[17px] leading-[1.2] text-black">
+          <!-- Características: "2 quartos | 2 banheiros | ..." -->
+          <ul class="vp-prop-features mt-[30px] flex flex-wrap gap-y-4 font-serif text-[16px] leading-[22px] text-[#373630]">
             {% if property.beds and property.beds > 0 %}
             <li>{{ property.beds }}{% if property.beds_max and property.beds_max > property.beds %} a {{ property.beds_max }}{% endif %} {% if property.beds == 1 and property.beds_max == blank %}quarto{% else %}quartos{% endif %}</li>
             {% endif %}
@@ -141,69 +141,32 @@
             <li>{{ property.total_area }}{% if property.total_area_max and property.total_area_max > property.total_area %} a {{ property.total_area_max }}{% endif %} m²/total</li>
             {% endif %}
           </ul>
+
+          {% if property.description != blank %}
+          <div class="vp-prop-description mt-[50px] text-[15px] leading-[25px] text-[#373630]">{{ property.description | strip }}</div>
+          {% endif %}
+
+          <!-- Compartilhe (só no mobile; no desktop fica no pé do card lateral) -->
+          {%- if theme_settings.sections['single:property'].show_share_buttons != false %}
+          <div class="md:hidden mt-[50px] flex items-center gap-[13px]" x-data="{ copied: false }">
+            <span class="font-serif text-[14px] font-semibold text-[#181A20]">Compartilhe:</span>
+            {% render 'components/property-share', title: _title %}
+          </div>
+          {%- endif %}
         </div>
       </div>
 
-      <!-- Card "Gostou deste imóvel?" — sticky na lateral (desktop), bloco normal no mobile -->
-      <aside class="relative z-10 mt-10 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:-mt-[40px]">
-        <div class="lg:sticky lg:top-5">
-          <div class="vp-prop-lead border border-[#EEEEEE] bg-white p-5 shadow-[0_4px_24px_0_rgb(0_0_0/0.06)]">
-            <h2 class="font-serif text-[22px] font-semibold leading-[1.2] text-black">Gostou deste imóvel?</h2>
-            <p class="font-serif mt-1 text-[15px] leading-[1.3] text-[#717171]">Fale com um de nossos corretores.</p>
+      <!-- Características do imóvel + plantas + localização -->
+      <div class="lg:col-start-1 lg:row-start-2 lg:row-end-3">
 
-            {% form 'property_interest' %}
-              {% if form.posted_successfully %}
-                <p class="mt-4 border border-green-200 bg-green-50 p-3 text-[14px] text-green-800">{{ form.success }}</p>
-              {% endif %}
-              {% if form.errors %}
-                <p class="mt-4 border border-red-200 bg-red-50 p-3 text-[14px] text-red-800">{{ form.errors | first }}</p>
-              {% endif %}
-              <input type="hidden" name="property_interest[property_id]" value="{{ property.id }}">
-              <input type="hidden" name="property_interest[property_sku]" value="{{ property.sku }}">
-              <input type="hidden" name="property_interest[property_type]" value="{{ property.type }}">
-              <input type="hidden" name="property_interest[contact_type]" value="email">
-              <div class="mt-5 space-y-[10px]">
-                <input type="text" name="property_interest[name]" required placeholder="Nome" aria-label="Nome" class="vp-prop-lead__input">
-                <input type="email" name="property_interest[email]" required placeholder="E-mail" aria-label="E-mail" class="vp-prop-lead__input">
-                {% include 'components/global/form/phone-input', name: 'property_interest[phone]', placeholder: 'Telefone', input_class: 'vp-prop-lead__input' %}
-                <select name="property_interest[contact_method]" required aria-label="Forma de contato" class="vp-prop-lead__input cursor-pointer">
-                  <option value="">Selecione uma forma de contato</option>
-                  <option value="Whatsapp">Whatsapp</option>
-                  <option value="E-mail">E-mail</option>
-                  <option value="Telefone">Telefone</option>
-                </select>
-
-                {% if workspace.settings.turnstile.enabled %}
-                  <div class="cf-turnstile" data-sitekey="{{ workspace.settings.turnstile.site_key }}"></div>
-                {% endif %}
-
-                <button type="submit" class="vp-btn w-full bg-black text-white border-black hover:bg-[#181A20]">Entrar em contato</button>
-              </div>
-            {% endform %}
-          </div>
-
-          <!-- Compartilhe -->
-          <div class="mt-5 flex items-center justify-center gap-4 text-[14px]" x-data="{ copied: false }">
-            <span class="font-bold text-black">Compartilhe:</span>
-            <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(window.location.href)" href="#" target="_blank" rel="noopener" class="text-[20px] text-[#3B5998] transition-opacity hover:opacity-70" aria-label="Compartilhar no Facebook"><i class="ph-fill ph-facebook-logo"></i></a>
-            <a :href="'https://wa.me/?text=' + encodeURIComponent({{ _title | json | escape }} + ' ' + window.location.href)" href="#" target="_blank" rel="noopener" class="text-[20px] text-[#25D366] transition-opacity hover:opacity-70" aria-label="Compartilhar no WhatsApp"><i class="ph ph-whatsapp-logo"></i></a>
-            <a :href="'mailto:?subject=' + encodeURIComponent({{ _title | json | escape }}) + '&body=' + encodeURIComponent(window.location.href)" href="#" class="text-[20px] text-[#EA4335] transition-opacity hover:opacity-70" aria-label="Compartilhar por e-mail"><i class="ph-fill ph-envelope-simple"></i></a>
-            <button type="button" @click="navigator.clipboard.writeText(window.location.href); copied = true; setTimeout(() => copied = false, 2000)" class="relative text-[20px] text-black transition-opacity hover:opacity-70" aria-label="Copiar link">
-              <i class="ph" :class="copied ? 'ph-check' : 'ph-copy'"></i>
-              <span x-show="copied" x-transition x-cloak class="absolute left-1/2 top-full mt-1 -translate-x-1/2 whitespace-nowrap text-[11px] text-[#717171]">Link copiado</span>
-            </button>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Conteúdo -->
-      <div class="lg:col-start-1 lg:row-start-2">
-
-        <!-- Sobre o imóvel -->
-        {% if property.description != blank %}
-        <section class="pt-[45px]">
-          <h2 class="vp-prop-title">Sobre o imóvel</h2>
-          <div class="vp-prop-description text-[15px] leading-[25px] text-black">{{ property.description | strip }}</div>
+        {% if property.amenities and property.amenities.size > 0 %}
+        <section class="pt-[40px] md:pt-[60px]">
+          <h2 class="vp-prop-title">Características do imóvel</h2>
+          <ul class="vp-prop-amenities grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-5">
+            {% for amenity in property.amenities %}
+            <li>{{ amenity.name | default: amenity }}</li>
+            {% endfor %}
+          </ul>
         </section>
         {% endif %}
 
@@ -246,34 +209,84 @@
         {% endif %}
 
         <!-- Localização -->
-        {% if _has_map %}
-        <section id="mapSection" class="scroll-mt-5 border-b border-[#E5E5E5] pt-[60px] pb-[15px]">
+        {% if _has_map and theme_settings.sections['single:property'].show_map != false %}
+        <section id="mapSection" class="scroll-mt-5 border-b border-[#DDDDDD] pt-[40px] md:pt-[60px] pb-[15px]">
           <h2 class="vp-prop-title">{% if map_display == 'exact' %}Localização{% else %}Localização aproximada{% endif %}</h2>
           <div
             id="mapWrapper"
-            class="relative h-[340px] md:h-[440px] overflow-hidden bg-[#F2F2F2]"
+            class="relative h-[488px] md:h-[438px] overflow-hidden bg-[#F2F2F2]"
             data-lat="{{ property.latitude }}"
             data-lng="{{ property.longitude }}"
             data-display="{{ map_display }}"
           >
             <div id="mapPlaceholder" class="flex h-full w-full items-start justify-center">
-              <img src="{{ theme.assets_url }}/assets/images/map-placeholder.jpg" alt="" class="absolute inset-0 h-full w-full object-cover opacity-60 grayscale" aria-hidden="true">
+              <img src="{{ theme.assets_url }}/assets/images/mapa.png" alt="" class="absolute inset-0 h-full w-full object-cover" aria-hidden="true">
               <div class="relative mx-4 mt-5 max-w-[300px] rounded-[8px] bg-white px-6 py-5 text-center shadow-[0_2px_12px_0_rgb(0_0_0/0.06)]">
                 <p class="text-[14px] leading-[22px] text-[#333]">Clique no botão abaixo para navegar pelo mapa de localização</p>
-                <button type="button" onclick="window.initPropertyMap()" class="font-serif mt-4 inline-flex items-center rounded-[4px] bg-black px-5 py-2 text-[14px] font-semibold text-white transition-colors hover:bg-[#181A20]">Navegar pelo mapa</button>
+                <button type="button" onclick="window.initPropertyMap()" class="mt-4 inline-flex items-center rounded-[4px] bg-[#181A20] px-5 py-2 text-[14px] font-medium text-white transition-colors hover:bg-[#373630]">Navegar pelo mapa</button>
               </div>
             </div>
           </div>
         </section>
         {% endif %}
+      </div>
 
-        <!-- Imóveis similares -->
+      <!-- Card "Gostou deste imóvel?": sticky na lateral (desktop); no mobile vem depois do mapa -->
+      <aside class="relative z-10 mt-[40px] lg:col-start-2 lg:row-span-3 lg:row-start-1 lg:-mt-[40px]">
+        <div class="lg:sticky lg:top-[60px]">
+          <div class="vp-prop-lead overflow-hidden rounded-[4px] bg-[#F8F8F8] shadow-[0_3px_10px_1px_rgb(0_0_0/0.1)] lg:bg-white lg:shadow-none lg:border lg:border-[#666158]">
+            <div class="bg-[#F8F8F8] p-5">
+              <h2 class="font-serif text-[25px] leading-[30px] font-medium lg:text-[20px] lg:leading-[24px] lg:font-bold text-[#373630]">Gostou deste imóvel?</h2>
+              <p class="mt-[5px] text-[15px] leading-[17px] text-[#666158]">Fale com um de nossos corretores.</p>
+
+              {% form 'property_interest' %}
+                {% if form.posted_successfully %}
+                  <p class="mt-4 rounded-[4px] border border-green-200 bg-green-50 p-3 text-[14px] text-green-800">{{ form.success }}</p>
+                {% endif %}
+                {% if form.errors %}
+                  <p class="mt-4 rounded-[4px] border border-red-200 bg-red-50 p-3 text-[14px] text-red-800">{{ form.errors | first }}</p>
+                {% endif %}
+                <input type="hidden" name="property_interest[property_id]" value="{{ property.id }}">
+                <input type="hidden" name="property_interest[property_sku]" value="{{ property.sku }}">
+                <input type="hidden" name="property_interest[property_type]" value="{{ property.type }}">
+                <input type="hidden" name="property_interest[contact_type]" value="email">
+                <div class="mt-5 space-y-[10px]">
+                  <input type="text" name="property_interest[name]" required placeholder="Nome" aria-label="Nome" class="vp-prop-lead__input">
+                  <input type="email" name="property_interest[email]" required placeholder="E-mail" aria-label="E-mail" class="vp-prop-lead__input">
+                  {% include 'components/global/form/phone-input', name: 'property_interest[phone]', placeholder: 'Telefone', input_class: 'vp-prop-lead__input' %}
+                  <select name="property_interest[contact_method]" required aria-label="Forma de contato" class="vp-prop-lead__input cursor-pointer">
+                    <option value="">Selecione uma forma de contato</option>
+                    <option value="Whatsapp">Whatsapp</option>
+                    <option value="E-mail">E-mail</option>
+                    <option value="Telefone">Telefone</option>
+                  </select>
+
+                  {% if workspace.settings.turnstile.enabled %}
+                    <div class="cf-turnstile" data-sitekey="{{ workspace.settings.turnstile.site_key }}"></div>
+                  {% endif %}
+
+                  <button type="submit" class="h-[40px] w-full rounded-[4px] bg-[#181A20] px-6 text-[14px] text-white shadow-[1px_1px_10px_1px_rgb(0_0_0/0.03)] transition-colors hover:bg-[#373630]">Entrar em contato</button>
+                </div>
+              {% endform %}
+            </div>
+
+            {%- if theme_settings.sections['single:property'].show_share_buttons != false %}
+            <div class="hidden lg:flex items-center justify-center gap-[13px] bg-white py-[14px]" x-data="{ copied: false }">
+              {% render 'components/property-share', title: _title %}
+            </div>
+            {%- endif %}
+          </div>
+        </div>
+      </aside>
+
+      <!-- Imóveis similares -->
+      <div class="lg:col-start-1 lg:row-start-3">
         {% if related.size > 0 %}
         <section class="pt-[45px] pb-[80px]">
           <h2 class="vp-prop-title">Imóveis similares</h2>
-          <div class="grid grid-cols-1 gap-[30px] md:grid-cols-2">
+          <div class="pb-card-grid grid grid-cols-1 gap-[30px] md:grid-cols-2">
             {% for property in related limit: 4 %}
-              {% include 'components/elegance-property-card' %}
+              {% include 'components/property-card' %}
             {% endfor %}
           </div>
         </section>
@@ -284,9 +297,6 @@
     </div>
   </div>
 </article>
-
-<!-- Condição Especial (mesma seção da home) -->
-{% section 'home/contact-section' %}
 
 <!-- Plantas Modal -->
 {% if property.floor_plans and property.floor_plans.size > 0 %}

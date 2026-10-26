@@ -1,7 +1,9 @@
 {%- comment -%}
   Abertura do "Anuncie seu imóvel": foto de fundo ocupando a faixa inteira,
   conteúdo alinhado à esquerda com sobretítulo, título grande em Reckless Neue,
-  texto e o botão escuro que leva ao formulário.
+  texto e o botão escuro que leva ao formulário. Medidas do original: 855px de
+  altura (700px no celular), título 55/66 (30/39 no celular) com os destaques
+  em peso 400 e botão de 44px.
 {%- endcomment -%}
 {%- assign s = sections['advertise/hero'] -%}
 
@@ -12,32 +14,64 @@
     background-size: cover;
     background-repeat: no-repeat;
   }
+  /* Véu do topo, conferido no Elementor de produção (post-61.css, container
+     02430cc): degradê 90deg do cinza #373630 até transparente, aplicado a 50%
+     de opacidade (--overlay-opacity:0.5). Estava preto puro e terminando em
+     70% — por isso escurecia demais e não tinha o tom acinzentado.
+     O original termina em `#F2295B00`, um rosa com alfa zero que o Elementor
+     deixou para trás; como o navegador interpola com alfa pré-multiplicado,
+     o resultado é o mesmo de `#37363000`, que é o que está aqui. */
   .pb-adhero::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgb(0 0 0 / .45) 0%, rgb(0 0 0 / .1) 70%);
+    opacity: .5;
+    background-image: linear-gradient(90deg, #373630 0%, #37363000 100%);
   }
   .pb-adhero__title {
     font-family: var(--font-heading);
-    font-size: 48px;
+    font-size: 55px;
     font-weight: 300;
-    line-height: 1.15;
-    color: #fff;
+    line-height: 66px;
+    color: #FDFBF7;
     max-width: 640px;
     text-shadow: 0 0 20px rgb(0 0 0 / .45);
   }
-  .pb-adhero__title span { font-weight: 600; }
-  @media (max-width: 1024px) { .pb-adhero__title { font-size: 36px; } }
-  @media (max-width: 767px)  { .pb-adhero__title { font-size: 28px; } }
-  .pb-adhero__text { color: #F0EEE9; max-width: 560px; }
-  .pb-adhero__text strong { font-weight: 600; color: #fff; }
+  .pb-adhero__title span { font-weight: 400; }
+  @media (max-width: 1024px) { .pb-adhero__title { font-size: 40px; line-height: 48px; } }
+  @media (max-width: 767px)  { .pb-adhero__title { font-size: 30px; line-height: 39px; } }
+  .pb-adhero__text { color: #FDFBF7; max-width: 594px; }
+  .pb-adhero__text strong { font-weight: 700; color: #FDFBF7; }
+  .pb-adhero__btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 15px 25px;
+    border-radius: 3px;
+    background: #181A20;
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 14px;
+    color: #fff;
+    transition: background-color .2s;
+  }
+  .pb-adhero__btn:hover { background: #373630; }
+  /* Altura do topo, de produção (02430cc): 95vh, 85vh até 1024px e 700px até
+     880px. Os 855px que estavam aqui são o valor medido de 95vh numa tela de
+     900px de altura — numa tela maior o topo ficava curto, o cartão do
+     formulário subia junto e o campo "Nome" já aparecia na primeira dobra.
+     Com vh o cartão para no mesmo ponto do original, mostrando só o título e
+     a chamada dele. */
+  .pb-adhero__inner { min-height: 95vh; padding-top: 140px; padding-bottom: 60px; }
+  @media (max-width: 1024px) { .pb-adhero__inner { min-height: 85vh; } }
+  @media (max-width: 880px)  { .pb-adhero__inner { min-height: 700px; } }
+  @media (max-width: 767px)  { .pb-adhero__inner { padding-top: 140px; padding-bottom: 40px; } }
 </style>
 
 <section {{ section_attrs }} class="pb-adhero pb-section{% if section_class %} {{ section_class }}{% endif %}"{% if s.image != blank %} style="background-image: url('{{ s.image }}');"{% endif %}>
-  <div class="pb-container relative z-10 flex min-h-[760px] flex-col justify-center pt-[200px] pb-[80px]">
+  <div class="pb-container pb-adhero__inner relative z-10 !mb-0 flex flex-col justify-center">
     {%- if s.eyebrow != blank %}
-    <span class="pb-eyebrow pb-eyebrow--light block mb-3">{{ s.eyebrow }}</span>
+    <span class="pb-eyebrow pb-eyebrow--light block mb-[19px] max-md:mb-[9px]">{{ s.eyebrow }}</span>
     {%- endif %}
 
     <h1 class="pb-adhero__title">
@@ -45,12 +79,12 @@
     </h1>
 
     {%- if s.description != blank %}
-    <div class="pb-text pb-adhero__text mt-6">{{ s.description }}</div>
+    <div class="pb-text pb-adhero__text mt-5">{{ s.description }}</div>
     {%- endif %}
 
     {%- if s.cta_text != blank %}
-    <div class="mt-7">
-      <a href="{{ s.cta_url | default: '#anunciar-form' }}" class="pb-btn">{{ s.cta_text }}</a>
+    <div class="mt-5 max-md:mt-0">
+      <a href="{{ s.cta_url | default: '#anunciar-form' }}" class="pb-adhero__btn">{{ s.cta_text }}</a>
     </div>
     {%- endif %}
   </div>

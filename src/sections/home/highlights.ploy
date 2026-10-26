@@ -9,79 +9,87 @@
 <style>
   /* Vem depois de "Nosso time", que recebe z-index na sobreposição de rolagem */
   .pb-highlights { position: relative; z-index: 3; }
-  .pb-highlights__slide {
-    position: relative;
-    height: 650px;
-    border-radius: 4px;
-    overflow: hidden;
+  .pb-highlights__title { font-family: var(--font-heading); font-size: 40px; line-height: 1.2em; color: #181A20; }
+  .pb-highlights__title strong { display: block; font-weight: 700; }
+  .pb-highlights__title em { display: block; font-weight: 300; font-style: italic; }
+  /* Slide reto de 650px (550px no celular), texto no canto inferior esquerdo */
+  .pb-highlights__slide { position: relative; height: 650px; overflow: hidden; box-shadow: 0 18px 50px rgba(0, 0, 0, .18); }
+  .pb-highlights__bg {
+    position: absolute;
+    inset: 0;
     background-size: cover;
     background-position: center;
   }
-  /* Véu que escurece só a parte de baixo, como no original */
+  /* Ken Burns: o fundo do slide ativo cresce devagar, como no widget do original */
+  .swiper-slide-active .pb-highlights__bg,
+  .pb-highlights__swiper:not(.swiper-initialized) .pb-highlights__bg { animation: pb-kenburns 20s linear forwards; }
+  @keyframes pb-kenburns { from { transform: scale(1); } to { transform: scale(1.3); } }
+  /* Véu sobre a foto inteira, não só no pé. São três camadas na mesma pseudo:
+     o escurecimento uniforme (28% — leve de propósito, para dar contraste ao
+     texto sem apagar a imagem), a vinheta que fecha as bordas e o degradê que
+     já existia, mantido porque é ele que segura o texto do canto inferior.
+     Fica acima de .pb-highlights__bg e abaixo de .pb-highlights__content
+     (z-index 2), então as letras não mudam. */
   .pb-highlights__slide::after {
     content: '';
     position: absolute;
     inset: 0;
+    background-color: rgba(0, 0, 0, .28);
     background-image: linear-gradient(180deg, #FFFFFF00 55%, #00000070 100%);
+    box-shadow: inset 0 0 120px 20px rgba(0, 0, 0, .35);
+    pointer-events: none;
   }
   .pb-highlights__content {
     position: absolute;
-    left: 0;
-    bottom: 60px;
+    left: 50px;
+    bottom: 50px;
     z-index: 2;
-    max-width: 500px;
-    padding-inline: 40px;
+    width: 500px;
+    max-width: calc(100% - 100px);
     color: #fff;
   }
-  .pb-highlights__heading {
-    font-family: var(--font-heading);
-    font-size: 34px;
-    font-weight: 400;
-    line-height: 1.15;
-  }
-  .pb-highlights__desc {
-    font-family: var(--font-body);
-    font-size: 15px;
-    line-height: 1.6;
-    margin-top: 12px;
-  }
+  .pb-highlights__heading { font-family: var(--font-heading); font-size: 40px; font-weight: 500; line-height: 1; }
+  .pb-highlights__desc { margin-top: 20px; font-family: var(--font-body); font-size: 15px; line-height: 21px; }
   .pb-highlights__btn {
     display: inline-flex;
     align-items: center;
-    margin-top: 22px;
+    margin-top: 30px;
     padding: 12px 24px;
     border: 1px solid #fff;
     border-radius: 4px;
     font-family: var(--font-body);
     font-size: 13px;
     font-weight: 500;
+    line-height: 13px;
     letter-spacing: .2px;
     text-transform: uppercase;
     color: #fff;
     transition: background-color .2s, color .2s;
   }
   .pb-highlights__btn:hover { background: #fff; color: #181A20; }
+  @media (max-width: 1024px) { .pb-highlights__title { font-size: 34px; } }
   @media (max-width: 767px) {
-    .pb-highlights__slide { height: 480px; }
-    .pb-highlights__content { padding-inline: 24px; bottom: 32px; }
-    .pb-highlights__heading { font-size: 26px; }
+    .pb-highlights__title { font-size: 30px; line-height: 1.3em; text-align: center; }
+    .pb-highlights__slide { height: 550px; }
+    .pb-highlights__content { left: 30px; bottom: 30px; width: 250px; max-width: calc(100% - 60px); }
+    .pb-highlights__heading { font-size: 30px; }
   }
 </style>
 
 <section {{ section_attrs }} class="pb-highlights pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="pb-container pt-[80px] pb-[90px]">
-    <h2 class="pb-title">
-      {{- s.title }}{% if s.title_highlight != blank %}<br><span class="font-normal italic">{{ s.title_highlight }}</span>{% endif -%}
+  <div class="mx-auto max-w-[1300px] pt-[60px] md:pt-[100px] pb-[20px]">
+    <h2 class="pb-highlights__title">
+      <strong>{{ s.title }}</strong>{% if s.title_highlight != blank %}<em>{{ s.title_highlight }}</em>{% endif %}
     </h2>
-    <div class="flex items-center mt-2 mb-8">
-      <span class="pb-divider"></span>
+    <div class="flex items-center mt-[20px] mb-[21px]">
+      <span class="pb-divider !my-0"></span>
     </div>
-
     <div class="swiper pb-highlights__swiper" data-pb-highlights>
       <div class="swiper-wrapper">
         {%- for slide in slides -%}
         <div class="swiper-slide">
-          <div class="pb-highlights__slide" style="background-image: url('{{ slide.image }}');">
+          <div class="pb-highlights__slide">
+            <div class="pb-highlights__bg" style="background-image: url('{{ slide.image }}');"></div>
             <div class="pb-highlights__content">
               {%- if slide.subtitle != blank %}<span class="pb-eyebrow pb-eyebrow--light block mb-2">{{ slide.subtitle }}</span>{% endif %}
               {%- if slide.title != blank %}<h3 class="pb-highlights__heading">{{ slide.title }}</h3>{% endif %}
@@ -101,6 +109,21 @@
     </div>
   </div>
 </section>
+{%- if slides.size > 1 %}
+<script>
+  // Carrossel com autoplay de 5s e setas, como o widget "slides" do original
+  document.addEventListener('DOMContentLoaded', function () {
+    var el = document.querySelector('[data-pb-highlights]');
+    if (!el || typeof Swiper === 'undefined') return;
+    new Swiper(el, {
+      loop: true,
+      speed: 600,
+      autoplay: { delay: 5000, disableOnInteraction: false },
+      navigation: { prevEl: el.querySelector('.swiper-button-prev'), nextEl: el.querySelector('.swiper-button-next') }
+    });
+  });
+</script>
+{%- endif %}
 {%- endif %}
 
 {% schema %}

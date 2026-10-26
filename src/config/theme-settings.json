@@ -56,10 +56,6 @@
       {
         "url": "{{routes.properties}}{{routes.operation_rent}}",
         "label": "Locação"
-      },
-      {
-        "url": "{{routes.contact}}",
-        "label": "Contato"
       }
     ]
   },
@@ -151,14 +147,6 @@
       {
         "url": "{{routes.advertise}}",
         "label": "Anuncie seu imóvel"
-      },
-      {
-        "url": "{{routes.about-us}}",
-        "label": "Sobre nós"
-      },
-      {
-        "url": "{{routes.favorites}}",
-        "label": "Favoritos"
       }
     ]
   },
@@ -168,6 +156,50 @@
       "title_italic": "imóvel ideal",
       "title_after": "em Campo Grande e região.",
       "overlay_color": "#02010133",
+      "location_suggestions": {
+        "items": [
+          {
+            "label": "Centro, Campo Grande - MS",
+            "value": "centro-campo-grande"
+          },
+          {
+            "label": "Royal Park, Campo Grande - MS",
+            "value": "royal-park"
+          },
+          {
+            "label": "Jardim Dos Estados, Campo Grande - MS",
+            "value": "jardim-dos-estados"
+          },
+          {
+            "label": "Monte Castelo, Campo Grande - MS",
+            "value": "monte-castelo"
+          },
+          {
+            "label": "Jardim Veraneio, Campo Grande - MS",
+            "value": "jardim-veraneio"
+          },
+          {
+            "label": "Alphaville Campo Grande, Campo Grande - MS",
+            "value": "alphaville-campo-grande"
+          },
+          {
+            "label": "Vila Morumbi, Campo Grande - MS",
+            "value": "vila-morumbi"
+          },
+          {
+            "label": "Residencial Novo Seminário, Campo Grande - MS",
+            "value": "residencial-novo-seminario"
+          },
+          {
+            "label": "Carandá Bosque, Campo Grande - MS",
+            "value": "caranda-bosque"
+          },
+          {
+            "label": "Vila Taveirópolis, Campo Grande - MS",
+            "value": "vila-taveiropolis"
+          }
+        ]
+      },
       "slides": {
         "items": [
           {
@@ -184,23 +216,23 @@
       "title": "Os empreendimentos e bairros mais buscados de",
       "title_highlight": "Campo Grande e região.",
       "cta_text": "Ver mais imóveis",
-      "cta_url": "/imoveis/venda/",
+      "cta_url": "{{routes.properties}}{{routes.operation_sale}}",
       "shortcuts": {
         "items": [
           {
             "title": "Royal Park",
             "image": "https://www.imoveispb.com.br/wp-content/uploads/2024/12/grid-lopes-pantanal-royal-park.jpg",
-            "url": "/imoveis/venda/?location[0]=royal-park"
+            "url": "{{routes.properties}}{{routes.operation_sale}}?location[]=royal-park"
           },
           {
             "title": "Villas Damha",
             "image": "https://www.imoveispb.com.br/wp-content/uploads/2024/12/grid-lopes-pantanal-villas-damha.jpg",
-            "url": "/imoveis/venda/?location[0]=villas-damha"
+            "url": "{{routes.properties}}{{routes.operation_sale}}?location[]=villas-damha"
           },
           {
             "title": "Jardim dos Estados",
             "image": "https://www.imoveispb.com.br/wp-content/uploads/2025/01/card-grid-Jardim-dos-estados-2.png",
-            "url": "/imoveis/venda/?location[0]=jardim-dos-estados"
+            "url": "{{routes.properties}}{{routes.operation_sale}}?location[]=jardim-dos-estados"
           }
         ]
       }
@@ -217,7 +249,7 @@
       "title": "Os imóveis mais buscados de",
       "title_highlight": "Campo Grande e região.",
       "cta_text": "Ver mais imóveis",
-      "cta_url": "/imoveis/venda/",
+      "cta_url": "{{routes.properties}}{{routes.operation_sale}}",
       "featured_skus": {
         "value": [
           "53496",
@@ -289,8 +321,9 @@
       "quote_highlight": "Passos & Buytendorp Imóveis",
       "quote_after": "- referência em agilidade, transparência e conhecimento do mercado de Campo Grande\".",
       "image": "https://www.imoveispb.com.br/wp-content/uploads/2025/01/Foto-Lopes-Pantanal-Sobre-no%CC%81s.jpg",
-      "title": "Credibilidade e visão local",
-      "title_highlight": "para quem busca o imóvel certo.",
+      "title": "",
+      "title_highlight": "Credibilidade e visão local",
+      "title_after": "para quem busca o imóvel certo.",
       "description": "A Passos & Buytendorp Imóveis surgiu da vontade de montarmos uma estrutura imobiliária diferente do que hoje está no mercado. A operação horizontal, vai de encontro à premissa que esta Imobiliária é de Corretores para Corretores e de todos os Clientes. A credibilidade e a eficiência, além de um atendimento de qualidade, onde buscamos nunca fazer apenas um negócio com um cliente uma só vez, é o lema desta empresa. Nossa missão é ajudar as pessoas/clientes, nosso maior patrimônio, a realizar sempre os melhores negócios imobiliários.",
       "cta_text": "Anuncie seu imóvel",
       "cta_url": "{{routes.advertise}}",
@@ -317,8 +350,11 @@
     },
     "about-us/team": {
       "eyebrow": "nosso time",
-      "title": "Conheça os especialistas",
-      "title_highlight": "que fazem a Passos & Buytendorp Imóveis crescer, inovar e conectar pessoas ao imóvel ideal",
+      "title": "",
+      "title_highlight": "Conheça os especialistas",
+      "title_middle": "que fazem a Passos & Buytendorp Imóveis crescer, inovar e",
+      "title_highlight2": "conectar pessoas ao imóvel ideal.",
+      "title_after": "",
       "description": "Nossa equipe dedicada combina experiência, credibilidade e atendimento humanizado para oferecer soluções completas em compra, venda, locação e administração de imóveis. Com profissionalismo e compromisso, ajudamos você a realizar os melhores negócios.",
       "members": {
         "items": [
@@ -347,24 +383,26 @@
       "title_highlight": "segurança e os melhores resultados",
       "title_after": "para você.",
       "description": "Na Passos & Buytendorp Imóveis, tornamos a compra, venda e locação de imóveis mais simples e eficazes. Oferecemos suporte completo, atendimento especializado e soluções estratégicas para garantir as melhores oportunidades e uma experiência segura em cada negociação.",
-      "items": [
-        {
-          "title": "Amplo Portfólio de Imóveis",
-          "description": "Ampla oferta de imóveis em Campo Grande e região para morar, investir ou alugar."
-        },
-        {
-          "title": "Os Melhores Lançamentos",
-          "description": "Oferecemos os melhores lançamentos imobiliários de Campo Grande, representando todas as construtoras da região."
-        },
-        {
-          "title": "Financiamento Imobiliário",
-          "description": "Facilitamos o financiamento do seu imóvel com condições especiais e aprovação rápida."
-        },
-        {
-          "title": "Corretores Capacitados",
-          "description": "Contamos com os profissionais mais qualificados, atualizados e prontos para oferecer o melhor atendimento do mercado."
-        }
-      ]
+      "values": {
+        "items": [
+          {
+            "title": "Amplo Portfólio de Imóveis",
+            "description": "Ampla oferta de imóveis em Campo Grande e região para morar, investir ou alugar."
+          },
+          {
+            "title": "Os Melhores Lançamentos",
+            "description": "Oferecemos os melhores lançamentos imobiliários de Campo Grande, representando todas as construtoras da região."
+          },
+          {
+            "title": "Financiamento Imobiliário",
+            "description": "Facilitamos o financiamento do seu imóvel com condições especiais e aprovação rápida."
+          },
+          {
+            "title": "Corretores Capacitados",
+            "description": "Contamos com os profissionais mais qualificados, atualizados e prontos para oferecer o melhor atendimento do mercado."
+          }
+        ]
+      }
     },
     "contact/main": {
       "eyebrow": "Canais de atendimento",
@@ -393,7 +431,9 @@
       "eyebrow": "Benefícios",
       "title": "Conheça as vantagens de",
       "title_highlight": "anunciar seu imóvel",
-      "title_after": "com a Passos & Buytendorp Imóveis.",
+      "title_middle": "com a",
+      "title_highlight2": "Passos & Buytendorp Imóveis.",
+      "title_after": "",
       "description": "Dê ao seu imóvel a visibilidade que ele merece! Com estratégias de marketing eficientes, atendimento exclusivo e avaliações precisas, garantimos que você alcance as melhores oportunidades no mercado.",
       "cta_text": "Falar com um corretor",
       "cta_url": "https://wa.me/556730287474",
@@ -421,8 +461,10 @@
     },
     "advertise/process": {
       "eyebrow": "Como Anunciar",
-      "title": "Anuncie seu imóvel",
-      "title_highlight": "de forma simples e segura",
+      "title": "",
+      "title_highlight": "Anuncie seu imóvel",
+      "title_middle": "de forma",
+      "title_highlight2": "simples e segura",
       "title_after": ", com a Passos & Buytendorp Imóveis.",
       "description": "Preencha o formulário, receba uma avaliação profissional, tenha seu imóvel divulgado para milhares de compradores e finalize sua negociação com o suporte da Passos & Buytendorp Imóveis.",
       "cta_text": "Anuncie agora",
@@ -450,6 +492,8 @@
       "submit_text": "Anunciar imóvel"
     },
     "archive:property": {
+      "title_sale": "Imóveis à venda em Campo Grande - MS e região",
+      "title_rent": "Imóveis para alugar em Campo Grande - MS e região",
       "default_sort": "recent",
       "default_view": "grid",
       "show_properties_count": true

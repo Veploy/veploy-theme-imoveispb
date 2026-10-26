@@ -1,14 +1,19 @@
 {%- comment -%}
-  "Sobre nós" da home: título à esquerda, texto numa coluna estreita à direita
-  e, logo abaixo, uma foto de 85vh que ocupa toda a largura do container, com
-  degradê para preto no pé — como no original.
+  "Sobre nós" da home: título à esquerda, texto numa coluna de 500px à direita
+  e, logo abaixo, uma foto de altura de tela cheia na largura do container.
+
+  Medidas do original: 100px no topo (60px no celular); sobretítulo e texto
+  alinhados pelo topo; foto 70px abaixo do texto (40px no celular, com 400px de
+  altura). A seção termina no pé da foto.
 {%- endcomment -%}
 {%- assign s = sections['home/about-section'] -%}
-
 <style>
+  /* A faixa ocupa a tela inteira (era 85vh). O efeito de entrada é o mesmo:
+     o parallax do `background-attachment: fixed` logo abaixo. */
   .pb-about__image {
     position: relative;
-    min-height: 85vh;
+    height: 100vh;
+    height: 100svh;
     border-radius: 4px;
     background-position: center center;
     background-repeat: no-repeat;
@@ -21,33 +26,28 @@
     inset: 0;
     background-image: linear-gradient(180deg, #02010100 0%, #000000 100%);
   }
+  .pb-about__text { font-family: var(--font-body); font-size: 15px; line-height: 22px; color: #717171; }
+  .pb-about__text p + p { margin-top: 1em; }
   @media (min-width: 1367px) { .pb-about__image { background-attachment: fixed; } }
-  @media (max-width: 1024px)  { .pb-about__image { min-height: 55vh; } }
+  @media (max-width: 1024px)  { .pb-about__image { height: 100vh; height: 100svh; } }
+  @media (max-width: 767px)   { .pb-about__image { height: 400px; } }
 </style>
 
 <section {{ section_attrs }} class="pb-about pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="pb-container pt-[100px] pb-[50px]">
-    <div class="flex flex-col lg:flex-row lg:items-end gap-8 lg:gap-10">
-      <div class="lg:flex-1">
-        {% include 'components/home-section-header',
-           eyebrow: s.eyebrow,
-           heading: s.title,
-           heading_highlight: s.title_highlight %}
-      </div>
-
+  <div class="mx-auto max-w-[1300px] pt-[60px] md:pt-[100px]">
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_500px] lg:gap-[150px] lg:items-start">
+      {% include 'components/home-section-header',
+         eyebrow: s.eyebrow,
+         heading: s.title,
+         heading_highlight: s.title_highlight %}
       {%- if s.description != blank %}
-      <div class="lg:max-w-[500px] lg:self-end">
-        <div class="pb-text">{{ s.description }}</div>
-      </div>
+      <div class="pb-about__text w-full max-w-[500px] ml-auto">{{ s.description }}</div>
       {%- endif %}
     </div>
+    {%- if s.image != blank %}
+    <div class="pb-about__image mt-[40px] lg:mt-[70px]" style="background-image: url('{{ s.image }}');" role="img" aria-label="{{ workspace.name }}"></div>
+    {%- endif %}
   </div>
-
-  {%- if s.image != blank %}
-  <div class="pb-container pb-[20px]">
-    <div class="pb-about__image" style="background-image: url('{{ s.image }}');" role="img" aria-label="{{ workspace.name }}"></div>
-  </div>
-  {%- endif %}
 </section>
 
 {% schema %}

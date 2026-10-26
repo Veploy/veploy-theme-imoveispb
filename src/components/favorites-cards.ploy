@@ -8,7 +8,7 @@
 {% endcomment %}
 
 {% if properties.size > 0 %}
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  <div class="pb-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[30px]">
     {% for property in properties %}
       <div data-favorite-item data-property-sku="{{ property.sku }}">
         {% include 'components/property-card' %}
@@ -22,7 +22,7 @@
         <a
           href="?page={{ pagination.current_page | minus: 1 }}"
           data-favorites-page-link
-          class="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+          class="flex items-center gap-1 h-[40px] px-4 bg-white border border-[#ECECEC] rounded-[4px] hover:border-[#181A20] text-[#181A20] text-[14px] transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -30,14 +30,14 @@
           {{ t.pagination.previous }}
         </a>
       {% endif %}
-      <span class="text-sm text-gray-500">
+      <span class="text-[14px] text-[#666158]">
         {{ pagination.current_page }} / {{ pagination.total_pages }}
       </span>
       {% if pagination.current_page < pagination.total_pages %}
         <a
           href="?page={{ pagination.current_page | plus: 1 }}"
           data-favorites-page-link
-          class="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
+          class="flex items-center gap-1 h-[40px] px-4 bg-white border border-[#ECECEC] rounded-[4px] hover:border-[#181A20] text-[#181A20] text-[14px] transition-colors"
         >
           {{ t.pagination.next }}
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">

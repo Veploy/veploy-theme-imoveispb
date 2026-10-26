@@ -8,8 +8,11 @@
     `colors.primary`, cantos de 4px e 1% de margem nas laterais.
 
   Aqui os dois são o mesmo elemento: o Alpine troca as classes quando a página
-  passa de 80px de rolagem. Em páginas internas (`overlay` falso) a barra já
-  nasce sólida.
+  passa de 80px de rolagem.
+
+  As páginas internas (`overlay` falso) usam o terceiro header do original
+  (`#41743`): fundo branco no fluxo, linha cinza embaixo, logo dourada, menu
+  escuro e sem barra flutuante na rolagem.
 {%- endcomment -%}
 {%- assign header_overlay = overlay | default: false -%}
 {%- assign header_bg = workspace.theme_settings.header.bg_color | default: '#181A20' -%}
@@ -32,9 +35,28 @@
     top: 0; left: 0; right: 0;
     background-image: linear-gradient(180deg, #373630B3 0%, #F6F6F600 90%);
   }
-  .pb-header--solid {
-    background-color: {{ header_bg }};
+  /* Páginas internas: barra branca no fluxo, como o header #41743 do original */
+  .pb-header--light {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #E4E4E4;
   }
+  .pb-header--light > nav { padding-block: 15px; }
+  .pb-header--light .pb-header__link { color: #181A20; }
+  .pb-header--light .pb-header__link:hover,
+  .pb-header--light .pb-header__link.is-active { color: #877C67; opacity: 1; }
+  .pb-header--light .pb-header__fav { color: #000000; }
+  .pb-header--light .pb-header__fav i,
+  .pb-header--light .pb-header__fav svg { color: #877B66; }
+  .pb-header--light .pb-header__cta {
+    color: #000000;
+    border-color: #181A20;
+    padding: 12px 24px;
+  }
+  .pb-header--light .pb-header__cta:hover { background-color: transparent; color: #877C67; }
+  .pb-header--light .pb-header__logo-neg { display: none; }
+  .pb-header--light .pb-header__logo-pos { display: block; }
+  .pb-header--light .pb-header__burger { color: #181A20 !important; }
+  .pb-header--light .pb-header__mfav { color: #877B66 !important; }
   /* Barra flutuante da rolagem: 1% de margem, cantos arredondados */
   .pb-header--stuck {
     position: fixed;
@@ -88,9 +110,35 @@
   .pb-header__fav i, .pb-header__fav svg { color: {{ header_fav_color }}; font-size: 19px; }
   .pb-header__fav:hover { opacity: .8; }
   .pb-header__logo { width: 185px; max-width: 185px; }
+  /* No mobile a logo tem 170px (100px na barra branca das páginas internas, que
+     assim fica com os 90px do original) e a
+     linha tem 15px de respiro em cima e embaixo, como no original */
   @media (max-width: 1024px) {
-    .pb-header__logo { width: 120px; max-width: 120px; }
+    .pb-header__logo { width: 170px; max-width: 170px; }
+    .pb-header--light .pb-header__logo { width: 100px; max-width: 100px; }
+    .pb-header > nav { min-height: 0; padding-block: 15px; }
   }
+  .pb-header__dropdown {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(50% + 31px);
+    z-index: 1001;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, .06);
+  }
+  .pb-header__dropdown-link {
+    display: block;
+    padding: 10px 20px;
+    font-family: var(--font-header, var(--font-body));
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 20px;
+    color: #33373D;
+    transition: background-color .2s, color .2s;
+  }
+  .pb-header__dropdown-link:hover,
+  .pb-header__dropdown-link.is-active { background: #181A20; color: #fff; }
 
   /* Logo: branca sobre o hero, dourada na barra da rolagem — como no original,
      onde o header fixo troca a imagem pela versão colorida. No mobile a dourada
@@ -105,12 +153,16 @@
   .pb-header--stuck .pb-header__logo-pos { display: block; }
 </style>
 
+{%- if header_overlay -%}
 <header
   x-data="{ stuck: false }"
   x-init="stuck = window.scrollY > 80; window.addEventListener('scroll', () => stuck = window.scrollY > 80, { passive: true })"
-  class="pb-header {% if header_overlay %}pb-header--overlay{% else %}pb-header--solid{% endif %}"
+  class="pb-header pb-header--overlay"
   :class="{ 'pb-header--stuck': stuck }"
 >
+{%- else -%}
+<header class="pb-header pb-header--light">
+{%- endif -%}
   <nav class="pb-container flex items-center justify-between gap-6 min-h-[110px] py-3" x-data="{ mobileOpen: false }">
 
     {%- comment -%} Esquerda: menu principal (desktop) {%- endcomment -%}
@@ -118,8 +170,9 @@
     <ul class="hidden lg:flex items-center flex-1">
       {%- for item in nav_items -%}
       {%- assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about-us}}', routes['about-us'] | replace: '{{routes.about}}', routes['about-us'] | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites -%}
+      {%- assign _resolved_slash = resolved_url | append: '/' -%}
       <li>
-        <a href="{% unless resolved_url contains '://' %}{{ locale_prefix }}{% endunless %}{{ resolved_url }}" class="pb-header__link"{% if item.target == '_blank' %} target="_blank" rel="noopener"{% endif %}>{{ item.label }}</a>
+        <a href="{% unless resolved_url contains '://' %}{{ locale_prefix }}{% endunless %}{{ resolved_url }}" class="pb-header__link{% if current_path == resolved_url or current_path == _resolved_slash %} is-active{% endif %}"{% if item.target == '_blank' %} target="_blank" rel="noopener"{% endif %}>{{ item.label }}</a>
       </li>
       {%- endfor -%}
     </ul>
@@ -150,79 +203,44 @@
       </a>
     </div>
 
-    {%- comment -%} Mobile: coração + hambúrguer {%- endcomment -%}
-    <div class="lg:hidden flex items-center gap-1">
-      <a href="{{ locale_prefix }}{{ routes.favorites }}" class="p-2 relative" style="color: {{ header_fav_color }};" aria-label="{{ t.nav.favorites }}">
-        <svg xmlns="http://www.w3.org/2000/svg" :fill="$store.favorites.count > 0 ? '#ef4444' : 'none'" viewBox="0 0 24 24" stroke-width="1.5" :stroke="$store.favorites.count > 0 ? '#ef4444' : 'currentColor'" class="w-6 h-6 transition-colors">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+    {%- comment -%} Mobile: coração + hambúrguer (vira X com o menu aberto) {%- endcomment -%}
+    <div class="lg:hidden flex items-center gap-[10px]">
+      <a href="{{ locale_prefix }}{{ routes.favorites }}" class="pb-header__mfav relative p-[5px]" style="color: {{ header_fav_color }};" aria-label="{{ t.nav.favorites }}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="w-[19px] h-[19px]" :fill="$store.favorites.count > 0 ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="32">
+          <path d="M458.4 64.3C400.6 15.7 311.3 23 256 79.3 200.7 23 111.4 15.6 53.6 64.3-21.6 127.6-10.6 230.8 43 285.5l175.4 178.7c10 10.2 23.4 15.9 37.6 15.9 14.3 0 27.6-5.6 37.6-15.8L469 285.5c53.5-54.7 64.7-157.9-10.6-221.2z"/>
         </svg>
-        <span x-cloak x-show="$store.favorites.count > 0" x-text="$store.favorites.count" class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1 leading-none"></span>
+        <span x-cloak x-show="$store.favorites.count > 0" x-text="$store.favorites.count" class="absolute -top-1 -right-1 min-w-[16px] h-[16px] flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1 leading-none"></span>
       </a>
-      <button type="button" class="p-2" style="color: {{ header_text }};" aria-label="Menu" @click="mobileOpen = !mobileOpen">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-        </svg>
+      <button type="button" class="pb-header__burger flex h-[33px] w-[33px] items-center justify-center" style="color: {{ header_text }};" :aria-label="mobileOpen ? 'Fechar menu' : 'Menu'" :aria-expanded="mobileOpen" @click="mobileOpen = !mobileOpen">
+        <svg x-show="!mobileOpen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" class="w-[22px] h-[22px]" aria-hidden="true"><path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"/></svg>
+        <svg x-show="mobileOpen" x-cloak xmlns="http://www.w3.org/2000/svg" viewBox="0 0 352 512" fill="currentColor" class="w-[22px] h-[22px]" aria-hidden="true"><path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z"/></svg>
       </button>
     </div>
 
-    {%- comment -%} Gaveta mobile {%- endcomment -%}
+    {%- comment -%}
+      Menu mobile — o dropdown do Elementor no original: painel branco na largura
+      toda da tela, 15px abaixo do botão, itens de 40px; o da página atual fica
+      com o fundo escuro.
+    {%- endcomment -%}
     <div
-      class="lg:hidden fixed inset-0 bg-black/40 z-[998]"
+      class="pb-header__dropdown lg:hidden"
       x-cloak x-show="mobileOpen"
-      x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-      x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-      @click="mobileOpen = false"
-    ></div>
-
-    <div
-      class="lg:hidden fixed inset-y-0 right-0 w-[85vw] max-w-[360px] z-[999] shadow-2xl flex flex-col"
-      style="background-color: {{ header_bg }}; color: {{ header_text }};"
-      x-cloak x-show="mobileOpen"
-      x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
-      x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full"
+      x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-1" x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-150" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
+      @click.outside="if (!$event.target.closest('.pb-header__burger')) mobileOpen = false"
       @keydown.escape.window="mobileOpen = false"
     >
-      <div class="flex items-center justify-between px-5 py-4 flex-shrink-0" style="border-bottom: 1px solid {{ header_text }}20;">
-        <a href="{{ locale_prefix }}/" class="block w-[110px]">
-          {%- if logo_neg != blank -%}
-            <img src="{{ logo_pos | default: logo_neg }}" alt="{{ workspace.name }}" class="w-full h-auto object-contain" width="110" height="65">
-          {%- else -%}
-            <span class="text-lg font-medium" style="color: {{ header_text }};">{{ workspace.name }}</span>
-          {%- endif -%}
-        </a>
-        <button @click="mobileOpen = false" class="w-9 h-9 flex items-center justify-center rounded-full" style="color: {{ header_text }};" aria-label="Fechar menu">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <div class="flex-1 overflow-y-auto">
-        <nav class="py-2">
-          {%- assign mobile_items = workspace.theme_settings.navigation.mobile_menu | default: nav_items -%}
-          {%- for item in mobile_items -%}
-            {%- assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about-us}}', routes['about-us'] | replace: '{{routes.about}}', routes['about-us'] | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites -%}
-            <a
-              href="{% unless resolved_url contains '://' %}{{ locale_prefix }}{% endunless %}{{ resolved_url }}"
-              class="flex items-center justify-between px-5 py-3.5"
-              style="color: {{ header_text }};"
-              {% if item.target == '_blank' %}target="_blank" rel="noopener"{% endif %}
-            >
-              <span class="text-[15px] font-medium uppercase tracking-[.2px]">{{ item.label }}</span>
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 opacity-40">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-              </svg>
-            </a>
-          {%- endfor -%}
-        </nav>
-
-        <div class="px-5 py-4" style="border-top: 1px solid {{ header_text }}20;">
-          <a href="{{ locale_prefix }}{{ routes.advertise }}" class="pb-header__cta w-full justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" class="w-[13px] h-[13px]"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"/></svg>
-            <span>Anuncie seu imóvel</span>
-          </a>
-        </div>
-      </div>
+      {%- assign mobile_items = workspace.theme_settings.navigation.mobile_menu | default: nav_items -%}
+      {%- for item in mobile_items -%}
+        {%- assign resolved_url = item.url | replace: '{{routes.properties}}', routes.properties | replace: '{{routes.operation_sale}}', routes.operation_sale | replace: '{{routes.operation_rent}}', routes.operation_rent | replace: '{{routes.blog}}', routes.blog | replace: '{{routes.contact}}', routes.contact | replace: '{{routes.about-us}}', routes['about-us'] | replace: '{{routes.about}}', routes['about-us'] | replace: '{{routes.advertise}}', routes.advertise | replace: '{{routes.favorites}}', routes.favorites -%}
+        {%- assign _resolved_slash = resolved_url | append: '/' -%}
+        <a
+          href="{% unless resolved_url contains '://' %}{{ locale_prefix }}{% endunless %}{{ resolved_url }}"
+          class="pb-header__dropdown-link{% if current_path == resolved_url or current_path == _resolved_slash %} is-active{% endif %}"
+          @click="mobileOpen = false"
+          {% if item.target == '_blank' %}target="_blank" rel="noopener"{% endif %}
+        >{{ item.label }}</a>
+      {%- endfor -%}
     </div>
   </nav>
 </header>

@@ -2,7 +2,6 @@
 {% block content %}
   {% section 'advertise/hero' %}
   {% section 'advertise/form' %}
-  {% section 'home/contact-section' %}
 {% endblock %}
 
 {% schema %}

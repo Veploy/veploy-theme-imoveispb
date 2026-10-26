@@ -12,60 +12,103 @@
   .pb-contact__heading {
     font-family: var(--font-heading);
     font-size: 30px;
-    font-weight: 300;
+    font-weight: 400;
     line-height: 1.2em;
     color: #181A20;
   }
   .pb-contact__lead {
     font-family: var(--font-heading);
-    font-size: 30px;
-    font-weight: 300;
-    line-height: 1.3em;
+    font-size: 25px;
+    font-weight: 400;
+    line-height: 1.2em;
     color: #181A20;
   }
   .pb-contact__lead i { font-style: italic; }
+  /* Celular: tudo centralizado, como no original — títulos 30/39, textos 20/26,
+     respiro lateral de 3vw + 10px e formulário numa coluna com o botão no meio */
   @media (max-width: 767px) {
-    .pb-contact__heading, .pb-contact__lead { font-size: 24px; }
+    .pb-contact { padding-inline: calc(3vw + 10px); }
+    .pb-contact__banner-wrap { margin-inline: -10px; }
+    .pb-contact__block { gap: 20px; padding-top: 70px; text-align: center; }
+    .pb-contact__heading { font-size: 30px; line-height: 39px; }
+    .pb-contact__lead { font-size: 20px; line-height: 26px; }
+    .pb-contact__sub { font-size: 20px; line-height: 26px; }
+    .pb-contact__block { padding-bottom: 25px; }
+    .pb-contact__block + .pb-contact__block { padding-top: 25px; }
+    .pb-contact__channels { grid-template-columns: 1fr; gap: 55px; margin-top: 55px; }
+    .pb-contact__socials { justify-content: center; }
+    .pb-contact__form-lead { margin-bottom: 40px; }
+    .pb-contact__submit-wrap { display: flex; justify-content: center; }
+    .pb-contact__submit-wrap .pb-form__submit { width: auto; padding-inline: 24px; }
   }
   .pb-contact__sub {
     font-family: var(--font-heading);
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 400;
     line-height: 1.2em;
     color: #181A20;
     margin-bottom: 14px;
   }
+  .pb-contact__info { font-family: var(--font-body); font-size: 15px; line-height: 22px; color: #717171; }
+  /* Redes: só o ícone, na cor do texto, como no original */
   .pb-contact__social {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 4px;
-    background: #181A20;
-    color: #fff;
-    transition: opacity .2s;
+    width: 26px;
+    height: 26px;
+    color: #666158;
+    transition: color .2s;
   }
-  .pb-contact__social:hover { opacity: .8; }
-  .pb-contact__social svg { width: 15px; height: 15px; fill: currentColor; }
+  .pb-contact__social:hover { color: #181A20; }
+  .pb-contact__social svg { width: 18px; height: 18px; fill: currentColor; }
   .pb-contact__banner {
-    min-height: 320px;
+    position: relative;
+    min-height: 305px;
     border-radius: 4px;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
+    overflow: hidden;
+  }
+  /* Véu escuro sobre o banner, conferido no Elementor de produção
+     (post-63.css, container 2139f65): degradê 180deg de #02010100 até
+     #000000E3 aplicado a 58% de opacidade (--overlay-opacity:0.58).
+     Faltava no tema — a foto entrava sem escurecimento nenhum. */
+  .pb-contact__banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: .58;
+    background-image: linear-gradient(180deg, #02010100 0%, #000000E3 100%);
+    pointer-events: none;
+  }
+
+  /* Em produção o mapa está num container de topo, na largura inteira da
+     página, com 1% de padding. Aqui ele nasce dentro do .pb-section, que já
+     aplica 5% de cada lado — somar o 1% deixava o mapa com 6% e estreito.
+     O `calc(50% - 50vw)` cancela o padding do pai e devolve a largura total
+     da viewport; o padding daqui fica sendo o único respiro.
+     O body tem overflow-x:hidden, então o 50vw não gera rolagem horizontal
+     quando existe barra de rolagem vertical.
+     O 1% de produção vale para cima e para baixo; nas laterais são 1.5%,
+     folga maior pedida no ajuste — é só esse segundo número que mexe na
+     margem esquerda/direita. */
+  .pb-contact__map {
+    margin-inline: calc(50% - 50vw);
+    padding: 1% 1.50%;
   }
 </style>
 
 <section {{ section_attrs }} class="pb-contact pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
   {%- if s.image != blank %}
-  <div class="pb-container pt-[150px]">
+  <div class="pb-contact__banner-wrap pt-[11px] mx-[-2vw]">
     <div class="pb-contact__banner" style="background-image: url('{{ s.image }}');" role="img" aria-label="{{ workspace.name }}"></div>
   </div>
   {%- endif %}
 
   {%- comment -%} Bloco 1: canais de atendimento {%- endcomment -%}
-  <div class="pb-container grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 pt-[80px] pb-[60px]">
+  <div class="pb-container !mb-0 pb-contact__block grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_710px] gap-10 lg:gap-5 pt-[60px] lg:pt-[110px] pb-[65px]">
     <h1 class="pb-contact__heading">{{ s.eyebrow | default: 'Canais de atendimento' }}</h1>
 
     <div>
@@ -75,10 +118,10 @@
       </p>
       {%- endif %}
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-10 mt-[50px]">
+      <div class="pb-contact__channels grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-10 mt-[55px]">
         <div>
           <h2 class="pb-contact__sub">{{ s.service_title | default: 'Entre em contato' }}</h2>
-          <ul class="pb-text flex flex-col gap-3">
+          <ul class="pb-contact__info flex flex-col gap-[15px]">
             {%- if theme_settings.contact.whatsapp != blank %}
             <li><a href="{{ _wa | default: '#' }}" target="_blank" rel="noopener" class="hover:text-[#181A20]">{{ theme_settings.contact.whatsapp }}</a></li>
             {%- endif %}
@@ -87,7 +130,7 @@
             {%- endif %}
           </ul>
 
-          <div class="flex items-center gap-2.5 mt-6">
+          <div class="pb-contact__socials flex items-center gap-5 mt-6">
             {%- if theme_settings.contact.facebook != blank %}
             <a href="{{ theme_settings.contact.facebook }}" target="_blank" rel="noopener" class="pb-contact__social" aria-label="Facebook">
               <svg viewBox="0 0 320 512"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg>
@@ -113,7 +156,7 @@
 
         <div>
           <h2 class="pb-contact__sub">{{ s.location_title | default: 'Conheça nosso espaço' }}</h2>
-          <ul class="pb-text flex flex-col gap-4">
+          <ul class="pb-contact__info flex flex-col gap-[15px]">
             {%- if theme_settings.contact.address != blank %}<li>{{ theme_settings.contact.address }}</li>{% endif %}
             {%- if theme_settings.contact.hours != blank %}<li>{{ theme_settings.contact.hours }}</li>{% endif %}
           </ul>
@@ -123,12 +166,12 @@
   </div>
 
   {%- comment -%} Bloco 2: formulário {%- endcomment -%}
-  <div class="pb-container border-t border-[#E7E0D2] pt-[60px] pb-[90px] grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14">
+  <div class="pb-container !mb-0 border-t border-[#E7E0D2] pb-contact__block pt-[65px] pb-[70px] grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_710px] gap-10 lg:gap-5">
     <h2 class="pb-contact__heading">{{ s.form_eyebrow | default: 'Envie-nos uma mensagem' }}</h2>
 
     <div>
       {%- if s.form_title != blank or s.form_title_italic != blank %}
-      <p class="pb-contact__lead mb-8">
+      <p class="pb-contact__lead pb-contact__form-lead mb-10">
         {%- if s.form_title_italic != blank %}<i>{{ s.form_title_italic }}</i> {% endif %}{{ s.form_title -}}
       </p>
       {%- endif %}
@@ -141,7 +184,7 @@
         <p class="pb-form__notice mb-6 border border-red-200 bg-red-50 text-red-800">{{ form.errors | first }}</p>
         {% endif %}
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-[9px] gap-y-5">
           <div>
             <input type="text" name="contact[name]" placeholder="Nome completo" class="pb-form__field" aria-label="Nome completo">
           </div>
@@ -162,7 +205,7 @@
           <div class="md:col-span-2 cf-turnstile" data-sitekey="{{ workspace.settings.turnstile.site_key }}"></div>
           {% endif %}
 
-          <div class="pt-2">
+          <div class="pb-contact__submit-wrap md:block">
             <button type="submit" class="pb-form__submit">{{ s.submit_text | default: 'Enviar mensagem' }}</button>
           </div>
         </div>
@@ -170,12 +213,19 @@
     </div>
   </div>
 
-  {%- comment -%} Mapa do endereço, igual ao rodapé da página original {%- endcomment -%}
+  {%- comment -%}
+    Mapa do endereço, no pé da página. Medidas do Elementor de produção
+    (post-63.css): o container 138fd7f tem 1% de padding nos quatro lados —
+    é ele que dá o respiro até o rodapé e afasta o mapa das bordas — e o
+    widget ce309b3 tem 4px de canto. A largura total vem do .pb-contact__map,
+    lá em cima. A altura fica em 400px, e não nos 350px de produção, porque
+    aqui o mapa ocupa a viewport inteira e 350px o deixava achatado.
+  {%- endcomment -%}
   {%- if theme_settings.contact.address != blank %}
-  <div class="w-full">
+  <div class="pb-contact__map">
     <iframe
       src="https://www.google.com/maps?q={{ theme_settings.contact.address | url_encode }}&output=embed"
-      class="w-full h-[400px] border-0"
+      class="w-full h-[400px] rounded-[4px] border-0"
       loading="lazy"
       referrerpolicy="no-referrer-when-downgrade"
       title="Localização de {{ workspace.name }}"

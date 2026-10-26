@@ -12,7 +12,7 @@
 {% assign inp_id = id | default: 'phone' | append: name %}
 {% assign inp_class = input_class | default: '' %}
 
-<div class="phone-input" x-data="phoneInput" data-init="{{ init }}"{% if required != false %} data-required{% endif %}>
+<div class="phone-input" x-data="phoneInput" data-init="{{ init | escape }}"{% if required != false %} data-required{% endif %}>
   {% if label != blank %}
   <label for="{{ inp_id }}" class="block text-base font-semibold text-gray-900 mb-2">{{ label }}</label>
   {% endif %}

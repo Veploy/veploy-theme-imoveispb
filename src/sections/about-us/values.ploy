@@ -1,45 +1,53 @@
 {%- comment -%}
-  "Diferenciais" do Sobre nós: cabeçalho com linha à esquerda e, à direita, a
-  lista de itens separados por um filete bege à esquerda de cada bloco.
+  "Diferenciais" do Sobre nós: cabeçalho e texto em cima e, embaixo, os itens
+  em quatro cartões de borda bege lado a lado (como os serviços da história).
+  No celular os itens ficam empilhados, sem cartão — igual ao original.
 {%- endcomment -%}
 {%- assign s = sections['about-us/values'] -%}
 {%- assign items = s.values.items | default: empty -%}
 
 <style>
-  .pb-values__item {
-    padding: 20px 15px 20px 30px;
-    border-left: 1px solid #E7E0D2;
-  }
+  .pb-values__item { display: flex; flex-direction: column; gap: 14px; }
   .pb-values__item h3 {
     font-family: var(--font-heading);
     font-size: 20px;
     font-weight: 400;
-    line-height: 1.2em;
+    line-height: 24px;
     color: #181A20;
-    margin-bottom: 15px;
+  }
+  @media (min-width: 1025px) {
+    .pb-values__item { padding: 30px; border: 1px solid #E7E0D2; border-radius: 4px; }
   }
 </style>
 
 <section {{ section_attrs }} class="pb-values pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="pb-container pt-[70px] pb-[90px] grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-    <div>
-      {% include 'components/home-section-header',
-         eyebrow: s.eyebrow,
-         heading: s.title,
-         heading_highlight: s.title_highlight,
-         heading_after: s.title_after %}
-      {%- if s.description != blank %}
-      <div class="pb-text max-w-[710px] mt-5">{{ s.description }}</div>
-      {%- endif %}
-      <div class="flex items-center mt-6">
-        <span class="pb-divider"></span>
-      </div>
+  <div class="pb-container !mb-0 pt-[60px] pb-[90px]">
+    {%- comment -%}
+      Entrada, de produção (post-59.css): cabeçalho 2539ee2 fadeInUp; itens
+      fadeInRight com 0 / 200 / 300 / 300ms.
+    {%- endcomment -%}
+    <div data-reveal="up">
+    {% include 'components/home-section-header',
+       eyebrow: s.eyebrow,
+       heading: s.title,
+       heading_highlight: s.title_highlight,
+       heading_after: s.title_after,
+       soft: true %}
+    {%- if s.description != blank %}
+    <div class="pb-text max-w-[710px] mt-[5px]">{{ s.description }}</div>
+    {%- endif %}
+    <div class="flex items-center mt-[30px]">
+      <span class="pb-divider !my-0"></span>
+    </div>
     </div>
 
     {%- if items != empty and items.size > 0 %}
-    <div class="flex flex-col gap-2">
+    <div class="grid grid-cols-1 min-[1025px]:grid-cols-4 gap-x-5 gap-y-[60px] mt-[60px] lg:mt-[93px]">
       {%- for item in items -%}
-      <div class="pb-values__item">
+      {%- if forloop.index0 == 0 -%}{%- assign _delay = 0 -%}
+      {%- elsif forloop.index0 == 1 -%}{%- assign _delay = 200 -%}
+      {%- else -%}{%- assign _delay = 300 -%}{%- endif -%}
+      <div class="pb-values__item" data-reveal="right" data-reveal-delay="{{ _delay }}">
         <h3>{{ item.title }}</h3>
         <p class="pb-text">{{ item.description }}</p>
       </div>

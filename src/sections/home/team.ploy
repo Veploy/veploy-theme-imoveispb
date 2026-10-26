@@ -33,7 +33,7 @@
     transition: transform .9s cubic-bezier(.165, .84, .44, 1);
   }
   .pb-team__member:hover::after { transform: scaleX(1); }
-  .pb-team__photo { overflow: hidden; border-radius: 4px; }
+  .pb-team__photo { overflow: hidden; border: 3px solid #333; border-radius: 4px; }
   .pb-team__photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 1s; }
   .pb-team__member:hover .pb-team__photo img { transform: scale(1.04); }
   .pb-team__name {
@@ -42,7 +42,13 @@
     font-weight: 400;
     line-height: 1.2em;
     color: #FDFBF7;
-    padding-top: 20px;
+    padding-top: 25px;
+  }
+  /* O título fica 30px para dentro do sobretítulo no desktop, como no original */
+  @media (min-width: 1025px) { .pb-team .pb-section-header__title { padding-left: 30px; } }
+  @media (max-width: 767px) {
+    .pb-team .pb-title { font-size: 25px; line-height: 1.3em; }
+    .pb-team__cta { display: none; }
   }
   .pb-team__role {
     font-family: var(--font-body);
@@ -55,10 +61,10 @@
 </style>
 
 <section {{ section_attrs }} class="pb-team pb-section{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="pb-container pt-[100px] pb-[60px]">
+  <div class="pb-container !mb-0 pt-[105px] pb-[80px]">
     {%- comment -%} Cabeçalho na metade direita, como no original {%- endcomment -%}
     <div class="lg:flex lg:justify-end">
-      <div class="w-full lg:w-1/2 lg:pl-[30px]">
+      <div class="w-full lg:w-1/2">
         {% include 'components/home-section-header',
            eyebrow: s.eyebrow,
            heading: s.title,
@@ -69,9 +75,9 @@
     </div>
 
     {%- if s.cta_text != blank %}
-    <div class="flex items-center gap-6 mt-2">
-      <span class="pb-divider pb-divider--light"></span>
-      <a href="{% unless _cta contains '://' %}{{ locale_prefix }}{% endunless %}{{ _cta }}" class="pb-link pb-link--light">
+    <div class="flex items-center gap-5 min-h-[14px] mt-[29px]">
+      <span class="pb-divider pb-divider--light !my-0"></span>
+      <a href="{% unless _cta contains '://' %}{{ locale_prefix }}{% endunless %}{{ _cta }}" class="pb-link pb-link--light pb-team__cta">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"/></svg>
         <span>{{ s.cta_text }}</span>
       </a>
@@ -79,7 +85,7 @@
     {%- endif %}
 
     {%- if members != empty and members.size > 0 %}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mt-[29px]">
       {%- for m in members -%}
       <div class="pb-team__member">
         {%- if m.image != blank %}

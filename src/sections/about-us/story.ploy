@@ -1,7 +1,10 @@
 {%- comment -%}
   "Nossa história": faixa em degradê branco → #F8F8F8 com a citação de abertura,
   a foto da sede à esquerda e o texto institucional à direita; embaixo, os quatro
-  serviços em cartões de borda bege.
+  serviços em cartões de borda bege. No celular a foto desce para depois do
+  texto, como no original.
+  O título segue o padrão da doc: title + title_highlight (destaque, peso 400)
+  + title_after.
 {%- endcomment -%}
 {%- assign s = sections['about-us/story'] -%}
 {%- assign services = s.services.items | default: empty -%}
@@ -17,9 +20,16 @@
     color: #373630;
     max-width: 730px;
   }
-  .pb-story__quote span { font-weight: 600; }
-  @media (max-width: 1024px) { .pb-story__quote { font-size: 30px; } }
-  @media (max-width: 767px)  { .pb-story__quote { font-size: 24px; } }
+  .pb-story__quote span { font-weight: 400; }
+  @media (max-width: 1024px) { .pb-story__quote { font-size: 30px; line-height: 39px; } }
+  .pb-story__title { font-family: var(--font-heading); font-size: 40px; font-weight: 300; line-height: 48px; color: #373630; }
+  .pb-story__title span { font-weight: 400; }
+  @media (max-width: 1024px) { .pb-story__title { font-size: 25px; line-height: 32.5px; } }
+  /* No celular o título fica centralizado e o link some, como no original */
+  @media (max-width: 767px) {
+    .pb-story__title { padding-inline: 12px; text-align: center; }
+    .pb-story__cta { display: none; }
+  }
 
   .pb-story__service {
     display: flex;
@@ -30,6 +40,7 @@
     border: 1px solid #E7E0D2;
     border-radius: 4px;
   }
+  .pb-story__service p { margin-top: 6px; }
   .pb-story__service h3 {
     font-family: var(--font-heading);
     font-size: 20px;
@@ -40,29 +51,33 @@
 </style>
 
 <section {{ section_attrs }} id="nossa-historia" class="pb-story pb-section{% if section_class %} {{ section_class }}{% endif %}">
-  <div class="pb-container pt-[90px] pb-[80px]">
+  <div class="pb-container !mb-0 pt-[60px] lg:pt-[80px] pb-[80px]">
     {%- if s.quote != blank or s.quote_highlight != blank %}
-    <h2 class="pb-story__quote">
+    {%- comment -%}
+      Entrada, de produção (post-59.css): citação 015f5c7 fadeInLeft; bloco
+      foto + texto 15c02c1 fadeInUp; cartões de serviço fadeInLeft 150ms.
+    {%- endcomment -%}
+    <h2 class="pb-story__quote" data-reveal="left">
       {{- s.quote }}{% if s.quote_highlight != blank %} <span>{{ s.quote_highlight }}</span>{% endif %}{% if s.quote_after != blank %} {{ s.quote_after }}{% endif -%}
     </h2>
     {%- endif %}
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-start mt-[60px]">
+    <div class="grid grid-cols-1 lg:grid-cols-[627px_minmax(0,1fr)] gap-10 lg:gap-[80px] lg:items-center mt-[60px]" data-reveal="up">
       {%- if s.image != blank %}
-      <div class="overflow-hidden rounded-[4px]">
+      <div class="overflow-hidden rounded-[4px] order-2 lg:order-none">
         <img src="{{ s.image }}" alt="{{ workspace.name }}" class="w-full h-auto object-cover" loading="lazy" width="1214" height="1000">
       </div>
       {%- endif %}
 
       <div>
-        <h3 class="pb-title">
-          {{- s.title }}{% if s.title_highlight != blank %} <span>{{ s.title_highlight }}</span>{% endif -%}
+        <h3 class="pb-story__title">
+          {{- s.title }}{% if s.title_highlight != blank %} <span>{{ s.title_highlight }}</span>{% endif %}{% if s.title_after != blank %} {{ s.title_after }}{% endif -%}
         </h3>
         {%- if s.description != blank %}
-        <div class="pb-text max-w-[594px] pt-[30px] pb-[20px]">{{ s.description }}</div>
+        <div class="pb-text max-w-[594px] pt-[30px] pb-[45px]">{{ s.description }}</div>
         {%- endif %}
         {%- if s.cta_text != blank %}
-        <a href="{% unless _cta contains '://' %}{{ locale_prefix }}{% endunless %}{{ _cta }}" class="pb-link">
+        <a href="{% unless _cta contains '://' %}{{ locale_prefix }}{% endunless %}{{ _cta }}" class="pb-link pb-story__cta">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"/></svg>
           <span>{{ s.cta_text }}</span>
         </a>
@@ -71,9 +86,9 @@
     </div>
 
     {%- if services != empty and services.size > 0 %}
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mt-[70px]">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mt-[80px]">
       {%- for item in services -%}
-      <div class="pb-story__service">
+      <div class="pb-story__service" data-reveal="left" data-reveal-delay="150">
         <h3>{{ item.title }}</h3>
         <p class="pb-text">{{ item.description }}</p>
       </div>
@@ -94,6 +109,7 @@
     { "type": "image_picker", "id": "image", "label": "Foto da sede" },
     { "type": "text", "id": "title", "label": "Título" },
     { "type": "text", "id": "title_highlight", "label": "Título — trecho em destaque" },
+    { "type": "text", "id": "title_after", "label": "Título — depois do destaque" },
     { "type": "richtext", "id": "description", "label": "Texto" },
     { "type": "text", "id": "cta_text", "label": "Texto do link", "default": "Anuncie seu imóvel" },
     { "type": "url", "id": "cta_url", "label": "Link" },

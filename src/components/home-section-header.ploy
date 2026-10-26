@@ -3,30 +3,39 @@
   título em Reckless Neue (com o trecho em destaque em `heading_highlight`) e,
   abaixo, uma linha fina que empurra o link "Ver mais imóveis" para a direita.
 
+  Medidas do original: 5px entre o sobretítulo e o título, 20px do título até
+  a linha, e o link centrado na altura da linha. No celular o link some e só a
+  linha fica.
+
   Params:
-    eyebrow, heading, heading_highlight, heading_after
+    eyebrow, heading, heading_highlight, heading_middle, heading_highlight2, heading_after
+                  (título em partes, no padrão title_before/highlight/after da doc:
+                  os trechos "highlight" vão destacados)
     cta_text, cta_url
-    align     'left' (padrão) | 'center'
-    variant   'light' (padrão, sobre fundo claro) | 'dark' (sobre fundo escuro)
-    italic    true para o título em itálico (seções "Nosso time" e "Destaque")
+    align         'left' (padrão) | 'center' — 'center-mobile' centraliza só no celular
+    variant       'light' (padrão, sobre fundo claro) | 'dark' (sobre fundo escuro)
+    italic        true para o título em itálico (seções "Nosso time" e "Destaque")
+    show_divider  true para desenhar a linha mesmo sem link
+    soft          true para o destaque em peso 400 (páginas internas); o padrão é 600 (home)
 {%- endcomment -%}
 {%- assign _align = align | default: 'left' -%}
 {%- assign _dark = false -%}
+{%- comment -%} Sem espaço antes do trecho final quando ele começa com pontuação (", com a…") {%- endcomment -%}
+{%- assign _after_first = heading_after | slice: 0 -%}
+{%- assign _after_sep = ' ' -%}
+{%- if _after_first == ',' or _after_first == '.' or _after_first == ';' or _after_first == ':' -%}{%- assign _after_sep = '' -%}{%- endif -%}
 {%- if variant == 'dark' -%}{%- assign _dark = true -%}{%- endif -%}
-
-<div class="pb-section-header{% if _align == 'center' %} text-center{% endif %}">
+<div class="pb-section-header{% if _align == 'center' %} pb-section-header--center{% elsif _align == 'center-mobile' %} pb-section-header--center-mobile{% endif %}">
   {%- if eyebrow != blank %}
-  <span class="pb-eyebrow{% if _dark %} pb-eyebrow--light{% endif %} block mb-3">{{ eyebrow }}</span>
+  <span class="pb-eyebrow{% if _dark %} pb-eyebrow--light{% endif %} pb-section-header__eyebrow">{{ eyebrow }}</span>
   {%- endif %}
-
   {%- if heading != blank or heading_highlight != blank %}
-  <h2 class="pb-title{% if _dark %} pb-title--light{% endif %}{% if italic %} pb-title--italic{% endif %}{% if _align == 'center' %} mx-auto{% endif %}">
-    {{- heading }}{% if heading_highlight != blank %} <span>{{ heading_highlight }}</span>{% endif %}{% if heading_after != blank %} {{ heading_after }}{% endif -%}
+  <h2 class="pb-title{% if _dark %} pb-title--light{% endif %}{% if italic %} pb-title--italic{% endif %}{% if soft %} pb-title--soft{% endif %} pb-section-header__title">
+    {{- heading }}{% if heading_highlight != blank %} <span>{{ heading_highlight }}</span>{% endif %}{% if heading_middle != blank %} {{ heading_middle }}{% endif %}{% if heading_highlight2 != blank %} <span>{{ heading_highlight2 }}</span>{% endif %}{% if heading_after != blank %}{{ _after_sep }}{{ heading_after }}{% endif -%}
   </h2>
   {%- endif %}
-
   {%- if cta_text != blank %}
-  <div class="flex items-center gap-6 mt-2">
+  <div class="pb-section-header__rule">
     <span class="pb-divider{% if _dark %} pb-divider--light{% endif %}"></span>
     <a href="{{ cta_url }}" class="pb-link{% if _dark %} pb-link--light{% endif %}">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" fill="currentColor" aria-hidden="true"><path d="M313.941 216H12c-6.627 0-12 5.373-12 12v56c0 6.627 5.373 12 12 12h301.941v46.059c0 21.382 25.851 32.09 40.971 16.971l86.059-86.059c9.373-9.373 9.373-24.569 0-33.941l-86.059-86.059c-15.119-15.119-40.971-4.411-40.971 16.971V216z"/></svg>
@@ -34,7 +43,7 @@
     </a>
   </div>
   {%- elsif show_divider %}
-  <div class="flex items-center mt-2">
+  <div class="pb-section-header__rule">
     <span class="pb-divider{% if _dark %} pb-divider--light{% endif %}"></span>
   </div>
   {%- endif %}

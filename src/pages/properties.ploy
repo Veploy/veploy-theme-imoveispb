@@ -64,539 +64,150 @@
 }
 </script>
 {%- endif -%}
-{%- assign _initial_view = initial_view | default: 'grid' -%}
-<section class="vp-page vp-properties-list min-h-screen" x-data="{ filtersOpen: false, view: '{{ _initial_view }}' }" x-effect="document.body.style.overflow = filtersOpen ? 'hidden' : ''" x-init="$watch('view', v => { if (typeof VpSetViewMode === 'function') VpSetViewMode(v); setTimeout(() => typeof vpInitSwipers === 'function' && vpInitSwipers(document), 50) })">
-  <div class="vp-page__container max-w-screen-xl mx-auto px-[3%] py-8">
-    <div class="vp-page__layout flex flex-col lg:flex-row gap-8">
-      <!-- Filters Sidebar (hidden on mobile) -->
-      <aside class="vp-page__sidebar hidden lg:block lg:w-[330px] flex-shrink-0 sticky top-4 self-start">
-        {% include 'components/property-filters' %}
-      </aside>
+{%- comment -%}
+  Listagem da Passos & Buytendorp, igual ao /imoveis/venda/ do original:
+  filtros numa coluna de 320px à esquerda; à direita o título da busca, as abas
+  Venda/Locação com o "Ordenar por" na mesma linha, a contagem e os cards em
+  duas colunas. No mobile os filtros abrem numa gaveta pelo botão "Filtrar".
+{%- endcomment -%}
+{%- assign _arch = sections['archive:property'] -%}
+{%- assign _op = filters.operation | default: 'sale' -%}
+{%- if _op == 'rent' -%}
+  {%- assign _list_title = _arch.title_rent | default: 'Imóveis para alugar em Campo Grande - MS e região' -%}
+{%- else -%}
+  {%- assign _list_title = _arch.title_sale | default: 'Imóveis à venda em Campo Grande - MS e região' -%}
+{%- endif -%}
+{%- assign default_sort = theme_settings.listings.default_sort | default: 'recent' -%}
+{%- assign current_sort = filters.sortby | default: default_sort -%}
 
-      <!-- Mobile Filters Drawer -->
-      <div
-        x-show="filtersOpen"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        class="lg:hidden fixed inset-0 bg-black/50 z-[200]"
-        @click="filtersOpen = false"
-        x-cloak
-      ></div>
-      <div
-        x-show="filtersOpen"
-        x-transition:enter="transition ease-out duration-300"
-        x-transition:enter-start="translate-x-full"
-        x-transition:enter-end="translate-x-0"
-        x-transition:leave="transition ease-in duration-200"
-        x-transition:leave-start="translate-x-0"
-        x-transition:leave-end="translate-x-full"
-        class="lg:hidden fixed top-0 right-0 bottom-0 w-full max-w-[340px] bg-white z-[201] overflow-y-auto shadow-2xl"
-        @click.outside="filtersOpen = false"
-        x-cloak
-      >
-        <!-- Drawer Header -->
-        <div class="sticky top-0 bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10">
-          <h2 class="text-lg font-semibold text-gray-900">{{ t.search.filters | default: 'Filtros' }}</h2>
-          <button @click="filtersOpen = false" class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <!-- Drawer Content -->
-        <div class="p-4">
-          {% include 'components/property-filters' %}
-        </div>
+<section
+  class="vp-page vp-properties-list pb-section bg-white"
+  x-data="{
+    filtersOpen: false,
+    withParam(key, value) {
+      const url = new URL(window.location.href);
+      if (value === '' || value === null) url.searchParams.delete(key); else url.searchParams.set(key, value);
+      if (key !== 'page') url.searchParams.delete('page');
+      return url.toString();
+    }
+  }"
+  x-effect="document.body.style.overflow = filtersOpen ? 'hidden' : ''"
+>
+  <div class="pb-container pt-[40px] pb-[40px] flex flex-col lg:flex-row gap-[30px]">
+
+    <aside class="hidden lg:block lg:w-[320px] flex-shrink-0 self-start">
+      {% include 'components/property-filters' %}
+    </aside>
+
+    {%- comment -%}
+      Filtros no celular: como no original, um botão escuro "Filtrar imóveis"
+      fixo no pé da tela abre o painel branco em tela cheia, com "X Fechar" no
+      topo e os mesmos filtros da coluna do desktop.
+    {%- endcomment -%}
+    <div
+      x-show="filtersOpen"
+      x-transition:enter="transition ease-out duration-300" x-transition:enter-start="translate-x-full" x-transition:enter-end="translate-x-0"
+      x-transition:leave="transition ease-in duration-200" x-transition:leave-start="translate-x-0" x-transition:leave-end="translate-x-full"
+      class="pb-filter-panel lg:hidden"
+      @keydown.escape.window="filtersOpen = false"
+      role="dialog"
+      aria-label="{{ t.search.filters | default: 'Filtros' }}"
+      x-cloak
+    >
+      <div class="flex justify-end">
+        <button type="button" @click="filtersOpen = false" class="pb-filter-panel__close">
+          <span aria-hidden="true">X</span> Fechar
+        </button>
+      </div>
+      {% include 'components/property-filters' %}
+    </div>
+
+    <button type="button" class="pb-filter-fab lg:hidden" @click="filtersOpen = true" x-show="!filtersOpen">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="currentColor" aria-hidden="true"><path d="M487.976 0H24.028C2.71 0-8.047 25.866 7.058 40.971L192 225.941V432c0 7.831 3.821 15.17 10.237 19.662l80 55.98C298.02 518.69 320 507.493 320 487.98V225.941l184.947-184.97C520.021 25.896 509.338 0 487.976 0z"/></svg>
+      <span>Filtrar imóveis</span>
+    </button>
+
+    <div class="vp-page__content flex-1 min-w-0">
+      <h1 class="pb-listing__title">{{ _list_title }}</h1>
+
+      <div class="pb-listing__bar">
+        <nav class="pb-listing__tabs" aria-label="Operação">
+          <a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_sale }}" class="pb-listing__tab{% if _op == 'sale' %} is-active{% endif %}"{% if _op == 'sale' %} aria-current="page"{% endif %}>Venda</a>
+          <a href="{{ locale_prefix }}{{ routes.properties }}{{ routes.operation_rent }}" class="pb-listing__tab{% if _op == 'rent' %} is-active{% endif %}"{% if _op == 'rent' %} aria-current="page"{% endif %}>Locação</a>
+        </nav>
+
+        <label class="pb-listing__sort">
+          <span>{{ t.listings.sort_by | default: 'Ordenar por:' }}</span>
+          <select name="sortby" @change="window.location.href = withParam('sortby', $event.target.value)">
+            <option value="recent"{% if current_sort == 'recent' %} selected{% endif %}>{{ t.listings.sort_by_default }} (recentes)</option>
+            <option value="price_asc"{% if current_sort == 'price_asc' %} selected{% endif %}>{{ t.listings.sort_price_asc }}</option>
+            <option value="price_desc"{% if current_sort == 'price_desc' %} selected{% endif %}>{{ t.listings.sort_price_desc }}</option>
+            <option value="area_asc"{% if current_sort == 'area_asc' %} selected{% endif %}>{{ t.listings.sort_area_asc }}</option>
+            <option value="area_desc"{% if current_sort == 'area_desc' %} selected{% endif %}>{{ t.listings.sort_area_desc }}</option>
+          </select>
+        </label>
       </div>
 
-      <!-- Main Content -->
-      <div class="vp-page__content flex-1">
-        <!-- Page Header -->
-        <div class="vp-page__header mb-4">
-          <h1 class="text-2xl font-bold text-gray-900 mb-1">
-            {{ title }}
-          </h1>
-          {% if theme_settings.listings.show_properties_count %}
-          <p class="text-sm text-gray-500">
-            {{ pagination.total_properties }} {{ t.home.properties_found }}
-          </p>
-          {% endif %}
+      {% if theme_settings.listings.show_properties_count != false %}
+      <p class="pb-listing__count">
+        {{ pagination.total_properties }} {% if pagination.total_properties == 1 %}imóvel encontrado{% else %}imóveis encontrados{% endif %}
+      </p>
+      {% endif %}
+
+      {% if properties.size > 0 %}
+        <div class="pb-listing__grid pb-card-grid">
+          {% for property in properties %}
+            {% include 'components/property-card' %}
+          {% endfor %}
         </div>
 
-        <!-- Mobile Filter/Sort Bar -->
-        <div class="lg:hidden sticky top-0 z-40 bg-white py-3 mb-4 border-b border-gray-100 shadow-sm -mx-[3vw] px-[3vw]">
-          <div class="grid grid-cols-2 gap-3">
-          <!-- Filter Button -->
-          <button
-            @click="filtersOpen = true"
-            class="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" />
-            </svg>
-            {{ t.search.filters | default: 'Filtrar' }}
-          </button>
-
-          {%- comment -%} TODO: map toggle mobile — descomentar quando lançar busca por mapa
-          <button
-            @click="view = view === 'map' ? 'grid' : 'map'"
-            :class="view === 'map' ? 'bg-primary text-white border-primary' : 'bg-white text-gray-700 border-gray-200 hover:bg-gray-50'"
-            class="flex items-center justify-center gap-2 px-3 py-2 border rounded-lg font-medium transition-colors text-sm"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-4 h-4">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/>
-            </svg>
-            <span x-text="view === 'map' ? '{{ t.listings.list_view | default: 'Lista' }}' : '{{ t.listings.map_view | default: 'Mapa' }}'"></span>
-          </button>
-          {%- endcomment -%}
-
-          <!-- Sort Button/Dropdown -->
+        {%- comment -%}
+          "Carregar mais", como no original: busca a próxima página e acrescenta
+          os cards na grade. Sem JavaScript, o link leva para a próxima página.
+        {%- endcomment -%}
+        {% if pagination.current_page < pagination.total_pages %}
+          {%- assign _next = pagination.current_page | plus: 1 -%}
           <div
-            class="relative"
+            class="pb-load-more"
             x-data="{
-              sortOpen: false,
-              handleSortChange(value) {
-                const url = new URL(window.location.href);
-                url.searchParams.set('sortby', value);
-                url.searchParams.delete('page');
-                window.location.href = url.toString();
+              next: {{ _next }},
+              last: {{ pagination.total_pages }},
+              loading: false,
+              async load() {
+                if (this.loading) return;
+                this.loading = true;
+                try {
+                  const res = await fetch(withParam('page', this.next), { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                  const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+                  const grid = document.querySelector('.pb-listing__grid');
+                  doc.querySelectorAll('.pb-listing__grid > *').forEach(card => grid.appendChild(document.importNode(card, true)));
+                  if (typeof vpInitSwipers === 'function') vpInitSwipers(grid);
+                  this.next++;
+                } catch (e) {
+                  window.location.href = withParam('page', this.next);
+                } finally {
+                  this.loading = false;
+                }
               }
             }"
+            x-show="next <= last"
           >
-            <button
-              @click="sortOpen = !sortOpen"
-              class="w-full flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors text-sm"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5 0L16.5 21m0 0L12 16.5m4.5 4.5V7.5" />
-              </svg>
-              {{ t.listings.sort_by | default: 'Ordenar' }}
-            </button>
-            <!-- Sort Dropdown -->
-            <div
-              x-show="sortOpen"
-              @click.outside="sortOpen = false"
-              x-transition:enter="transition ease-out duration-150"
-              x-transition:enter-start="opacity-0 scale-95"
-              x-transition:enter-end="opacity-100 scale-100"
-              x-transition:leave="transition ease-in duration-100"
-              x-transition:leave-start="opacity-100 scale-100"
-              x-transition:leave-end="opacity-0 scale-95"
-              class="fixed left-[5%] right-[5%] mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden"
-              x-cloak
-            >
-              {% assign default_sort_mobile = theme_settings.listings.default_sort | default: 'recent' %}
-              {% assign current_sort = filters.sortby | default: default_sort_mobile %}
-              <button @click="handleSortChange('recent')" class="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 transition-colors {% if current_sort == 'recent' %}bg-primary/5 text-primary font-medium{% endif %}">
-                {{ t.listings.sort_default }}
-              </button>
-              <button @click="handleSortChange('price_asc')" class="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 transition-colors {% if current_sort == 'price_asc' %}bg-primary/5 text-primary font-medium{% endif %}">
-                {{ t.listings.sort_price_asc }}
-              </button>
-              <button @click="handleSortChange('price_desc')" class="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 transition-colors {% if current_sort == 'price_desc' %}bg-primary/5 text-primary font-medium{% endif %}">
-                {{ t.listings.sort_price_desc }}
-              </button>
-              <button @click="handleSortChange('area_desc')" class="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 transition-colors {% if current_sort == 'area_desc' %}bg-primary/5 text-primary font-medium{% endif %}">
-                {{ t.listings.sort_area_desc }}
-              </button>
-              <button @click="handleSortChange('area_asc')" class="w-full px-4 py-3 text-left text-sm hover:bg-gray-50 transition-colors {% if current_sort == 'area_desc' %}bg-primary/5 text-primary font-medium{% endif %}">
-                {{ t.listings.sort_area_asc }}
-              </button>
-            </div>
-          </div>
-          </div>
-        </div>
-
-        <!-- Desktop Control Bar -->
-        <div class="hidden lg:flex lg:items-center lg:justify-between gap-4 mb-6 relative z-50">
-          <!-- View Toggle + Clear Filters -->
-          <div class="flex items-center gap-3">
-          <div class="flex items-center gap-1 p-1 bg-gray-100 rounded-lg">
-            <button
-              @click="view = 'grid'"
-              :class="view === 'grid' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'"
-              class="p-1.5 rounded-md transition-all"
-              aria-label="Visualização em grade"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                <path d="M3 3h8v8H3zm0 10h8v8H3zm10-10h8v8h-8zm0 10h8v8h-8z"/>
-              </svg>
-            </button>
-            <button
-              @click="view = 'list'"
-              :class="view === 'list' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'"
-              class="p-1.5 rounded-md transition-all"
-              aria-label="Visualização em lista"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                <path d="M3 5h18v2H3zm0 6h18v2H3zm0 6h18v2H3z"/>
-              </svg>
-            </button>
-            {%- comment -%} TODO: map view button — descomentar quando lançar busca por mapa {%- endcomment -%}
-            {%- comment -%}
-            <button
-              @click="view = 'map'"
-              :class="view === 'map' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'"
-              class="p-1.5 rounded-md transition-all"
-              aria-label="Buscar no mapa"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 010-5 2.5 2.5 0 010 5z"/>
-              </svg>
-            </button>
-            {%- endcomment -%}
-          </div>
-
-          {%- assign _has_filters = false -%}
-          {%- for f in filters -%}
-            {%- unless f[0] == 'operation' or f[0] == 'sortby' -%}
-              {%- if f[1] != blank -%}{%- assign _has_filters = true -%}{%- endif -%}
-            {%- endunless -%}
-          {%- endfor -%}
-          {% if _has_filters %}
-          {% assign clear_operation = filters.operation | default: 'sale' %}
-          {% if clear_operation == 'rent' %}
-            {% assign operation_segment = routes.operation_rent | default: '/alugar' %}
-          {% elsif clear_operation == 'short_term' %}
-            {% assign operation_segment = routes.operation_short_term | default: '/temporada' %}
-          {% else %}
-            {% assign operation_segment = routes.operation_sale | default: '/comprar' %}
-          {% endif %}
-          <a
-            href="{{ routes.properties | default: '/imoveis' }}{{ operation_segment }}"
-            class="text-sm text-gray-500 hover:text-primary transition-colors whitespace-nowrap"
-          >
-            {{ t.search.clear_filters }}
-          </a>
-          {% endif %}
-          </div>
-
-          <!-- Sort Controls -->
-          <div class="flex items-center gap-3">
-            <!-- Sort Dropdown -->
-            <div class="inline-flex items-center gap-3 py-2.5 bg-white/80 backdrop-blur-sm rounded-xl relative z-[110]">
-              <div
-                class="min-w-[180px]"
-                x-data="
-                  {
-                    handleSortChange() {
-                      this.$nextTick(() => {
-                        const select = this.$el.querySelector('select[name=sortby]');
-                        if (!select || !select.value) return;
-
-                        const sortValue = select.value;
-
-                        // Build new URL preserving all current params
-                        const url = new URL(window.location.href);
-                        url.searchParams.set('sortby', sortValue);
-                        url.searchParams.delete('page'); // Reset to page 1 when sorting
-
-                        window.location.href = url.toString();
-                      });
-                    }
-                  }
-                "
-                x-init="$watch('$el.querySelector(\'select[name=sortby]\')', () => handleSortChange())"
-              >
-                {% assign default_sort = theme_settings.listings.default_sort | default: 'recent' %}
-                {% assign current_sort = filters.sortby | default: default_sort %}
-                {% comment %} Build default label with configured sort name {% endcomment %}
-                {% case default_sort %}
-                  {% when 'price_asc' %}
-                    {% assign default_sort_label = t.listings.sort_price_asc %}
-                  {% when 'price_desc' %}
-                    {% assign default_sort_label = t.listings.sort_price_desc %}
-                  {% when 'area_desc' %}
-                    {% assign default_sort_label = t.listings.sort_area_desc %}
-                  {% when 'area_asc' %}
-                    {% assign default_sort_label = t.listings.sort_area_asc %}
-                  {% else %}
-                    {% assign default_sort_label = t.listings.sort_default %}
-                {% endcase %}
-                {% capture default_option_label %}{{ t.listings.sort_by_default }} ({{ default_sort_label }}){% endcapture %}
-                {% comment %} Build options excluding the one that matches default_sort {% endcomment %}
-                {% capture sort_opts %}{{ default_sort }}|{{ default_option_label }}{% unless default_sort == 'recent' %}||recent|{{ t.listings.sort_default }}{% endunless %}{% unless default_sort == 'price_asc' %}||price_asc|{{ t.listings.sort_price_asc }}{% endunless %}{% unless default_sort == 'price_desc' %}||price_desc|{{ t.listings.sort_price_desc }}{% endunless %}{% unless default_sort == 'area_asc' %}||area_asc|{{ t.listings.sort_area_asc }}{% endunless %}{% unless default_sort == 'area_desc' %}||area_desc|{{ t.listings.sort_area_desc }}{% endunless %}{% endcapture %}
-                <div @change="handleSortChange()">
-                  {% render 'components/global/form/select',
-                    options_str: sort_opts,
-                    name: 'sortby',
-                    init_selected: current_sort,
-                    placeholder: sort_placeholder,
-                    close_on_select: true,
-                    auto_width: true
-                  %}
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Properties Grid / List / Map -->
-        {% if properties.size > 0 %}
-          <!-- Standard Grid View -->
-          <div
-            x-show="view === 'grid'"
-            class="grid grid-cols-1 md:grid-cols-2 gap-6"
-            {% if _initial_view == 'list' or _initial_view == 'map' %}style="display:none"{% endif %}
-          >
-            {% for property in properties %}
-              {% include 'components/property-card' %}
-            {% endfor %}
-          </div>
-
-          <!-- Standard List View -->
-          <div
-            x-show="view === 'list'"
-            class="flex flex-col gap-4"
-            {% if _initial_view == 'grid' or _initial_view == 'map' %}style="display:none"{% endif %}
-          >
-            {% for property in properties %}
-              {% include 'components/property-list-item' %}
-            {% endfor %}
-          </div>
-
-          {%- comment -%} TODO: map view layout — descomentar quando lançar busca por mapa
-          <!-- Map View (split layout) -->
-          <div
-            x-show="view === 'map'"
-            class="vp-map-view flex flex-col lg:flex-row w-full"
-            {% unless _initial_view == 'map' %}style="display:none"{% endunless %}
-          >
-            <!-- Property list (left side) -->
-            <div id="vpMapListContainer" class="vp-map-view__list w-full lg:w-[60%] overflow-y-auto lg:h-[calc(100vh-140px)] px-4 py-4">
-              <p class="vp-map-count text-sm text-gray-500 mb-3">{{ pagination.total_properties }} {{ t.home.properties_found | default: 'imóveis nesta área' }}</p>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {% for property in properties %}
-                  <div data-map-sku="{{ property.sku }}">
-                    {% include 'components/property-card' %}
-                  </div>
-                {% endfor %}
-              </div>
-
-              <!-- Map View Pagination -->
-              {% if pagination.total_pages > 1 %}
-                <nav class="mt-6 flex items-center justify-center gap-2 flex-wrap pb-4">
-                  {% if pagination.current_page > 1 %}
-                    <a
-                      href="/imoveis?page={{ pagination.current_page | minus: 1 }}{% if filters.operation %}&operation={{ filters.operation }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}"
-                      class="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                      </svg>
-                      {{ t.pagination.previous }}
-                    </a>
-                  {% endif %}
-                  <span class="text-sm text-gray-500">
-                    {{ pagination.current_page }} / {{ pagination.total_pages }}
-                  </span>
-                  {% if pagination.current_page < pagination.total_pages %}
-                    <a
-                      href="/imoveis?page={{ pagination.current_page | plus: 1 }}{% if filters.operation %}&operation={{ filters.operation }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}"
-                      class="flex items-center gap-1 px-3 py-1.5 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 text-sm font-medium transition-colors"
-                    >
-                      {{ t.pagination.next }}
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                      </svg>
-                    </a>
-                  {% endif %}
-                </nav>
-              {% endif %}
-            </div>
-
-            <!-- Map container (right side, sticky) -->
-            <div class="vp-map-view__map w-full lg:w-[40%] h-[50vh] lg:h-[calc(100vh-140px)] lg:sticky lg:top-0 order-first lg:order-last">
-              <div id="vpMapContainer" class="w-full h-full bg-gray-100"></div>
-            </div>
-          </div>
-          {%- endcomment -%}
-
-          <!-- Pagination (hidden in map view — map has its own) -->
-          {% if pagination.total_pages > 1 %}
-            <nav class="mt-10 flex items-center justify-center gap-2 flex-wrap">
-              <!-- First Page -->
-              {% if pagination.current_page > 1 %}
-                <a
-                  href="/imoveis?page=1{% if filters.operation %}&operation={{ filters.operation }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}"
-                  class="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
-                  title="{{ t.pagination.first }}"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="w-4 h-4"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
-                  </svg>
-                </a>
-              {% endif %}
-
-              <!-- Previous Page -->
-              {% if pagination.current_page > 1 %}
-                <a
-                  href="/imoveis?page={{ pagination.current_page | minus: 1 }}{% if filters.operation %}&operation={{ filters.operation }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}"
-                  class="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="w-4 h-4"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                  </svg>
-                  {{ t.pagination.previous }}
-                </a>
-              {% endif %}
-
-              <div class="flex items-center gap-1">
-                {% assign start_page = pagination.current_page | minus: 2 %}
-                {% if start_page < 1 %}{% assign start_page = 1 %}{% endif %}
-                {% assign end_page = start_page | plus: 4 %}
-                {% if end_page > pagination.total_pages %}{% assign end_page = pagination.total_pages %}{% endif %}
-                {% if end_page < 5 %}{% assign end_page = 5 %}{% endif %}
-                {% if end_page > pagination.total_pages %}{% assign end_page = pagination.total_pages %}{% endif %}
-                {% if start_page > 1 %}
-                  {% assign start_page = end_page | minus: 4 %}
-                  {% if start_page < 1 %}{% assign start_page = 1 %}{% endif %}
-                {% endif %}
-
-                <!-- First page number if not in range -->
-                {% if start_page > 1 %}
-                  <a
-                    href="/imoveis?page=1{% if filters.operation %}&operation={{ filters.operation }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}"
-                    class="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
-                  >
-                    1
-                  </a>
-                  {% if start_page > 2 %}
-                    <span class="w-10 h-10 flex items-center justify-center text-gray-400">...</span>
-                  {% endif %}
-                {% endif %}
-
-                <!-- Page numbers -->
-                {% for i in (start_page..end_page) %}
-                  {% if i == pagination.current_page %}
-                    <span class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-lg font-semibold shadow-md">
-                      {{- i -}}
-                    </span>
-                  {% else %}
-                    <a
-                      href="/imoveis?page={{ i }}{% if filters.operation %}&operation={{ filters.operation }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}"
-                      class="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
-                    >
-                      {{ i }}
-                    </a>
-                  {% endif %}
-                {% endfor %}
-
-                <!-- Last page number if not in range -->
-                {% if end_page < pagination.total_pages %}
-                  {% if end_page < pagination.total_pages | minus: 1 %}
-                    <span class="w-10 h-10 flex items-center justify-center text-gray-400">...</span>
-                  {% endif %}
-                  <a
-                    href="/imoveis?page={{ pagination.total_pages }}{% if filters.operation %}&operation={{ filters.operation }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}"
-                    class="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
-                  >
-                    {{ pagination.total_pages }}
-                  </a>
-                {% endif %}
-              </div>
-
-              <!-- Next Page -->
-              {% if pagination.current_page < pagination.total_pages %}
-                <a
-                  href="/imoveis?page={{ pagination.current_page | plus: 1 }}{% if filters.operation %}&operation={{ filters.operation }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}"
-                  class="flex items-center gap-1 px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
-                >
-                  {{ t.pagination.next }}
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="w-4 h-4"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                  </svg>
-                </a>
-              {% endif %}
-
-              <!-- Last Page -->
-              {% if pagination.current_page < pagination.total_pages %}
-                <a
-                  href="/imoveis?page={{ pagination.total_pages }}{% if filters.operation %}&operation={{ filters.operation }}{% endif %}{% if filters.type %}&type={{ filters.type }}{% endif %}"
-                  class="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-lg hover:bg-gray-50 text-gray-700 font-medium transition-colors"
-                  title="{{ t.pagination.last }}"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke-width="2"
-                    stroke="currentColor"
-                    class="w-4 h-4"
-                  >
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 4.5l7.5 7.5-7.5 7.5m6-15l7.5 7.5-7.5 7.5" />
-                  </svg>
-                </a>
-              {% endif %}
-            </nav>
-
-            <p class="text-center text-gray-500 text-sm mt-4">
-              {{ t.pagination.page }}
-              {{ pagination.current_page }}
-              {{ t.pagination.of }}
-              {{ pagination.total_pages }} ({{ pagination.total_properties }}
-              {{ t.home.properties_found }})
-            </p>
-          {% endif %}
-
-        {% else %}
-          <!-- Empty State -->
-          <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1"
-              stroke="currentColor"
-              class="w-16 h-16 mx-auto text-gray-400 mb-4"
-            >
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
-            </svg>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ t.listings.no_property_found }}</h3>
-            <p class="text-gray-600 mb-6">{{ t.listings.try_adjust_filters }}</p>
-            {% assign clear_op = filters.operation | default: 'sale' %}
-            {% if clear_op == 'rent' %}
-              {% assign op_seg = routes.operation_rent | default: '/alugar' %}
-            {% elsif clear_op == 'short_term' %}
-              {% assign op_seg = routes.operation_short_term | default: '/temporada' %}
-            {% else %}
-              {% assign op_seg = routes.operation_sale | default: '/comprar' %}
-            {% endif %}
-            <a
-              href="{{ locale_prefix }}{{ routes.properties }}{{ op_seg }}"
-              class="inline-block bg-primary hover:bg-primary/90 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
-            >
-              {{ t.search.clear_filters }}
+            <a href="?page={{ _next }}" class="pb-load-more__btn" :class="loading && 'is-loading'" @click.prevent="load()">
+              <span x-show="!loading">Carregar mais</span>
+              <span x-show="loading" x-cloak>Carregando…</span>
             </a>
           </div>
         {% endif %}
-      </div>
+
+      {% else %}
+        <div class="border border-[#ECECEC] rounded-[4px] px-6 py-14 text-center">
+          <i class="ph ph-buildings text-[48px] text-[#A9A49A]"></i>
+          <h2 class="font-serif mt-4 text-[22px] text-[#181A20]">{{ t.listings.no_property_found }}</h2>
+          <p class="mt-2 text-[14px] text-[#666158]">{{ t.listings.try_adjust_filters }}</p>
+          {%- if _op == 'rent' -%}{%- assign _clear_seg = routes.operation_rent -%}{%- else -%}{%- assign _clear_seg = routes.operation_sale -%}{%- endif -%}
+          <a href="{{ locale_prefix }}{{ routes.properties }}{{ _clear_seg }}" class="pb-filters__submit inline-flex items-center justify-center !w-auto px-8 mt-6">{{ t.search.clear_filters }}</a>
+        </div>
+      {% endif %}
     </div>
   </div>
 </section>
@@ -682,6 +293,18 @@
   "location": "archive:property",
   "name": "Listagem de Imóveis",
   "settings": [
+    {
+      "type": "text",
+      "id": "title_sale",
+      "label": "Título da listagem de venda",
+      "default": "Imóveis à venda em Campo Grande - MS e região"
+    },
+    {
+      "type": "text",
+      "id": "title_rent",
+      "label": "Título da listagem de locação",
+      "default": "Imóveis para alugar em Campo Grande - MS e região"
+    },
     {
       "type": "select",
       "id": "default_sort",

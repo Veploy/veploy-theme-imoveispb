@@ -22,24 +22,30 @@
     background: {{ footer_card_bg }};
     color: {{ footer_text }};
     border-radius: 4px;
-    padding: 4% 5% 0;
+    /* Laterais de 5vw + 9px e topo de 61px (36px no tablet/celular, 21px abaixo
+       de 480px), como o container do original */
+    padding: 61px calc(5vw + 9px) 0;
   }
+  @media (max-width: 1024px) { .pb-footer__card { padding-top: 36px; } }
+  @media (max-width: 480px)  { .pb-footer__card { padding-top: 21px; } }
   /* Grade em vez de flex-wrap: as quatro colunas começam todas na mesma linha
      de base, sem uma subir ou descer conforme o tamanho do conteúdo. */
   .pb-footer__grid {
     display: grid;
-    grid-template-columns: 1.5fr 1.2fr 1fr 1fr;
+    grid-template-columns: minmax(0, 1fr) 236px 236px 172px;
     align-items: start;
-    gap: 50px 40px;
+    gap: 40px 60px;
     max-width: 1300px;
     margin-inline: auto;
   }
+  /* Tablet e celular: marca e Contato na largura toda; Institucional e Links
+     úteis lado a lado embaixo */
   @media (max-width: 1024px) {
-    .pb-footer__grid { grid-template-columns: 1fr 1fr; }
+    .pb-footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 40px; }
+    .pb-footer__grid > .pb-footer__wide { grid-column: 1 / -1; }
   }
-  @media (max-width: 600px) {
-    .pb-footer__grid { grid-template-columns: 1fr; gap: 36px; }
-  }
+  .pb-footer__logo { width: 185px; }
+  @media (max-width: 1024px) { .pb-footer__logo { width: 136px; } }
   /* Títulos das colunas: Geist 14/700 em caixa alta, no bege do kit */
   .pb-footer__title {
     font-family: var(--font-body);
@@ -79,13 +85,15 @@
   .pb-footer__bottom {
     max-width: 1300px;
     margin-inline: auto;
-    margin-top: 40px;
+    margin-top: 54px;
     padding: 18px 0;
     border-top: 1px solid {{ footer_text }}1A;
     font-family: var(--font-body);
-    font-size: 13px;
-    color: {{ footer_text }};
+    font-size: 14px;
+    line-height: 20px;
+    color: #FDFBF7;
   }
+  @media (max-width: 1024px) { .pb-footer__bottom { margin-top: 30px; } }
 </style>
 
 <footer class="pb-footer">
@@ -93,17 +101,17 @@
     <div class="pb-footer__grid">
 
       {%- comment -%} Coluna 1: marca, assinatura, CRECI e redes {%- endcomment -%}
-      <div>
-        <a href="{{ locale_prefix }}/" class="block w-[150px] mb-5">
+      <div class="pb-footer__wide">
+        <a href="{{ locale_prefix }}/" class="pb-footer__logo block mb-5">
           {%- if _logo != blank -%}
-            <img src="{{ _logo }}" alt="{{ workspace.name }}" class="w-full h-auto object-contain" width="150" height="89" loading="lazy">
+            <img src="{{ _logo }}" alt="{{ workspace.name }}" class="w-full h-auto object-contain" width="185" height="110" loading="lazy">
           {%- else -%}
             <span class="text-2xl font-medium">{{ workspace.name }}</span>
           {%- endif -%}
         </a>
 
         {%- if theme_settings.footer.tagline != blank %}
-        <p class="pb-footer__text max-w-[320px] mb-5">{{ theme_settings.footer.tagline }}</p>
+        <p class="pb-footer__text !leading-[22px] !py-0 max-w-[310px] mb-5">{{ theme_settings.footer.tagline }}</p>
         {%- endif %}
 
         {%- if theme_settings.contact.creci != blank %}
@@ -116,7 +124,7 @@
         <div class="flex items-center gap-[5px] flex-wrap">
           {%- if theme_settings.contact.facebook != blank %}
           <a href="{{ theme_settings.contact.facebook }}" target="_blank" rel="noopener" class="pb-footer__social" aria-label="Facebook">
-            <svg viewBox="0 0 320 512"><path d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z"/></svg>
+            <svg viewBox="0 0 512 512"><path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"/></svg>
           </a>
           {%- endif %}
           {%- if theme_settings.contact.instagram != blank %}
@@ -126,7 +134,7 @@
           {%- endif %}
           {%- if theme_settings.contact.linkedin != blank %}
           <a href="{{ theme_settings.contact.linkedin }}" target="_blank" rel="noopener" class="pb-footer__social" aria-label="LinkedIn">
-            <svg viewBox="0 0 448 512"><path d="M100.28 448H7.4V148.9h92.88zM53.79 108.1C24.09 108.1 0 83.5 0 53.8a53.79 53.79 0 0 1 107.58 0c0 29.7-24.1 54.3-53.79 54.3zM447.9 448h-92.68V302.4c0-34.7-.7-79.2-48.29-79.2-48.29 0-55.69 37.7-55.69 76.7V448h-92.78V148.9h89.08v40.8h1.3c12.4-23.5 42.69-48.3 87.88-48.3 94 0 111.28 61.9 111.28 142.3V448z"/></svg>
+            <svg viewBox="0 0 448 512"><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>
           </a>
           {%- endif %}
           {%- if theme_settings.contact.youtube != blank %}
@@ -144,7 +152,7 @@
       </div>
 
       {%- comment -%} Coluna 2: contato {%- endcomment -%}
-      <div>
+      <div class="pb-footer__wide">
         <h4 class="pb-footer__title">Contato</h4>
         <ul class="pb-footer__list">
           {%- if theme_settings.contact.email != blank %}
