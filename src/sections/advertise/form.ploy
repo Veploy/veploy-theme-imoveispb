@@ -71,10 +71,27 @@
   .pb-ad__form input.pb-form__field:not([type='checkbox']):not([type='radio']),
   .pb-ad__form select.pb-form__field { border-bottom-color: #666158; }
   @media (min-width: 1025px) {
-    /* O card sobe 39px por cima da foto do topo e acompanha a rolagem */
+    /* O card sobe 39px por cima da foto do topo e acompanha a rolagem.
+       Os -139px somados aos 100px de padding do grid dão os -40px líquidos
+       do cartão 7821faf em produção. */
     .pb-ad__aside { position: relative; z-index: 20; margin-top: -139px; }
-    .pb-ad__sticky { position: sticky; top: 120px; }
+    /* A barra flutuante (.pb-header--stuck) é fixa em `top: 2%` e o nav tem
+       110px de altura, então o pé dela fica em 2vh + 110px. Com os 120px que
+       estavam aqui o cabeçalho cobria o título do cartão. Agora o cartão para
+       20px abaixo da barra, em qualquer altura de tela. */
+    .pb-ad__sticky { position: sticky; top: calc(2vh + 130px); }
   }
+
+  /* Entrada das seções ao rolar, portada do Elementor de produção
+     (post-61.css). Cada elemento tem `animated-slow`, que no Elementor vale
+     2s de duração:
+       cabeçalho "Benefícios" (b1c06ae) ....... fadeInDown
+       cards de benefício (04eb2ab e irmãos) .. fadeInLeft,  150ms
+       painel "Somos referência" (883c093) .... fadeInUp
+       cabeçalho "Como Anunciar" (a186103) .... fadeInDown
+       etapas (cd6bbb5, 641a087, 02f0f22) ..... fadeInRight, 0 / 200 / 300ms
+     Os atributos data-reveal ficam no HTML; o CSS e a classe .pb-reveal vêm
+     do reveal.js, então, se o script não carregar, nada fica escondido. */
 </style>
 
 <section {{ section_attrs }} class="pb-ad pb-section bg-white{% if section_class %} {{ section_class }}{% endif %}">
@@ -85,6 +102,7 @@
 
       {%- comment -%} Benefícios {%- endcomment -%}
       <div>
+        <div data-reveal="down">
         {% include 'components/home-section-header',
            eyebrow: b.eyebrow,
            heading: b.title,
@@ -105,11 +123,12 @@
           </a>
         </div>
         {%- endif %}
+        </div>
 
         {%- if benefits != empty and benefits.size > 0 %}
         <div class="grid grid-cols-1 min-[1025px]:grid-cols-3 gap-5 mt-[60px] min-[1025px]:mt-[75px]">
           {%- for item in benefits -%}
-          <div class="pb-ad__card">
+          <div class="pb-ad__card" data-reveal="left" data-reveal-delay="150">
             <h3>{{ item.title }}</h3>
             <p class="pb-text">{{ item.description }}</p>
           </div>
@@ -120,7 +139,7 @@
 
       {%- comment -%} Painel cinza de reforço {%- endcomment -%}
       {%- if b.highlight_title != blank %}
-      <div class="pb-ad__panel">
+      <div class="pb-ad__panel" data-reveal="up">
         <h2>
           {{- b.highlight_title }}{% if b.highlight_title_highlight != blank %} <span>{{ b.highlight_title_highlight }}</span>{% endif %}{% if b.highlight_title_after != blank %} {{ b.highlight_title_after }}{% endif -%}
         </h2>
@@ -135,6 +154,7 @@
 
       {%- comment -%} Como anunciar {%- endcomment -%}
       <div>
+        <div data-reveal="down">
         {% include 'components/home-section-header',
            eyebrow: p.eyebrow,
            heading: p.title,
@@ -155,11 +175,19 @@
           </a>
         </div>
         {%- endif %}
+        </div>
 
         {%- if steps != empty and steps.size > 0 %}
         <div class="grid grid-cols-1 min-[1025px]:grid-cols-3 gap-5 mt-[60px] min-[1025px]:mt-[75px]">
+          {%- comment -%}
+            Atrasos do original: 0ms na primeira etapa, 200ms na segunda e
+            300ms da terceira em diante.
+          {%- endcomment -%}
           {%- for item in steps -%}
-          <div class="pb-ad__step">
+          {%- if forloop.index0 == 0 -%}{%- assign _delay = 0 -%}
+          {%- elsif forloop.index0 == 1 -%}{%- assign _delay = 200 -%}
+          {%- else -%}{%- assign _delay = 300 -%}{%- endif -%}
+          <div class="pb-ad__step" data-reveal="right" data-reveal-delay="{{ _delay }}">
             <h3>{{ item.title }}</h3>
             <p class="pb-text">{{ item.description }}</p>
           </div>

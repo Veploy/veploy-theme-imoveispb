@@ -14,11 +14,19 @@
     background-size: cover;
     background-repeat: no-repeat;
   }
+  /* Véu do topo, conferido no Elementor de produção (post-61.css, container
+     02430cc): degradê 90deg do cinza #373630 até transparente, aplicado a 50%
+     de opacidade (--overlay-opacity:0.5). Estava preto puro e terminando em
+     70% — por isso escurecia demais e não tinha o tom acinzentado.
+     O original termina em `#F2295B00`, um rosa com alfa zero que o Elementor
+     deixou para trás; como o navegador interpola com alfa pré-multiplicado,
+     o resultado é o mesmo de `#37363000`, que é o que está aqui. */
   .pb-adhero::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgb(0 0 0 / .45) 0%, rgb(0 0 0 / .1) 70%);
+    opacity: .5;
+    background-image: linear-gradient(90deg, #373630 0%, #37363000 100%);
   }
   .pb-adhero__title {
     font-family: var(--font-heading);
@@ -48,8 +56,16 @@
     transition: background-color .2s;
   }
   .pb-adhero__btn:hover { background: #373630; }
-  .pb-adhero__inner { min-height: 855px; padding-top: 140px; padding-bottom: 60px; }
-  @media (max-width: 767px) { .pb-adhero__inner { min-height: 700px; padding-top: 140px; padding-bottom: 40px; } }
+  /* Altura do topo, de produção (02430cc): 95vh, 85vh até 1024px e 700px até
+     880px. Os 855px que estavam aqui são o valor medido de 95vh numa tela de
+     900px de altura — numa tela maior o topo ficava curto, o cartão do
+     formulário subia junto e o campo "Nome" já aparecia na primeira dobra.
+     Com vh o cartão para no mesmo ponto do original, mostrando só o título e
+     a chamada dele. */
+  .pb-adhero__inner { min-height: 95vh; padding-top: 140px; padding-bottom: 60px; }
+  @media (max-width: 1024px) { .pb-adhero__inner { min-height: 85vh; } }
+  @media (max-width: 880px)  { .pb-adhero__inner { min-height: 700px; } }
+  @media (max-width: 767px)  { .pb-adhero__inner { padding-top: 140px; padding-bottom: 40px; } }
 </style>
 
 <section {{ section_attrs }} class="pb-adhero pb-section{% if section_class %} {{ section_class }}{% endif %}"{% if s.image != blank %} style="background-image: url('{{ s.image }}');"{% endif %}>
