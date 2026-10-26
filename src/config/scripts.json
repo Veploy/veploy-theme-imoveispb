@@ -10,7 +10,8 @@
     "location-filter.js",
     "property-filters.js",
     "main.js",
-    "contact-autofill.js"
+    "contact-autofill.js",
+    "reveal.js"
   ],
   "single:property": [
     "gallery-modal.js",
